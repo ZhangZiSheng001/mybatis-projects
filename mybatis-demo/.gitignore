@@ -11,6 +11,7 @@ target/
 .settings/
 .project
 .classpath
+.sts4-cache
 
 # idea ignore
 .idea/
