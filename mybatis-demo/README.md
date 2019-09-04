@@ -1,4 +1,4 @@
-# mybatis-projects
+# mybatis-demo
 
 ## 简介
 `Mybatis`是一个持久层框架，相比`Hibernate`（面向Code），更面向DB，可以灵活地对`sql`语句进行优化。它封装了`JDBC`访问数据库的过程，整合连接池，并提供了事务机制。  
