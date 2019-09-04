@@ -3,11 +3,11 @@
 ## 简介
 `Mybatis`是一个持久层框架，相比`Hibernate`（面向Code），更面向DB，可以灵活地对`sql`语句进行优化。它封装了`JDBC`访问数据库的过程，整合连接池，并提供了事务机制。  
 
-`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成代码，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。  
+`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成实体和单表CRUD的接口和xml，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。 
 
 使用`SpringBoot`整合`Mybatis`主要需掌握以下内容：  
 
-1. `application.propertie`的配置；  
+1. `application.properties`的配置；  
 
 2. `mapper`的配置：`select`、`insert`、`update`、`delete`、`resultMap`、`sql`、动态sql（`where`、`if`、`trim`、`for each`）；  
 
@@ -18,7 +18,7 @@
 5. 逆向工程  
 
 ## 需求
-采用`SpringBoot`整合`Mybatis`针对三个实体进行增删改查操作：  
+采用`Spring Boot`整合`Mybatis`针对以下三个实体进行增删改查操作：  
 
 1. 用户：  
 
@@ -28,14 +28,19 @@
 
 ## 工程环境
 JDK：1.8.0_201  
+
 maven：3.6.1  
+
 IDE：Spring Tool Suites4 for Eclipse 4.12  
-mysql：5.7
+
+mysql：5.7  
+
 mybatis：3.5.2  
-SpringBoot：2.1.7.RELEASE
+
+SpringBoot：2.1.7.RELEASE  
 
 ## 依赖引入
-这里采用c3p0连接池，logback日志实现。
+这里采用c3p0连接池。
 
 ```xml
 <parent>
@@ -89,7 +94,7 @@ SpringBoot：2.1.7.RELEASE
 ```
 
 ## application.properties的配置
-关于这个文件的配置，其实还有很多选项，只是常用的就下面这几个。数据源我想让它做到自动加载配置文件，所以在Configuration类中配置。  
+关于这个文件的配置，其实还有很多选项，只是常用的就下面这几个。数据源我想让它做到自动加载配置文件，所以在`Configuration`类中配置。  
   
 ```properties
 # datasource：这个我选择在Configuration类中配置c3p0，可以直接读取文件
@@ -106,6 +111,7 @@ pagehelper.supportMethodsArguments=true
 pagehelper.params=count=countSql
 ```
 c3p0的配置  
+本来想在`application.properties`中配置数据源的全路径类名就行了，但保存说要连接参数，目前只能用`DataSourceConfig`方式来处理。  
 
 ```java
 /**
@@ -129,10 +135,11 @@ public class DataSourceConfig {
 ```
 
 ## *mapper.xml的配置
-项目中的mapper.xml、Mapper接口和实体类都是逆向工程生成。生成的Mapper几乎包含了单表操作的所有方法，我们只要在这个基础上配置多表关系就行了。  
+项目中的mapper.xml、Mapper接口和实体类都是逆向工程生成（sql脚本在项目中已给出，可以按此使用mybatis-generator生成）。生成的Mapper几乎包含了单表操作的所有方法，我们只要在这个基础上配置多表关系就行了。  
 
 ### 多方的配置
 这里是按主键查询的情况，如果是按Example查询的话，项目中也有，这里不再列出。  
+
 ```xml
 <!-- 关联查询角色的ResultMap -->
 <resultMap id="UserRoleResultMap" type="User">
@@ -163,7 +170,8 @@ public class DataSourceConfig {
 ```
 
 ### 一方配置
-多方和一方其实配置差不多，关键在resultMap里一方时`collection`，而多方是`association`。
+多方和一方其实配置差不多，关键在resultMap里一方时`collection`，而多方是`association`。 
+
 ```xml
 <!-- 关联查询User的ResultMap -->
 <resultMap id="RoleUserResultMap" type="Role">
@@ -224,8 +232,24 @@ FROM `mybatis_menu` WHERE `menu_parent_id` = '' or `menu_parent_id` is NULL
    from `mybatis_menu` where `menu_parent_id` = #{value}
 </select>
 ```
+## 启动类的配置
+这里要配置好Mapper的扫描包
+```java
+/**
+ * @Description
+ * @Author zzs
+ * @Date 2018-05-02 14:51
+ */
+@SpringBootApplication
+@MapperScan("cn.zzs.mybatis.mapper")
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
 
-### Mapper的使用
+## Mapper的使用
 注意，逆向工程生成的mapper中只会包含基本的方法，如果我们要自定义方法，需要在Mapper接口中给出。另外，mapper.xml也必须配置好方法对应的sql。  
 
 ```java
@@ -260,7 +284,7 @@ public class UserMapperTest {
 ```
 
 ## 分页插件的使用
-注意，使用分页插件前提要在pom文件中引入pageHelper的依赖，并且在application.properties中配置好相关参数。  
+注意，使用分页插件前提要在pom文件中引入`pageHelper`的依赖，并且在`application.properties`中配置好相关参数。  
 
 ```java
 	/**

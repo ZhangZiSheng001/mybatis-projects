@@ -3,7 +3,7 @@
 ## 简介
 `Mybatis`是一个持久层框架，相比`Hibernate`（面向Code），更面向DB，可以灵活地对`sql`语句进行优化。它封装了`JDBC`访问数据库的过程，整合连接池，并提供了事务机制。  
 
-`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成代码，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。  
+`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成实体和单表CRUD的接口和xml，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。 
 
 使用`Mybatis`主要需掌握以下内容：  
 
@@ -28,13 +28,17 @@
 
 ## 工程环境
 JDK：1.8.0_201  
+
 maven：3.6.1  
+
 IDE：Spring Tool Suites4 for Eclipse 4.12  
-mysql：5.7
-mybatis：3.5.2
+
+mysql：5.7  
+
+mybatis：3.5.2  
 
 ## 依赖引入
-`Mybatis`有自带的连接池，所以不需要引入连接池的坐标。当然我们也可以使用其他连接池。  
+`Mybatis`有自带的连接池，所以不需要引入连接池的坐标。当然我们也可以使用其他连接池，这里不涉及。  
 
 ```xml
 <dependency>
@@ -78,7 +82,7 @@ mybatis：3.5.2
 
 ## mybatis-config.xml的配置
 注意：**configuration的标签必须按顺序写，不然会报错。**  
-关于这个文件的配置，其实还有很多选项，只是常用的就下面这几个，其他的这里不做介绍。在网上找到一篇比较全面的博客，可以看看：[MyBatis详解3.MyBatis配置详解](https://www.jianshu.com/p/b3fc571e6da5)
+关于这个文件的配置，其实还有很多选项，只是常用的就下面这几个，其他的这里不做介绍。在网上找到一篇比较全面的博客，可以看看：[MyBatis详解3.MyBatis配置详解](https://www.jianshu.com/p/b3fc571e6da5)  
   
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -127,7 +131,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 ```
 
 ## *mapper.xml的配置
-项目中的mapper.xml、Mapper接口和实体类都是逆向工程生成。生成的Mapper几乎包含了单表操作的所有方法，我们只要在这个基础上配置多表关系就行了。  
+项目中的mapper.xml、Mapper接口和实体类都是逆向工程生成（sql脚本在项目中已给出，可以按此使用mybatis-generator生成）。生成的Mapper几乎包含了单表操作的所有方法，我们只要在这个基础上配置多表关系就行了。  
 
 ### 多方的配置
 这里是按主键查询的情况，如果是按Example查询的话，项目中也有，这里不再列出。  
@@ -161,7 +165,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 ```
 
 ### 一方配置
-多方和一方其实配置差不多，关键在resultMap里一方时`collection`，而多方是`association`。
+多方和一方其实配置差不多，关键在resultMap里一方时`collection`，而多方是`association`。  
+
 ```xml
 <!-- 关联查询User的ResultMap -->
 <resultMap id="RoleUserResultMap" type="Role">
@@ -224,7 +229,7 @@ FROM `mybatis_menu` WHERE `menu_parent_id` = '' or `menu_parent_id` is NULL
 ```
 ## SqlSession和Mapper的获取和使用
 ### SqlSession和Mapper的获取
-注意，这个对象不是线程安全的，单独使用一般就是用于提交和回滚事务。 
+注意，`SqlSession`这个对象不是线程安全的，单独使用一般就是用于提交和回滚事务，以及获得`Mapper`对象。 
  
 ```java
 private UserMapper userMapper;
@@ -283,7 +288,7 @@ public void testSave() {
 ```
 
 ## 分页插件的使用
-注意，使用分页插件前提要在pom文件中引入pageHelper的依赖，并且在mybatis-config.xml中配置好plugins。  
+注意，使用分页插件前提要在pom文件中引入`pageHelper`的依赖，并且在`mybatis-config.xml`中配置好`plugins`。  
 
 ```java
 /**
@@ -308,8 +313,9 @@ public void testPageHelper() {
 ```	
 
 ## Mybatis的原理
-通过源码分析，`Mybatis`的`sqlSession`在执行数据库操作时，会利用`Configuration`配置对象获得`MappedStatement`对象（方法和执行语句的Map），根据这个对象`Executor`执行器对象完成传入参数的处理、语句的执行和结果集的封装。 
-![mybatis原理图](https://github.com/ZhangZiSheng001/mybatis-projects/blob/master/mybatis-demo/img/mybatis%E5%8E%9F%E7%90%86%E5%9B%BE.jpg?raw=true)
+通过源码分析，`Mybatis`的`sqlSession`在执行数据库操作时，会利用`Configuration`配置对象获得`MappedStatement`对象（方法和执行语句的Map），根据这个对象`Executor`执行器对象完成传入参数的处理、语句的执行和结果集的封装。  
+
+![mybatis原理图](https://github.com/ZhangZiSheng001/mybatis-projects/blob/master/mybatis-demo/img/mybatis%E5%8E%9F%E7%90%86%E5%9B%BE.jpg)
 
 ## 项目路径
 测试单独使用Mybatis对数据库进行增删改查  
@@ -318,7 +324,10 @@ public void testPageHelper() {
 测试Spring整合Mybatis对数据库进行增删改查  
 [mybatis-spring-demo](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-spring-demo)  
 
+测试SpringBoot整合Mybatis对数据库进行增删改查  
+[mybatis-springboot-demo](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-springboot-demo)  
+
 逆向工程   
-[mybatis-generator](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-generator)  
+[mybatis-generator](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-generator)   
 
 > 学习使我快乐！！

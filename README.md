@@ -3,19 +3,19 @@
 ## 简介
 `Mybatis`是一个持久层框架，相比`Hibernate`（面向Code），更面向DB，可以灵活地对`sql`语句进行优化。它封装了`JDBC`访问数据库的过程，整合连接池，并提供了事务机制。  
 
-`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成代码，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。 
+`Mybatis`利用动态代理自动实现`Mapper`接口，而且这种方式可以利用逆向工程生成实体和单表CRUD的接口和xml，非常方便。我们开发时只需专注如何拼装`sql`语句，其它复杂的过程全部可以交给`Mybatis`去完成。 
 
 通过源码分析，`Mybatis`的`sqlSession`在执行数据库操作时，会利用`Configuration`配置对象获得`MappedStatement`对象（方法和执行语句的Map），根据这个对象`Executor`执行器对象完成传入参数的处理、语句的执行和结果集的封装。  
 
 使用`Mybatis`主要需掌握以下内容：  
 
-1. `config`的配置：主要为`typeAliases`、`plugins`、`environments`、`mappers`等；  
+1. `config`的常用配置：主要为`typeAliases`、`plugins`、`mappers`等；  
 
 2. `mapper`的配置：`select`、`insert`、`update`、`delete`、`resultMap`、`sql`、动态sql（`where`、`if`、`trim`、`for each`）；  
 
-3. `mapper`的一对多和多对多、自关联的配置；  
+3. `mapper`的一对多和多对多、**自关联**的配置；  
 
-4. `SqlSession`和`Mapper`的`API`使用；  
+4. `Mapper`的`API`使用；  
 
 5. 逆向工程  
 
@@ -30,10 +30,16 @@
 
 ## 工程环境
 JDK：1.8.0_201  
+
 maven：3.6.1  
+
 IDE：Spring Tool Suites4 for Eclipse 4.12  
-mysql：5.7
-mybatis：3.5.2
+
+mysql：5.7  
+
+mybatis：3.5.2  
+
+SpringBoot：2.1.7.RELEASE  
 
 ## 项目路径
 测试单独使用Mybatis对数据库进行增删改查  
