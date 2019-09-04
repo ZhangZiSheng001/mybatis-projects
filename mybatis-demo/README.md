@@ -309,7 +309,7 @@ public void testPageHelper() {
 
 ## Mybatis的原理
 通过源码分析，`Mybatis`的`sqlSession`在执行数据库操作时，会利用`Configuration`配置对象获得`MappedStatement`对象（方法和执行语句的Map），根据这个对象`Executor`执行器对象完成传入参数的处理、语句的执行和结果集的封装。 
-![mybatis原理图](https://github.com/ZhangZiSheng001/mybatis-demo/blob/master/img/mybatis原理图.jpg)
+![mybatis原理图](https://github.com/ZhangZiSheng001/mybatis-projects/blob/master/mybatis-demo/img/mybatis%E5%8E%9F%E7%90%86%E5%9B%BE.jpg?raw=true)
 
 ## 项目路径
 测试单独使用Mybatis对数据库进行增删改查  
