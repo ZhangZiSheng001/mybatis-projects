@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c3p0-config>
+	<default-config>
+	
+	    <property name="driverClass">com.mysql.cj.jdbc.Driver</property>
+	    <property name="jdbcUrl">jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=GMT%2B8&amp;useSSL=true</property>
+	    <property name="user">root</property>
+	    <property name="password">root</property>
+	    
+	    <!-- ++++++++++++++++++Basic Pool Configuration++++++++++++++++++++ -->
+		<!--初始化时获取三个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+		<property name="initialPoolSize">3</property>
+		<!--最大空闲时间,n秒内未使用则连接被丢弃。若为0则永不丢弃。单位：秒。Default: 0 -->
+		<property name="maxIdleTime">0</property>		
+		<!--连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize">15</property>
+		<!--连接池中保留的最小连接数。Default: 3 -->	
+		<property name="minPoolSize">3</property>
+		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+		<property name="acquireIncrement">3</property>
+
+		<!-- ++++++++++++++++++Managing Pool Size and Connection Age++++++++++++++++++ -->
+		<!--当连接池中的连接达到指定存活时间会被替代和销毁，如果为0则不作要求。单位：秒。Default: 0 -->
+		<property name="maxConnectionAge">0</property>
+		<!--在程序负载级别减小时，允许超过minPoolSize的连接最大空闲时间，应小于maxIdleTime。0表示不作要求。
+			单位：秒。Default: 0 -->
+		<property name="maxIdleTimeExcessConnections">0</property>
+		
+		<!-- ++++++++++++++++++Configuring Connection Testing++++++++++++++++++ -->
+		<!--c3p0将建一张名为Test的空表，并使用其自带的查询语句进行测试。如果定义了这个参数那么 属性preferredTestQuery将被忽略。
+			Default: null -->
+		<!-- <property name="automaticTestTable"></property> -->
+		<!--通过ConnectionTester或QueryConnectionTester的实现类来测试连接。类名需制定全路径。 
+			Default: com.mchange.v2.c3p0.impl.DefaultConnectionTester -->
+		<property name="connectionTesterClassName">com.mchange.v2.c3p0.impl.DefaultConnectionTester</property>			
+		<!--每n秒检查所有连接池中的空闲连接。0表示不作要求。单位：秒。Default: 0 -->
+		<property name="idleConnectionTestPeriod">0</property>
+		<!--定义所有连接测试都执行的测试语句。Default:null -->
+		<property name="preferredTestQuery">select 1</property>
+		<!--如果设为true那么在每个connection提交的 时候都将校验其有效性。
+			为了提高性能，建议搭配idleConnectionTestPeriod和automaticTestTable或preferredTestQuery一起是使用。Default: false -->
+		<property name="testConnectionOnCheckout">false</property>
+		<!--如果设为true那么在每个connection检出的 时候都将校验其有效性。
+			为了提高性能，建议搭配idleConnectionTestPeriod和automaticTestTable或preferredTestQuery一起是使用。Default: false -->
+		<property name="testConnectionOnCheckin">false</property>		
+		
+		<!-- ++++++++++++++++++Configuring Statement Pooling++++++++++++++++++ -->
+		<!--PreparedStatements缓存的最大数量。如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。Default: 0 -->
+		<property name="maxStatements">0</property>
+		<!--maxStatementsPerConnection定义了连接池内单个连接所拥有的最大缓存statements数。Default: 0 -->
+		<property name="maxStatementsPerConnection">0</property>
+		<!-- 暂时没理解  Default: 0 -->
+		<property name="statementCacheNumDeferredCloseThreads">0</property>
+		
+		<!-- ++++++++++++++++++Configuring Recovery From Database Outages ++++++++++++++++++ -->
+		<!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		<property name="acquireRetryAttempts">30</property>
+		<!--两次连接中间隔时间，单位毫秒。Default: 1000 -->
+		<property name="acquireRetryDelay">1000</property>
+		<!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效保留，并在下次调用getConnection()的时候继续尝试获取连接。
+			如果设为true，那么在尝试 获取连接失败后该数据源将申明已断开并永久关闭。Default: false -->
+		<property name="breakAfterAcquireFailure">false</property>	
+		
+		<!-- ++++++++++++++++++Managing Connection Lifecycles with Connection Customizer++++++++++++++++++ -->
+		<!--通过ConnectionCustomizer的实现类来自定义Connection检入检出销毁等动作时执行某些方法。Default: null -->
+		<!-- <property name="connectionCustomizerClassName"></property>	 -->	
+		
+		<!-- ++++++++++++++++++Configuring Unresolved Transaction Handling++++++++++++++++++ -->
+		<!--连接关闭时默认将所有未提交的操作回滚。Default: false -->
+		<property name="autoCommitOnClose">false</property>
+		<!--（文档原文）作者强烈建议不使用的一个属性 。Default: false-->
+		<property name="forceIgnoreUnresolvedTransactions">false</property>		
+				
+		<!-- ++++++++++++++++++Configuring to Debug and Workaround Broken Client Applications++++++++++++++++++ -->	
+		<property name="debugUnreturnedConnectionStackTraces">false</property>
+		<property name="unreturnedConnectionTimeout">0</property>
+		
+		<!--  ++++++++++++++++++Configuring To Avoid Memory Leaks On Hot Redeploy Of Clients ++++++++++++++++++ -->	
+		<property name="contextClassLoaderSource">caller</property>
+		<property name="privilegeSpawnedThreads">false</property>
+		
+		<!-- ++++++++++++++++++Other DataSource Configuration++++++++++++++++++ -->
+		<!--当连接池用完时客户端调用getConnection()后等待获取新连接的时间，超时后将抛出 SQLException,如设为0则无限期等待。
+			单位毫秒。Default: 0 -->
+		<property name="checkoutTimeout">0</property>
+		<!--指定c3p0 libraries的路径，如果（通常都是这样）在本地即可获得那么无需设置，默认null即可 Default: null -->
+		<property name="factoryClassLocation"></property>
+		<!--c3p0是异步操作的，缓慢的JDBC操作通过帮助进程完成。扩展这些操作可以有效的提升性能 通过多线程实现多个操作同时被执行。Default:3 -->
+		<property name="numHelperThreads">3</property>
+		<property name="forceSynchronousCheckins">false</property>
+		<property name="maxAdministrativeTaskTime">0</property>
+		
+	</default-config>
+<!--   <named-config name="oracleSource">
+    <property name="driverClass">oracle.jdbc.driver.OracleDriver</property>
+    <property name="jdbcUrl">jdbc:oracle:thin:@//localhost:1521/xe</property>
+    <property name="user">system</property>
+    <property name="password">root</property>
+ 
+    <property name="initialPoolSize">10</property>
+    <property name="maxIdleTime">30</property>
+    <property name="maxPoolSize">100</property>
+    <property name="minPoolSize">10</property>
+  </named-config> -->
+</c3p0-config>
