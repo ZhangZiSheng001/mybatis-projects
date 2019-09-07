@@ -110,11 +110,11 @@
   <!-- 关联查询Role的Example条件拼接语句 -->
    <sql id="Related_Role_Example_Where_Clause">
     <where>
-        and u.`user_role_id` = r.`role_id` and 
+        and u.`user_role_id` = r.`role_id` 
       <trim prefix="(" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
+          <trim prefix="and(" prefixOverrides="and" suffix=")">
             <foreach collection="criteria.criteria" item="criterion">
               <choose>
                 <when test="criterion.noValue">

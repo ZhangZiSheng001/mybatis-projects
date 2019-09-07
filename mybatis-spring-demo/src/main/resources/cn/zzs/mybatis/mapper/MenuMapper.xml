@@ -93,8 +93,8 @@
   <!-- 关联查询Menu的Example条件拼接语句 -->
    <sql id="Related_Role_Example_Where_Clause">
     <where>
-        rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id` and 
-      <trim prefix="(" suffix=")">  
+        rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id`  
+      <trim prefix="and (" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
           <trim prefix="(" prefixOverrides="and" suffix=")">
