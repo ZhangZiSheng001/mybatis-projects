@@ -24,8 +24,8 @@
       <association property="role" javaType="role">
            <id property="id" column="role_id"/>
           <result property="name" column="role_name"/>
-          <result property="create" column="gmt_create"/>
-          <result property="modified" column="gmt_modified"/>
+          <result property="create" column="a"/>
+          <result property="modified" column="b"/>
       </association>
   </resultMap>
   
@@ -102,19 +102,19 @@
           u.`user_name`,
           u.`user_role_id`,
           r.`role_id`,
-          r.`gmt_create`,
-          r.`gmt_modified`,
+          r.`gmt_create` a,
+          r.`gmt_modified` b,
           r.`role_name` 
   </sql>
   
   <!-- 关联查询Role的Example条件拼接语句 -->
    <sql id="Related_Role_Example_Where_Clause">
     <where>
-        and u.`user_role_id` = r.`role_id` 
-      <trim prefix="(" suffix=")">  
+        and u.`user_role_id` = r.`role_id`  
+      <trim prefix="and(" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
-          <trim prefix="and(" prefixOverrides="and" suffix=")">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
             <foreach collection="criteria.criteria" item="criterion">
               <choose>
                 <when test="criterion.noValue">
@@ -164,6 +164,9 @@
     <if test="_parameter != null">
       <include refid="Related_Role_Example_Where_Clause" />
     </if>
+    <if test="_parameter != null">
+      where u.`user_role_id` = r.`role_id`  
+    </if>	
     <if test="orderByClause != null">
       order by u.${orderByClause} 
     </if>

@@ -78,8 +78,8 @@
    <!-- 关联查询Role的查询字段 -->
   <sql id="Related_Role_Column_List">
      r.`role_id`,
-     r.`gmt_create`,
-     r.`gmt_modified`,
+     r.`gmt_create` a,
+     r.`gmt_modified` b,
      r.`role_name`,
      m.`menu_id`,
      m.`gmt_create`,
@@ -93,7 +93,7 @@
   <!-- 关联查询Menu的Example条件拼接语句 -->
    <sql id="Related_Role_Example_Where_Clause">
     <where>
-        rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id`  
+        and rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id`  
       <trim prefix="and (" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
@@ -136,8 +136,8 @@
       <collection property="roles" ofType="Role">
           <id property="id" column="role_id"/>
           <result property="name" column="role_name"/>
-          <result property="create" column="gmt_create"/>
-          <result property="modified" column="gmt_modified"/>          
+          <result property="create" column="a"/>
+          <result property="modified" column="b"/>          
       </collection>
   </resultMap>  
     
@@ -171,6 +171,9 @@
     <if test="_parameter != null">
       <include refid="Related_Role_Example_Where_Clause" />
     </if>
+    <if test="_parameter != null">
+      where rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id` 
+    </if>	
     <if test="orderByClause != null">
       order by m.${orderByClause}
     </if>

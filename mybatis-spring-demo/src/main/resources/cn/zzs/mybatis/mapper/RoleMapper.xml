@@ -76,13 +76,13 @@
   <sql id="Related_User_Column_List">
           u.`user_id`,
           u.`user_age`,
-          u.`gmt_create`,
-          u.`gmt_modified`,
+          u.`gmt_create` a,
+          u.`gmt_modified` b,
           u.`user_name`,
           u.`user_role_id`,
           r.`role_id`,
-          r.`gmt_create`,
-          r.`gmt_modified`,
+          r.`gmt_create` ,
+          r.`gmt_modified` ,
           r.`role_name` 
   </sql>
   
@@ -90,7 +90,7 @@
    <sql id="Related_User_Example_Where_Clause">
     <where>
         and u.`user_role_id` = r.`role_id`  
-      <trim prefix="and (" suffix=")">  
+      <trim prefix="and(" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
           <trim prefix="(" prefixOverrides="and" suffix=")">
@@ -130,8 +130,8 @@
           <id property="id" column="user_id" />
           <result property="name"  column="user_name"/>
           <result property="age" column="user_age"/>
-          <result property="create" column="gmt_create"/>
-          <result property="modified" column="gmt_modified"/>
+          <result property="create" column="a"/>
+          <result property="modified" column="b"/>
           <result property="roleId" column="role_id"/>
       </collection>
   </resultMap>
@@ -159,6 +159,9 @@
     <if test="_parameter != null">
       <include refid="Related_User_Example_Where_Clause" />
     </if>
+    <if test="_parameter != null">
+      where u.`user_role_id` = r.`role_id` 
+    </if>	
     <if test="orderByClause != null">
       order by r.${orderByClause}
     </if>
@@ -171,8 +174,8 @@
      r.`gmt_modified`,
      r.`role_name`,
      m.`menu_id`,
-     m.`gmt_create`,
-     m.`gmt_modified`,
+     m.`gmt_create` a,
+     m.`gmt_modified` b,
      m.`menu_name`,
      m.`menu_order`,
      m.`menu_url`,
@@ -182,8 +185,8 @@
   <!-- 关联查询Menu的Example条件拼接语句 -->
    <sql id="Related_Menu_Example_Where_Clause">
     <where>
-        rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id`  
-      <trim prefix="and (" suffix=")">  
+        and rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id` 
+      <trim prefix="and(" suffix=")">  
       <foreach collection="oredCriteria" item="criteria" separator="or">
         <if test="criteria.valid">
           <trim prefix="(" prefixOverrides="and" suffix=")">
@@ -221,8 +224,8 @@
       <result property="modified" column="gmt_modified"/>
       <collection property="menus" ofType="Menu">
           <id property="id" column="menu_id" />
-          <result property="create"  column="gmt_create"/>
-          <result property="modified" column="gmt_modified"/>
+          <result property="create"  column="a"/>
+          <result property="modified" column="b"/>
           <result property="name" column="menu_name"/>
           <result property="modified" column="menu_order"/>
           <result property="url" column="menu_url"/>
@@ -260,6 +263,9 @@
     <if test="_parameter != null">
       <include refid="Related_Menu_Example_Where_Clause" />
     </if>
+    <if test="_parameter != null">
+     where rm.`role_id` = r.`role_id`  and  rm.`menu_id` = m.`menu_id`  
+    </if>	
     <if test="orderByClause != null">
       order by r.${orderByClause}
     </if>
