@@ -227,7 +227,7 @@
           <result property="create"  column="a"/>
           <result property="modified" column="b"/>
           <result property="name" column="menu_name"/>
-          <result property="modified" column="menu_order"/>
+          <result property="order" column="menu_order"/>
           <result property="url" column="menu_url"/>
           <result property="parentId" column="menu_parent_id"/>
       </collection>
