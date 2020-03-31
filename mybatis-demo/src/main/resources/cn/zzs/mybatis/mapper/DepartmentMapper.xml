@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zzs.mybatis.mapper.DepartmentMapper">
+	<!-- 基础映射表 -->
+	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Department">
+       <id column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
+       <result column="parent_id" property="parentId" javaType="string" jdbcType="VARCHAR"/>
+       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
+       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+	<!-- 查询条件 -->
+	<sql id="Condition_Where_Clause">
+        <if test="con.no !=null and con.no != ''">
+        and 
+            d.no = #{con.no}
+        </if>
+        <if test="con.parentId != null and con.parentId != ''">
+        and 
+            d.parent_id = #{con.parentId}
+        </if>
+        <if test="con.name != null and con.name != ''">
+        and 
+           d.name = #{con.name} 
+        </if>
+        <if test="con.type != null and con.type != ''">
+        and 
+           d.type = #{con.type} 
+        </if>
+        <if test="con.deleted != null">
+        and 
+           d.deleted = #{con.deleted} 
+        </if>
+        <if test="con.create != null">
+        and 
+           d.gmt_create = #{con.create} 
+        </if> 
+        <if test="con.modified != null">
+        and 
+           d.gmt_modified = #{con.modified} 
+        </if>          
+	</sql>
+	
+	<!-- 基础字段 -->
+	<sql id="Base_Column_List">
+		d.id, 
+		d.no, 
+		d.parent_id, 
+		d.`name`, 
+		d.type, 
+		d.deleted, 
+		d.gmt_create, 
+		d.gmt_modified 
+	</sql>
+    
+    <!-- 根据条件查询 -->
+	<select id="selectByCondition"
+		parameterType="cn.zzs.mybatis.condition.DepartmentCondition"
+		resultMap="BaseResultMap">
+		select 
+		    <if test="con.distinct">
+            distinct
+		    </if>
+            <include refid="Base_Column_List" />
+		from 
+            demo_department d 
+		where 1=1 
+            <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null and con.orderByClause != ''">
+           order by ${con.orderByClause} 
+        </if>
+	</select>
+
+    <!-- 根据id查询 -->
+	<select id="selectByPrimaryKey" 
+        parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+            <include refid="Base_Column_List" />
+		from 
+            demo_department d 
+		where 
+            d.id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 根据id删除 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete d from 
+            demo_department d 
+		where 
+            d.id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据条件删除 -->
+	<delete id="deleteByCondition"
+		parameterType="cn.zzs.mybatis.condition.DepartmentCondition">
+		delete d from 
+            demo_department d 
+        where 1=1 
+		<include refid="Condition_Where_Clause" />
+	</delete>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterType="cn.zzs.mybatis.entity.Department">
+		insert into 
+            demo_department 
+        (id, no, parent_id,name, type, deleted, gmt_create,gmt_modified)
+		values (
+            #{id,jdbcType=VARCHAR}, 
+            #{no,jdbcType=VARCHAR},
+            #{parentId,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR}, 
+            #{type,jdbcType=VARCHAR}, 
+            #{deleted,jdbcType=BIT},
+            #{create,jdbcType=TIMESTAMP},
+            #{modified,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<!-- 根据条件查询数量 -->
+	<select id="countByCondition"
+		parameterType="cn.zzs.mybatis.condition.DepartmentCondition"
+		resultType="java.lang.Long">
+		select 
+            count(*)  
+        from 
+            demo_department d 
+        where 1=1 
+		<include refid="Condition_Where_Clause" />
+	</select>
+	
+	<!-- 根据条件更新 -->
+	<update id="updateByCondition" parameterType="map">
+		update 
+            demo_department d 
+		set 
+            d.no = #{record.no,jdbcType=VARCHAR},
+            d.parent_id = #{record.parentId,jdbcType=VARCHAR},
+            d.name = #{record.name,jdbcType=VARCHAR},
+            d.type = #{record.type,jdbcType=VARCHAR},
+            d.deleted = #{record.deleted,jdbcType=BIT},
+            d.gmt_create = #{record.create,jdbcType=TIMESTAMP},
+            d.gmt_modified = #{record.modified,jdbcType=TIMESTAMP}
+        where 1=1 
+            <include refid="Condition_Where_Clause" />
+	</update>
+	
+	<!-- 根据id更新 -->
+	<update id="updateByPrimaryKey" parameterType="cn.zzs.mybatis.entity.Department">
+		update 
+            demo_department d 
+		set 
+            d.no = #{no,jdbcType=VARCHAR},
+            d.parent_id = #{parentId,jdbcType=VARCHAR},
+            d.name = #{name,jdbcType=VARCHAR},
+            d.type = #{type,jdbcType=VARCHAR},
+            d.deleted = #{deleted,jdbcType=BIT},
+            d.gmt_create = #{create,jdbcType=TIMESTAMP},
+            d.gmt_modified = #{modified,jdbcType=TIMESTAMP}
+		where 
+            d.id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

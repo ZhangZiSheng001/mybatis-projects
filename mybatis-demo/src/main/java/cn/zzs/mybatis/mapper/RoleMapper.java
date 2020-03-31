@@ -4,81 +4,26 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import cn.zzs.mybatis.pojo.Role;
-import cn.zzs.mybatis.pojo.RoleExample;
+import cn.zzs.mybatis.condition.RoleCondition;
+import cn.zzs.mybatis.entity.Role;
 
 public interface RoleMapper {
-	long countByExample(RoleExample example);
 
-	int deleteByExample(RoleExample example);
+	long countByCondition(@Param("con") RoleCondition con);
 
-	int deleteByPrimaryKey(Long id);
+	int deleteByCondition(@Param("con") RoleCondition con);
 
-	int insert(Role record);
+	int deleteByPrimaryKey(String id);
 
-	int insertSelective(Role record);
+	int insert(Role role);
 
-	List<Role> selectByExample(RoleExample example);
+	List<Role> selectByCondition(@Param("con") RoleCondition con);
 
-	Role selectByPrimaryKey(Long id);
+	Role selectByPrimaryKey(String id);
 
-	int updateByExampleSelective(@Param("record") Role record, @Param("example") RoleExample example);
+	int updateByCondition(@Param("record") Role role, @Param("con") RoleCondition con);
 
-	int updateByExample(@Param("record") Role record, @Param("example") RoleExample example);
-
-	int updateByPrimaryKeySelective(Role record);
-
-	int updateByPrimaryKey(Role record);
-
-	/**
-	 * 
-	 * @Title: selectRelatedUserByPrimaryKey
-	 * @Description: 根据id查询角色并返回用户角色
-	 * @author: zzs
-	 * @date: 2019年9月3日 下午10:33:52
-	 * @param id
-	 */
-	List<Role> selectRelatedUserByPrimaryKey(Long id);
-
-	/**
-	 * 
-	 * @Title: selectRelatedUserByExample
-	 * @Description: 根据条件查询角色并返回用户角色
-	 * @author: zzs
-	 * @date: 2019年9月3日 下午10:33:52
-	 * @param example
-	 */
-	List<Role> selectRelatedUserByExample(RoleExample example);
-
-	/**
-	 * 
-	 * @Title: selectRelatedMenuByPrimaryKey
-	 * @Description: 根据id查询角色并返回菜单角色
-	 * @author: zzs
-	 * @date: 2019年9月3日 下午10:33:52
-	 * @param id
-	 */
-	List<Role> selectRelatedMenuByPrimaryKey(Long id);
-
-	/**
-	 * 
-	 * @Title: selectRelatedMenuByExample
-	 * @Description: 根据条件查询角色并返回菜单角色
-	 * @author: zzs
-	 * @date: 2019年9月3日 下午10:33:52
-	 * @param example
-	 */
-	List<Role> selectRelatedMenuByExample(RoleExample example);
+	int updateByPrimaryKey(Role role);
 	
-	/**
-	 * 
-	 * @Title: setMenuByPrimaryKey
-	 * @Description: 设置指定角色的菜单
-	 * @author: zzs
-	 * @date: 2019年9月4日 上午11:46:19
-	 * @param id
-	 * @param menuId
-	 * @return: void
-	 */
-	void setMenuByPrimaryKey(@Param("id")Long id,@Param("menuId")String menuId);
+	List<Role> selectByEmployeeId(String employeeId);
 }

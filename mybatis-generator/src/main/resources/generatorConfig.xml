@@ -14,7 +14,7 @@
 
 		<!--optional,旨在创建class时，对注释进行控制 -->
 		<commentGenerator>
-			<property name="suppressDate" value="true" />
+			<property name="suppressDate" value="false" />
 			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
 			<property name="suppressAllComments" value="true" />
 		</commentGenerator>
@@ -37,7 +37,7 @@
 		<!-- targetPackage：生成的实体类所在的包 -->
 		<!-- targetProject：生成的实体类所在的硬盘位置 -->
 		<javaModelGenerator 
-			targetPackage="cn.zzs.mybatis.pojo"
+			targetPackage="cn.zzs.mybatis.repository.dataobject"
 			targetProject=".\src\main\java">
 			<!-- 是否允许子包 -->
 			<property name="enableSubPackages" value="false" />
@@ -66,14 +66,17 @@
 		</javaClientGenerator>
 		
 		<!-- 指定数据库表 -->
-		<table tableName="mybatis_menu" domainObjectName="Menu" >
+		<!-- <table tableName="demo_menu" domainObjectName="Menu" >
 		   <columnRenamingRule searchString="^(menu_)|(gmt_)" replaceString=""/>
 		</table>
-		<table tableName="mybatis_role" domainObjectName="Role">
+		<table tableName="demo_role" domainObjectName="Role">
 		  <columnRenamingRule searchString="^(role_)|(gmt_)" replaceString=""/>
 		</table>
-		<table tableName="mybatis_user" domainObjectName="User">
-		  <columnRenamingRule searchString="^(user_)|(gmt_)" replaceString=""/>
-		</table>
+		<table tableName="demo_employee" domainObjectName="Employee">
+		  <columnRenamingRule searchString="^(employee_)|(gmt_)" replaceString=""/>
+		</table> -->
+		<table tableName="demo_department" domainObjectName="Department">
+          <columnRenamingRule searchString="^(department_)|(gmt_)" replaceString=""/>
+        </table>
 	</context>
 </generatorConfiguration>

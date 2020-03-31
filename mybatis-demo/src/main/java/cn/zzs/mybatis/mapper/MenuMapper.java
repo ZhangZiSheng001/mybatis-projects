@@ -4,69 +4,24 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import cn.zzs.mybatis.pojo.Menu;
-import cn.zzs.mybatis.pojo.MenuExample;
+import cn.zzs.mybatis.condition.MenuCondition;
+import cn.zzs.mybatis.entity.Menu;
 
 public interface MenuMapper {
-    long countByExample(MenuExample example);
 
-    int deleteByExample(MenuExample example);
+	long countByCondition(@Param("con") MenuCondition con);
 
-    int deleteByPrimaryKey(String id);
+	int deleteByCondition(@Param("con") MenuCondition con);
 
-    int insert(Menu record);
+	int deleteByPrimaryKey(String id);
 
-    int insertSelective(Menu record);
+	int insert(Menu menu);
 
-    List<Menu> selectByExample(MenuExample example);
+	List<Menu> selectByCondition(@Param("con") MenuCondition con);
 
-    Menu selectByPrimaryKey(String id);
+	Menu selectByPrimaryKey(String id);
 
-    int updateByExampleSelective(@Param("record") Menu record, @Param("example") MenuExample example);
+	int updateByCondition(@Param("record") Menu menu, @Param("con") MenuCondition con);
 
-    int updateByExample(@Param("record") Menu record, @Param("example") MenuExample example);
-
-    int updateByPrimaryKeySelective(Menu record);
-
-    int updateByPrimaryKey(Menu record);
-    
-    /**
-     * 
-     * @Title: selectRelatedRoleByPrimaryKey
-     * @Description: 根据id查询菜单并返回角色
-     * @author: zzs
-     * @date: 2019年9月3日 下午10:33:52
-     * @param id
-     */
-    List<Menu> selectRelatedRoleByPrimaryKey(String id);
-    
-    /**
-     * 
-     * @Title: selectRelatedRoleByExample
-     * @Description: 根据条件查询菜单并返回角色
-     * @author: zzs
-     * @date: 2019年9月3日 下午10:33:52
-     * @param example
-     */
-    List<Menu> selectRelatedRoleByExample(MenuExample example);
-    
-    /**
-     * 
-     * @Title: selectRootRelatedChildren
-     * @Description: 查询根菜单并返回子菜单
-     * @author: zzs
-     * @date: 2019年9月4日 上午10:48:18
-     * @return: Menu
-     */
-    Menu selectRootRelatedChildren();
-    
-    /**
-     * 
-     * @Title: selectRootRelatedChildrenByPrimaryKey
-     * @Description: 根据id查询菜单并返回子菜单
-     * @author: zzs
-     * @date: 2019年9月4日 上午10:58:46
-     * @return: Menu
-     */
-    Menu selectRootRelatedChildrenByPrimaryKey();
+	List<Menu> selectByEmployeeId(String employeeId);
 }

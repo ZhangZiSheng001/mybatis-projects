@@ -10,15 +10,23 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     <!-- 引入配置文件 -->
     <properties resource="jdbc.properties"></properties>
     
+    <!-- 全局配置 -->
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode"/>
+    </settings>
+    
     <!-- 配置别名 -->
     <typeAliases>
-        <package name="cn.zzs.mybatis.pojo"/>
+        <package name="cn.zzs.mybatis.entity"/>
     </typeAliases>    
     
     <!-- 配置插件 -->
     <plugins>
         <!-- 分页插件 -->
-        <plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
     </plugins>
     
     <!-- 配置环境：可以有多个 -->
@@ -26,17 +34,18 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         <environment id="development">
             <!-- 使用jdbc事务管理 -->
             <transactionManager type="JDBC"/>
-            <!-- 数据库连接池 -->
-            <dataSource type="POOLED">
+            <!-- 数据源 -->
+            <!-- <dataSource type="POOLED">
                 <property name="driver" value="${jdbc.driver}" />
                 <property name="url" value="${jdbc.url}" />
                 <property name="username" value="${jdbc.username}" />
                 <property name="password" value="${jdbc.password}" />
-            </dataSource>
+            </dataSource> -->
+            <dataSource type="cn.zzs.mybatis.factory.HikariDataSourceFactory"/>
         </environment>
     </environments>
     
-    <!-- 加载映射文件 -->
+    <!-- 映射器 -->
     <mappers>
         <package name="cn.zzs.mybatis.mapper"/>
     </mappers>
