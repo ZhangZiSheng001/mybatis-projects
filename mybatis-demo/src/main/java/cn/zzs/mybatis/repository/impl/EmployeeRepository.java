@@ -14,50 +14,50 @@ import cn.zzs.mybatis.util.MybatisUtils;
  * @date: 2020年3月23日 下午4:53:55
  */
 public class EmployeeRepository implements IEmployeeRepository {
-	
-	@Override
-	public Employee get(String id) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
-	}
 
-	@Override
-	public List<Employee> list(EmployeeCondition con) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByCondition(con);
-	}
+    @Override
+    public Employee get(String id) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+    }
 
-	@Override
-	public long count(EmployeeCondition con) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).countByCondition(con);
-	}
+    @Override
+    public List<Employee> list(EmployeeCondition con) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByCondition(con);
+    }
 
-	@Override
-	public int delete(EmployeeCondition con) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByCondition(con);
-	}
+    @Override
+    public long count(EmployeeCondition con) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).countByCondition(con);
+    }
 
-	@Override
-	public int delete(String id) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByPrimaryKey(id);
-	}
+    @Override
+    public int delete(EmployeeCondition con) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByCondition(con);
+    }
 
-	@Override
-	public int save(Employee employee) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
-	}
-	
-	@Override
-	public int saveBatch(List<Employee> list) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insertBatch(list);
-	}
+    @Override
+    public int delete(String id) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByPrimaryKey(id);
+    }
 
-	@Override
-	public int update(Employee employee, EmployeeCondition con) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByCondition(employee, con);
-	}
+    @Override
+    public int save(Employee employee) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
+    }
 
-	@Override
-	public int update(Employee employee) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByPrimaryKey(employee);
-	}
+    @Override
+    public int saveBatch(List<Employee> list) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insertBatch(list);
+    }
+
+    @Override
+    public int update(Employee employee, EmployeeCondition con) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByCondition(employee, con);
+    }
+
+    @Override
+    public int update(Employee employee) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByPrimaryKey(employee);
+    }
 
 }

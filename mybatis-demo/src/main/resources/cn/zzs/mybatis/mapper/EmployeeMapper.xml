@@ -2,286 +2,265 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.zzs.mybatis.mapper.EmployeeMapper">
     <!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
-	   <id column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-	   <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
-       <association 
-			property="department" 
-			column="department_id" 
-			select="cn.zzs.mybatis.mapper.DepartmentMapper.selectByPrimaryKey"/>
-       <collection 
-			property="roles"
-			column="id"
-			select="cn.zzs.mybatis.mapper.RoleMapper.selectByEmployeeId"
-			/>
-       <collection 
-			property="menus"
-			column="id"
-			select="cn.zzs.mybatis.mapper.MenuMapper.selectByEmployeeId"
-           />
-	</resultMap>
-	
-	<!-- AbstractEmployeeCondition查询条件 -->
-	<sql id="Abstract_Condition_Where_Clause">
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
+        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
+        <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR" />
+        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
+        <association property="department" column="department_id" select="cn.zzs.mybatis.mapper.DepartmentMapper.selectByPrimaryKey" />
+        <collection property="roles" column="id" select="cn.zzs.mybatis.mapper.RoleMapper.selectByEmployeeId" />
+        <collection property="menus" column="id" select="cn.zzs.mybatis.mapper.MenuMapper.selectByEmployeeId" />
+    </resultMap>
+
+    <!-- AbstractEmployeeCondition查询条件 -->
+    <sql id="Abstract_Condition_Where_Clause">
         <if test="con.name != null and con.name != ''">
-        and 
-           e.name = #{con.name} 
+            and
+            e.name = #{con.name}
         </if>
         <if test="con.gender != null">
-        and 
-           e.gender = #{con.gender} 
+            and
+            e.gender = #{con.gender}
         </if>
         <if test="con.no !=null and con.no != ''">
-        and 
+            and
             e.no = #{con.no}
         </if>
         <if test="con.password != null and con.password != ''">
-        and 
-           e.password = #{con.password} 
+            and
+            e.password = #{con.password}
         </if>
         <if test="con.phone != null and con.phone != ''">
-        and 
-           e.phone = #{con.phone} 
+            and
+            e.phone = #{con.phone}
         </if>
         <if test="con.address != null and con.address != ''">
-        and 
+            and
             e.address = #{con.address}
         </if>
         <if test="con.status != null">
-        and 
-            e.status = #{con.status} 
+            and
+            e.status = #{con.status}
         </if>
         <if test="con.deleted != null">
-        and 
-           e.deleted = #{con.deleted} 
+            and
+            e.deleted = #{con.deleted}
         </if>
         <if test="con.createStart != null">
-        and 
-           e.gmt_create &gt; #{con.createStart} 
-        </if> 
+            and
+            e.gmt_create &gt; #{con.createStart}
+        </if>
         <if test="con.createEnd != null">
-        and 
-           e.gmt_create &lt; #{con.createEnd} 
-        </if> 
+            and
+            e.gmt_create &lt; #{con.createEnd}
+        </if>
         <if test="con.modifiedStart != null">
-        and 
-           e.gmt_modified &gt; #{con.modifiedStart} 
-        </if> 
+            and
+            e.gmt_modified &gt; #{con.modifiedStart}
+        </if>
         <if test="con.modifiedEnd != null">
-        and 
-           e.gmt_modified &lt; #{con.modifiedEnd} 
-        </if>   
-	</sql>
-	
-	<!-- EmployeeCondition查询条件 -->
-	<sql id="Condition_Where_Clause">
-        <include refid="Abstract_Condition_Where_Clause"/>
+            and
+            e.gmt_modified &lt; #{con.modifiedEnd}
+        </if>
+    </sql>
+
+    <!-- EmployeeCondition查询条件 -->
+    <sql id="Condition_Where_Clause">
+        <include refid="Abstract_Condition_Where_Clause" />
         <if test="con.departmentNo != null and con.departmentNo != ''">
-        and 
+            and
             d.no = #{con.departmentNo}
         </if>
         <if test="con.departmentName != null and con.departmentName != ''">
-        and 
+            and
             d.name = #{con.departmentName}
         </if>
-	</sql>
-	
-	
-	<!-- 关联表 -->
-	<sql id="Join_Clause">
+    </sql>
+
+
+    <!-- 关联表 -->
+    <sql id="Join_Clause">
         <if test="con.joinDepartment">
-            inner join 
-                demo_department d 
+            inner join
+            demo_department d
         </if>
-	</sql>
-	
-	<!-- 基础字段 -->
-	<sql id="Base_Column_List">
-		e.id, 
-		e.`name`, 
-		e.gender, 
-		e.no, 
-		e.password, 
-		e.phone, 
-		e.address, 
-		e.status, 
-		e.deleted, 
-		e.department_id, 
-		e.gmt_create, 
-		e.gmt_modified  
-	</sql>
-	
-	<!-- 根据条件查询 -->
-	<select id="selectByCondition"
-		parameterType="cn.zzs.mybatis.condition.EmployeeCondition"
-		resultMap="BaseResultMap">
-		select
-            <if test="con.distinct">
+    </sql>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        e.id,
+        e.`name`,
+        e.gender,
+        e.no,
+        e.password,
+        e.phone,
+        e.address,
+        e.status,
+        e.deleted,
+        e.department_id,
+        e.gmt_create,
+        e.gmt_modified
+    </sql>
+
+    <!-- 根据条件查询 -->
+    <select id="selectByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap">
+        select
+        <if test="con.distinct">
             distinct
-            </if>
-            <include refid="Base_Column_List" />
-		from 
-            demo_employee e 
-            <include refid="Join_Clause"></include>
-		where 1=1 
-            <include refid="Condition_Where_Clause" />
-		<if test="con.orderByClause != null">
-			order by ${con.orderByClause}
-		</if>
-	</select>
-	
-	<!-- 根据id查询 -->
-	<select id="selectByPrimaryKey" 
-        parameterType="java.lang.String"
-		resultMap="BaseResultMap">
-		select
-            <include refid="Base_Column_List" />
-		from 
-            demo_employee e 
-		where 
-            e.id = #{id,jdbcType=VARCHAR}
-	</select>
-	
-	<!-- 根据id删除 -->
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete e from 
-            demo_employee e
-		where 
-            e.id = #{id,jdbcType=VARCHAR}
-	</delete>
-	
-	<!-- 根据条件删除 -->
-	<delete id="deleteByCondition"
-		parameterType="cn.zzs.mybatis.condition.EmployeeCondition">
-		delete e from 
-            demo_employee e 
-        where 1=1 
-            <include refid="Condition_Where_Clause" />
-	</delete>
-	
-	<!-- 新增 -->
-	<insert id="insert"
-		parameterType="cn.zzs.mybatis.entity.Employee">
-		insert into 
-            demo_employee 
+        </if>
+        <include refid="Base_Column_List" />
+        from
+        demo_employee e
+        <include refid="Join_Clause"></include>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null">
+            order by ${con.orderByClause}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from
+        demo_employee e
+        where
+        e.id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据id删除 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete e from
+        demo_employee e
+        where
+        e.id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据条件删除 -->
+    <delete id="deleteByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition">
+        delete e from
+        demo_employee e
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </delete>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.zzs.mybatis.entity.Employee">
+        insert into
+        demo_employee
         (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
-		values (
-            #{id,jdbcType=VARCHAR}, 
-            #{name,jdbcType=VARCHAR},
-            #{gender,jdbcType=BIT},
-            #{no,jdbcType=VARCHAR}, 
-            #{password,jdbcType=VARCHAR}, 
-            #{phone,jdbcType=VARCHAR},
-            #{address,jdbcType=VARCHAR}, 
-            #{status,jdbcType=TINYINT},
-            #{deleted,jdbcType=BIT},
-            #{departmentId,jdbcType=VARCHAR}, 
-            #{create,jdbcType=TIMESTAMP}, 
-            #{modified,jdbcType=TIMESTAMP}
-		)
-	</insert>
-	
-    <!-- 批量新增 -->
-    <insert id="insertBatch"
-        parameterType="cn.zzs.mybatis.entity.Employee">
-        insert into 
-            demo_employee 
-        (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
-        values 
-	    <foreach item="item" index="index" collection="list" separator=",">
-	        (
-	            #{item.id,jdbcType=VARCHAR}, 
-	            #{item.name,jdbcType=VARCHAR},
-	            #{item.gender,jdbcType=BIT},
-	            #{item.no,jdbcType=VARCHAR}, 
-	            #{item.password,jdbcType=VARCHAR}, 
-	            #{item.phone,jdbcType=VARCHAR},
-	            #{item.address,jdbcType=VARCHAR}, 
-	            #{item.status,jdbcType=TINYINT},
-	            #{item.deleted,jdbcType=BIT},
-	            #{item.departmentId,jdbcType=VARCHAR}, 
-	            #{item.create,jdbcType=TIMESTAMP}, 
-	            #{item.modified,jdbcType=TIMESTAMP}
-	        )
-		</foreach>
+        values (
+        #{id,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR},
+        #{gender,jdbcType=BIT},
+        #{no,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR},
+        #{phone,jdbcType=VARCHAR},
+        #{address,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT},
+        #{deleted,jdbcType=BIT},
+        #{departmentId,jdbcType=VARCHAR},
+        #{create,jdbcType=TIMESTAMP},
+        #{modified,jdbcType=TIMESTAMP}
+        )
     </insert>
-	
-	<!-- 根据条件查询数量 -->
-	<select id="countByCondition"
-		parameterType="cn.zzs.mybatis.condition.EmployeeCondition"
-		resultType="java.lang.Long">
-		select 
-            count(*) 
-        from 
-            demo_employee e 
-            <include refid="Join_Clause"></include>
-        where 1=1 
+
+    <!-- 批量新增 -->
+    <insert id="insertBatch" parameterType="cn.zzs.mybatis.entity.Employee">
+        insert into
+        demo_employee
+        (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
+        values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.id,jdbcType=VARCHAR},
+            #{item.name,jdbcType=VARCHAR},
+            #{item.gender,jdbcType=BIT},
+            #{item.no,jdbcType=VARCHAR},
+            #{item.password,jdbcType=VARCHAR},
+            #{item.phone,jdbcType=VARCHAR},
+            #{item.address,jdbcType=VARCHAR},
+            #{item.status,jdbcType=TINYINT},
+            #{item.deleted,jdbcType=BIT},
+            #{item.departmentId,jdbcType=VARCHAR},
+            #{item.create,jdbcType=TIMESTAMP},
+            #{item.modified,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据条件查询数量 -->
+    <select id="countByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultType="java.lang.Long">
+        select
+        count(*)
+        from
+        demo_employee e
+        <include refid="Join_Clause"></include>
+        where 1=1
         <include refid="Condition_Where_Clause" />
-	</select>
-	
-	<!-- 根据条件更新 -->
-	<update id="updateByCondition" parameterType="map">
-		update 
-            demo_employee e 
-    <set>
-      <if test="name != null">
+    </select>
+
+    <!-- 根据条件更新 -->
+    <update id="updateByCondition" parameterType="map">
+        update
+        demo_employee e
+        <set>
+            <if test="name != null">
+                e.name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                e.gender = #{gender,jdbcType=BIT},
+            </if>
+            <if test="no != null">
+                e.no = #{no,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                e.password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                e.phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                e.address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                e.status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="deleted != null">
+                e.deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="departmentId != null">
+                e.department_id = #{departmentId,jdbcType=VARCHAR},
+            </if>
+            <if test="create != null">
+                e.gmt_create = #{create,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                e.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </update>
+
+    <!-- 根据id更新 -->
+    <update id="updateByPrimaryKey" parameterType="cn.zzs.mybatis.entity.Employee">
+        update
+        demo_employee e
+        set
         e.name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="gender != null">
         e.gender = #{gender,jdbcType=BIT},
-      </if>
-      <if test="no != null">
         e.no = #{no,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
         e.password = #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="phone != null">
         e.phone = #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="address != null">
         e.address = #{address,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
         e.status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="deleted != null">
         e.deleted = #{deleted,jdbcType=BIT},
-      </if>
-      <if test="departmentId != null">
         e.department_id = #{departmentId,jdbcType=VARCHAR},
-      </if>
-      <if test="create != null">
         e.gmt_create = #{create,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        e.gmt_modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-		where 1=1 
-        <include refid="Condition_Where_Clause" />
-	</update>
-	
-	<!-- 根据id更新 -->
-	<update id="updateByPrimaryKey"
-		parameterType="cn.zzs.mybatis.entity.Employee">
-		update 
-            demo_employee e 
-		set 
-			e.name = #{name,jdbcType=VARCHAR},
-			e.gender = #{gender,jdbcType=BIT},
-			e.no = #{no,jdbcType=VARCHAR},
-			e.password = #{password,jdbcType=VARCHAR},
-			e.phone = #{phone,jdbcType=VARCHAR},
-			e.address = #{address,jdbcType=VARCHAR},
-			e.status = #{status,jdbcType=TINYINT},
-			e.deleted = #{deleted,jdbcType=BIT},
-			e.department_id = #{departmentId,jdbcType=VARCHAR},
-			e.gmt_create = #{create,jdbcType=TIMESTAMP},
-			e.gmt_modified = #{modified,jdbcType=TIMESTAMP}
-		where 
-            e.id = #{id,jdbcType=VARCHAR}
-	</update>
+        e.gmt_modified = #{modified,jdbcType=TIMESTAMP}
+        where
+        e.id = #{id,jdbcType=VARCHAR}
+    </update>
 </mapper>

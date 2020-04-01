@@ -2,7 +2,6 @@ package cn.zzs.mybatis.condition;
 
 import cn.zzs.mybatis.condition.base.AbstractMenuCondition;
 
-
 /**
  * <p>菜单查询条件 </p>
  * @author: zzs

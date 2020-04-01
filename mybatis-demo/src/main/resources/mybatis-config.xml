@@ -3,37 +3,34 @@
 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <!-- 注意：configuration的标签必须按顺序写，不然会报错 -->
-<!-- properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?
-,reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers? -->
+<!-- properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory? ,reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers? -->
 <configuration>
 
-    <!-- 引入配置文件 -->
-    <properties resource="jdbc.properties"></properties>
-    
     <!-- 全局配置 -->
     <settings>
-        <setting name="lazyLoadingEnabled" value="true"/>
-        <setting name="aggressiveLazyLoading" value="false"/>
-        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
-        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode"/>
+        <setting name="lazyLoadingEnabled" value="true" />
+        <setting name="aggressiveLazyLoading" value="false" />
+        <setting name="autoMappingUnknownColumnBehavior" value="WARNING" />
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode" />
+        <setting name="defaultExecutorType" value="REUSE" />
     </settings>
-    
+
     <!-- 配置别名 -->
     <typeAliases>
-        <package name="cn.zzs.mybatis.entity"/>
-    </typeAliases>    
-    
+        <package name="cn.zzs.mybatis.entity" />
+    </typeAliases>
+
     <!-- 配置插件 -->
     <plugins>
         <!-- 分页插件 -->
-        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor" />
     </plugins>
-    
+
     <!-- 配置环境：可以有多个 -->
     <environments default="development">
         <environment id="development">
             <!-- 使用jdbc事务管理 -->
-            <transactionManager type="JDBC"/>
+            <transactionManager type="JDBC" />
             <!-- 数据源 -->
             <!-- <dataSource type="POOLED">
                 <property name="driver" value="${jdbc.driver}" />
@@ -41,13 +38,13 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
                 <property name="username" value="${jdbc.username}" />
                 <property name="password" value="${jdbc.password}" />
             </dataSource> -->
-            <dataSource type="cn.zzs.mybatis.factory.HikariDataSourceFactory"/>
+            <dataSource type="cn.zzs.mybatis.factory.HikariDataSourceFactory" />
         </environment>
     </environments>
-    
+
     <!-- 映射器 -->
     <mappers>
-        <package name="cn.zzs.mybatis.mapper"/>
+        <package name="cn.zzs.mybatis.mapper" />
     </mappers>
-    
+
 </configuration>

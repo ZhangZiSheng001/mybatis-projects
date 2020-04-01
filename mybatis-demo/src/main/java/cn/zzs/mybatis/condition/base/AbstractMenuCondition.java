@@ -9,94 +9,94 @@ import java.util.Date;
  */
 public abstract class AbstractMenuCondition extends BaseCondition {
 
-	private String MenuId;
+    private String MenuId;
 
-	private String parentId;
+    private String parentId;
 
-	private String name;
+    private String name;
 
-	private Byte order;
+    private Byte order;
 
-	private String url;
+    private String url;
 
-	private Boolean parent;
+    private Boolean parent;
 
-	private Boolean deleted;
+    private Boolean deleted;
 
-	private Date create;
+    private Date create;
 
-	private Date modified;
+    private Date modified;
 
-	public String getMenuId() {
-		return MenuId;
-	}
+    public String getMenuId() {
+        return MenuId;
+    }
 
-	public void setMenuId(String MenuId) {
-		this.MenuId = MenuId;
-	}
+    public void setMenuId(String MenuId) {
+        this.MenuId = MenuId;
+    }
 
-	public String getParentId() {
-		return parentId;
-	}
+    public String getParentId() {
+        return parentId;
+    }
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Byte getOrder() {
-		return order;
-	}
+    public Byte getOrder() {
+        return order;
+    }
 
-	public void setOrder(Byte order) {
-		this.order = order;
-	}
+    public void setOrder(Byte order) {
+        this.order = order;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public Boolean getParent() {
-		return parent;
-	}
+    public Boolean getParent() {
+        return parent;
+    }
 
-	public void setParent(Boolean parent) {
-		this.parent = parent;
-	}
+    public void setParent(Boolean parent) {
+        this.parent = parent;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Date getCreate() {
-		return create;
-	}
+    public Date getCreate() {
+        return create;
+    }
 
-	public void setCreate(Date create) {
-		this.create = create;
-	}
+    public void setCreate(Date create) {
+        this.create = create;
+    }
 
-	public Date getModified() {
-		return modified;
-	}
+    public Date getModified() {
+        return modified;
+    }
 
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 
 }

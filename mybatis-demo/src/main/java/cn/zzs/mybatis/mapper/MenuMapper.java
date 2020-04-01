@@ -9,19 +9,19 @@ import cn.zzs.mybatis.entity.Menu;
 
 public interface MenuMapper {
 
-	long countByCondition(@Param("con") MenuCondition con);
+    long countByCondition(@Param("con") MenuCondition con);
 
-	int deleteByCondition(@Param("con") MenuCondition con);
+    int deleteByCondition(@Param("con") MenuCondition con);
 
-	int deleteByPrimaryKey(String id);
+    int deleteByPrimaryKey(String id);
 
-	int insert(Menu menu);
+    int insert(Menu menu);
 
-	List<Menu> selectByCondition(@Param("con") MenuCondition con);
+    List<Menu> selectByCondition(@Param("con") MenuCondition con);
 
-	Menu selectByPrimaryKey(String id);
+    Menu selectByPrimaryKey(String id);
 
-	int updateByCondition(@Param("record") Menu menu, @Param("con") MenuCondition con);
+    int updateByCondition(@Param("record") Menu menu, @Param("con") MenuCondition con);
 
-	List<Menu> selectByEmployeeId(String employeeId);
+    List<Menu> selectByEmployeeId(String employeeId);
 }

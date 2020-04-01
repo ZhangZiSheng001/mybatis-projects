@@ -9,19 +9,19 @@ import cn.zzs.mybatis.entity.Department;
 
 public interface DepartmentMapper {
 
-	long countByCondition(@Param("con") DepartmentCondition con);
+    long countByCondition(@Param("con") DepartmentCondition con);
 
-	int deleteByCondition(@Param("con") DepartmentCondition con);
+    int deleteByCondition(@Param("con") DepartmentCondition con);
 
-	int deleteByPrimaryKey(String id);
+    int deleteByPrimaryKey(String id);
 
-	int insert(Department department);
+    int insert(Department department);
 
-	List<Department> selectByCondition(@Param("con") DepartmentCondition con);
+    List<Department> selectByCondition(@Param("con") DepartmentCondition con);
 
-	Department selectByPrimaryKey(String id);
+    Department selectByPrimaryKey(String id);
 
-	int updateByCondition(@Param("record") Department department, @Param("con") DepartmentCondition con);
+    int updateByCondition(@Param("record") Department department, @Param("con") DepartmentCondition con);
 
-	int updateByPrimaryKey(Department department);
+    int updateByPrimaryKey(Department department);
 }

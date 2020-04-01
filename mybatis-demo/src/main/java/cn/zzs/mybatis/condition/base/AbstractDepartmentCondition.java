@@ -9,83 +9,83 @@ import java.util.Date;
  */
 public abstract class AbstractDepartmentCondition extends BaseCondition {
 
-	private String departmentId;
+    private String departmentId;
 
-	private String no;
+    private String no;
 
-	private String parentId;
+    private String parentId;
 
-	private String name;
+    private String name;
 
-	private String type;
+    private String type;
 
-	private Boolean deleted;
+    private Boolean deleted;
 
-	private Date create;
+    private Date create;
 
-	private Date modified;
+    private Date modified;
 
-	public String getDepartmentId() {
-		return departmentId;
-	}
+    public String getDepartmentId() {
+        return departmentId;
+    }
 
-	public void setDepartmentId(String departmentId) {
-		this.departmentId = departmentId;
-	}
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
+    }
 
-	public String getNo() {
-		return no;
-	}
+    public String getNo() {
+        return no;
+    }
 
-	public void setNo(String no) {
-		this.no = no;
-	}
+    public void setNo(String no) {
+        this.no = no;
+    }
 
-	public String getParentId() {
-		return parentId;
-	}
+    public String getParentId() {
+        return parentId;
+    }
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Date getCreate() {
-		return create;
-	}
+    public Date getCreate() {
+        return create;
+    }
 
-	public void setCreate(Date create) {
-		this.create = create;
-	}
+    public void setCreate(Date create) {
+        this.create = create;
+    }
 
-	public Date getModified() {
-		return modified;
-	}
+    public Date getModified() {
+        return modified;
+    }
 
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 }

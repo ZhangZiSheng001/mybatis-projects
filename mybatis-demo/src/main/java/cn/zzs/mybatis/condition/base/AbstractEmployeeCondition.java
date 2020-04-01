@@ -9,153 +9,144 @@ import java.util.Date;
  */
 public abstract class AbstractEmployeeCondition extends BaseCondition {
 
-	private String employeeId;
+    private String employeeId;
 
-	private String name;
+    private String name;
 
-	private Boolean gender;
+    private Boolean gender;
 
-	private String no;
+    private String no;
 
-	private String password;
+    private String password;
 
-	private String phone;
+    private String phone;
 
-	private String address;
+    private String address;
 
-	private Byte status;
+    private Byte status;
 
-	private Boolean deleted;
+    private Boolean deleted;
 
-	private String departmentId;
+    private String departmentId;
 
-	private Date createStart;
-	
-	private Date createEnd;
+    private Date createStart;
 
-	private Date modifiedStart;
-	
-	private Date modifiedEnd;
+    private Date createEnd;
 
-	public String getEmployeeId() {
-		return employeeId;
-	}
+    private Date modifiedStart;
 
-	public void setEmployeeId(String employeeId) {
-		this.employeeId = employeeId;
-	}
+    private Date modifiedEnd;
 
-	public String getName() {
-		return name;
-	}
+    public String getEmployeeId() {
+        return employeeId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
 
-	public Boolean getGender() {
-		return gender;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setGender(Boolean gender) {
-		this.gender = gender;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getNo() {
-		return no;
-	}
+    public Boolean getGender() {
+        return gender;
+    }
 
-	public void setNo(String no) {
-		this.no = no;
-	}
+    public void setGender(Boolean gender) {
+        this.gender = gender;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getNo() {
+        return no;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setNo(String no) {
+        this.no = no;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-	public Byte getStatus() {
-		return status;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setStatus(Byte status) {
-		this.status = status;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Byte getStatus() {
+        return status;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
 
-	public String getDepartmentId() {
-		return departmentId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setDepartmentId(String departmentId) {
-		this.departmentId = departmentId;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	
-	public Date getCreateStart() {
-		return createStart;
-	}
+    public String getDepartmentId() {
+        return departmentId;
+    }
 
-	
-	public void setCreateStart(Date createStart) {
-		this.createStart = createStart;
-	}
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
+    }
 
-	
-	public Date getCreateEnd() {
-		return createEnd;
-	}
+    public Date getCreateStart() {
+        return createStart;
+    }
 
-	
-	public void setCreateEnd(Date createEnd) {
-		this.createEnd = createEnd;
-	}
+    public void setCreateStart(Date createStart) {
+        this.createStart = createStart;
+    }
 
-	
-	public Date getModifiedStart() {
-		return modifiedStart;
-	}
+    public Date getCreateEnd() {
+        return createEnd;
+    }
 
-	
-	public void setModifiedStart(Date modifiedStart) {
-		this.modifiedStart = modifiedStart;
-	}
+    public void setCreateEnd(Date createEnd) {
+        this.createEnd = createEnd;
+    }
 
-	
-	public Date getModifiedEnd() {
-		return modifiedEnd;
-	}
+    public Date getModifiedStart() {
+        return modifiedStart;
+    }
 
-	
-	public void setModifiedEnd(Date modifiedEnd) {
-		this.modifiedEnd = modifiedEnd;
-	}
+    public void setModifiedStart(Date modifiedStart) {
+        this.modifiedStart = modifiedStart;
+    }
 
+    public Date getModifiedEnd() {
+        return modifiedEnd;
+    }
+
+    public void setModifiedEnd(Date modifiedEnd) {
+        this.modifiedEnd = modifiedEnd;
+    }
 
 }

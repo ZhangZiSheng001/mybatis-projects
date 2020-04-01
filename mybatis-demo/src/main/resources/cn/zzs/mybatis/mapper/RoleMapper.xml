@@ -1,173 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.zzs.mybatis.mapper.RoleMapper">
-	<!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Role">
-       <id column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-       <result column="is_general" property="general" javaType="boolean" jdbcType="BIT"/>
-       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
+    <!-- 基础映射表 -->
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Role">
+        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
+        <result column="is_general" property="general" javaType="boolean" jdbcType="BIT" />
+        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
     </resultMap>
-	
-	<!-- 查询条件 -->
-	<sql id="Condition_Where_Clause">
+
+    <!-- 查询条件 -->
+    <sql id="Condition_Where_Clause">
         <if test="con.name != null and con.name != ''">
-        and 
-           r.name = #{con.name} 
+            and
+            r.name = #{con.name}
         </if>
         <if test="con.general != null">
-        and 
-           r.is_general = #{con.general} 
+            and
+            r.is_general = #{con.general}
         </if>
         <if test="con.deleted != null">
-        and 
-           r.deleted = #{con.deleted} 
+            and
+            r.deleted = #{con.deleted}
         </if>
         <if test="con.create != null">
-        and 
-           r.gmt_create = #{con.create} 
-        </if> 
+            and
+            r.gmt_create = #{con.create}
+        </if>
         <if test="con.modified != null">
-        and 
-           r.gmt_modified = #{con.modified} 
-        </if> 	
-	</sql>
-	
-	<!-- 基础字段 -->
-	<sql id="Base_Column_List">
-		r.id, 
-		r.`name`, 
-		r.is_general, 
-		r.deleted, 
-		r.gmt_create, 
-		r.gmt_modified  
-	</sql>
-	
-	<!-- 根据条件查询 -->
-	<select id="selectByCondition"
-		parameterType="cn.zzs.mybatis.condition.RoleCondition"
-		resultMap="BaseResultMap">
-		select
-            <if test="con.distinct">
-            distinct 
-            </if>
-            <include refid="Base_Column_List" />
-		from demo_role r
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-		<if test="con.orderByClause != null and con.orderByClause != ''">
-			order by ${con.orderByClause}
-		</if>
-	</select>
-	
-	<!-- 根据id查询 -->
-	<select id="selectByPrimaryKey" 
-        parameterType="java.lang.String"
-		resultMap="BaseResultMap">
-		select 
-            <include refid="Base_Column_List" />
-		from 
-            demo_role r
-        where 
-            r.id = #{id,jdbcType=VARCHAR}
-	</select>
-	
-	<!-- 根据id删除 -->
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete r from 
-            demo_role r
-		where 
-            r.id = #{id,jdbcType=VARCHAR}
-	</delete>
-	
-	<!-- 根据条件删除 -->
-	<delete id="deleteByCondition" parameterType="cn.zzs.mybatis.condition.RoleCondition">
-		delete r from 
-            demo_role r
-        where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</delete>
-	
-	<!-- 新增 -->
-	<insert id="insert"
-		parameterType="cn.zzs.mybatis.entity.Role">
-		insert into 
-            demo_role  
-        (id, name, is_general, deleted, gmt_create,gmt_modified)
-		values (
-			#{id,jdbcType=VARCHAR}, 
-			#{name,jdbcType=VARCHAR},
-			#{general,jdbcType=BIT}, 
-			#{deleted,jdbcType=BIT}, 
-			#{create,jdbcType=TIMESTAMP},
-			#{modified,jdbcType=TIMESTAMP})
-	</insert>
-	
-	<!-- 根据条件查询数量 -->
-	<select id="countByCondition"
-		parameterType="cn.zzs.mybatis.condition.RoleCondition"
-		resultType="java.lang.Long">
-		select 
-            count(*) 
-        from demo_role r
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</select>
-	
-	<!-- 根据条件更新 -->
-	<update id="updateByCondition" parameterType="map">
-		update 
-            demo_role r
-    <set>
-      <if test="name != null">
-        r.name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="isGeneral != null">
-        r.is_general = #{isGeneral,jdbcType=BIT},
-      </if>
-      <if test="deleted != null">
-        r.deleted = #{deleted,jdbcType=BIT},
-      </if>
-      <if test="create != null">
-        r.gmt_create = #{create,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        r.gmt_modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-        where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</update>
-	
-	<!-- 根据id更新 -->
-	<update id="updateByPrimaryKey"
-		parameterType="cn.zzs.mybatis.entity.Role">
-		update 
-            demo_role r 
-		set 
-			r.name = #{name,jdbcType=VARCHAR},
-			r.is_general = #{general,jdbcType=BIT},
-			r.deleted = #{deleted,jdbcType=BIT},
-			r.gmt_create = #{create,jdbcType=TIMESTAMP},
-			r.gmt_modified = #{modified,jdbcType=TIMESTAMP}
-		where 
-            r.id = #{id,jdbcType=VARCHAR}
-	</update>
-	
-	<!-- 根据员工id查询角色 -->
-	<select id="selectByEmployeeId"        
-        parameterType="java.lang.String"
-        resultMap="BaseResultMap">
-        select 
+            and
+            r.gmt_modified = #{con.modified}
+        </if>
+    </sql>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        r.id,
+        r.`name`,
+        r.is_general,
+        r.deleted,
+        r.gmt_create,
+        r.gmt_modified
+    </sql>
+
+    <!-- 根据条件查询 -->
+    <select id="selectByCondition" parameterType="cn.zzs.mybatis.condition.RoleCondition" resultMap="BaseResultMap">
+        select
+        <if test="con.distinct">
             distinct
-            <include refid="Base_Column_List"/>
-        from 
-            demo_role r, demo_employee_role er 
-        where 
-            er.role_id = r.id 
-        and 
-            er.employee_id = #{id,jdbcType=VARCHAR} 
-        and 
-            r.deleted = 0 
-	</select>
+        </if>
+        <include refid="Base_Column_List" />
+        from demo_role r
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null and con.orderByClause != ''">
+            order by ${con.orderByClause}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from
+        demo_role r
+        where
+        r.id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据id删除 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete r from
+        demo_role r
+        where
+        r.id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据条件删除 -->
+    <delete id="deleteByCondition" parameterType="cn.zzs.mybatis.condition.RoleCondition">
+        delete r from
+        demo_role r
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </delete>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.zzs.mybatis.entity.Role">
+        insert into
+        demo_role
+        (id, name, is_general, deleted, gmt_create,gmt_modified)
+        values (
+        #{id,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR},
+        #{general,jdbcType=BIT},
+        #{deleted,jdbcType=BIT},
+        #{create,jdbcType=TIMESTAMP},
+        #{modified,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 根据条件查询数量 -->
+    <select id="countByCondition" parameterType="cn.zzs.mybatis.condition.RoleCondition" resultType="java.lang.Long">
+        select
+        count(*)
+        from demo_role r
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </select>
+
+    <!-- 根据条件更新 -->
+    <update id="updateByCondition" parameterType="map">
+        update
+        demo_role r
+        <set>
+            <if test="name != null">
+                r.name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="isGeneral != null">
+                r.is_general = #{isGeneral,jdbcType=BIT},
+            </if>
+            <if test="deleted != null">
+                r.deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="create != null">
+                r.gmt_create = #{create,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                r.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </update>
+
+    <!-- 根据id更新 -->
+    <update id="updateByPrimaryKey" parameterType="cn.zzs.mybatis.entity.Role">
+        update
+        demo_role r
+        set
+        r.name = #{name,jdbcType=VARCHAR},
+        r.is_general = #{general,jdbcType=BIT},
+        r.deleted = #{deleted,jdbcType=BIT},
+        r.gmt_create = #{create,jdbcType=TIMESTAMP},
+        r.gmt_modified = #{modified,jdbcType=TIMESTAMP}
+        where
+        r.id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 根据员工id查询角色 -->
+    <select id="selectByEmployeeId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        distinct
+        <include refid="Base_Column_List" />
+        from
+        demo_role r, demo_employee_role er
+        where
+        er.role_id = r.id
+        and
+        er.employee_id = #{id,jdbcType=VARCHAR}
+        and
+        r.deleted = 0
+    </select>
 </mapper>

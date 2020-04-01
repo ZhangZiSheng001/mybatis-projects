@@ -69,44 +69,44 @@ mysql：5.7.28
 Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的比较好。
 
 ```xml
-		<!-- Mybatis -->
-		<dependency>
-			<groupId>org.Mybatis</groupId>
-			<artifactId>Mybatis</artifactId>
-			<version>3.5.4</version>
-		</dependency>
-		<!-- mysql驱动-->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.15</version>
-		</dependency>
-		<!-- logback -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.2.3</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
-			<type>jar</type>
-		</dependency>
-		<!-- 连接池 -->
+        <!-- Mybatis -->
+        <dependency>
+            <groupId>org.Mybatis</groupId>
+            <artifactId>Mybatis</artifactId>
+            <version>3.5.4</version>
+        </dependency>
+        <!-- mysql驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+        </dependency>
+        <!-- logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <type>jar</type>
+        </dependency>
+        <!-- 连接池 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.6.1</version>
         </dependency>
         <!-- junit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
 ```
 
 ## 数据库脚本
@@ -130,63 +130,63 @@ Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的
 
 
 ```java
-	@Override
-	public Employee selectByPrimaryKey(String id) throws SQLException {
-		Employee employee = null;
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		
-		// 创建sql
-		String sql = "select * from demo_employee where id = ?";
-		try {
-			// 获得连接（JDBCUtils保证同一线程获得同一个连接对象）
-			Connection connection = JDBCUtils.getConnection();
-			// 获得Statement对象
-			statement = connection.prepareStatement(sql);
+    @Override
+    public Employee selectByPrimaryKey(String id) throws SQLException {
+        Employee employee = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        
+        // 创建sql
+        String sql = "select * from demo_employee where id = ?";
+        try {
+            // 获得连接（JDBCUtils保证同一线程获得同一个连接对象）
+            Connection connection = JDBCUtils.getConnection();
+            // 获得Statement对象
+            statement = connection.prepareStatement(sql);
 
-			// 设置参数
-			statement.setObject(1, id);
+            // 设置参数
+            statement.setObject(1, id);
 
-			// 执行，获取结果集
-			resultSet = statement.executeQuery();
+            // 执行，获取结果集
+            resultSet = statement.executeQuery();
 
-			if(resultSet.next()) {
-				// 映射结果集
-				employee = convert(resultSet);
-			}
+            if(resultSet.next()) {
+                // 映射结果集
+                employee = convert(resultSet);
+            }
             // 返回员工对象
-			return employee;
+            return employee;
 
-		} finally {
-			// 释放资源
-			JDBCUtils.release(null, statement, resultSet);
-		}
-	}
+        } finally {
+            // 释放资源
+            JDBCUtils.release(null, statement, resultSet);
+        }
+    }
 
-	/**
-	 * <p>通过结果集构造员工对象</p>
-	 * @author: zzs
-	 * @date: 2020年3月28日 下午12:20:02
-	 * @param resultSet
-	 * @return: Employee
-	 * @throws SQLException 
-	 */
-	private Employee convert(ResultSet resultSet) throws SQLException {
-		Employee employee = new Employee();
-		employee.setId(resultSet.getString("id"));
-		employee.setName(resultSet.getString("name"));
-		employee.setGender(resultSet.getBoolean("gender"));
-		employee.setNo(resultSet.getString("no"));
-		employee.setAddress(resultSet.getString("address"));
-		employee.setDeleted(resultSet.getBoolean("deleted"));
-		employee.setDepartmentId(resultSet.getString("department_id"));
-		employee.setPassword(resultSet.getString("password"));
-		employee.setPhone(resultSet.getString("phone"));
-		employee.setStatus(resultSet.getByte("status"));
-		employee.setCreate(resultSet.getDate("gmt_create"));
-		employee.setModified(resultSet.getDate("gmt_modified"));
-		return employee;
-	}
+    /**
+     * <p>通过结果集构造员工对象</p>
+     * @author: zzs
+     * @date: 2020年3月28日 下午12:20:02
+     * @param resultSet
+     * @return: Employee
+     * @throws SQLException 
+     */
+    private Employee convert(ResultSet resultSet) throws SQLException {
+        Employee employee = new Employee();
+        employee.setId(resultSet.getString("id"));
+        employee.setName(resultSet.getString("name"));
+        employee.setGender(resultSet.getBoolean("gender"));
+        employee.setNo(resultSet.getString("no"));
+        employee.setAddress(resultSet.getString("address"));
+        employee.setDeleted(resultSet.getBoolean("deleted"));
+        employee.setDepartmentId(resultSet.getString("department_id"));
+        employee.setPassword(resultSet.getString("password"));
+        employee.setPhone(resultSet.getString("phone"));
+        employee.setStatus(resultSet.getByte("status"));
+        employee.setCreate(resultSet.getDate("gmt_create"));
+        employee.setModified(resultSet.getDate("gmt_modified"));
+        return employee;
+    }
 ```
 
 通过上面的代码，我们可以看到两个主要的问题：
@@ -206,66 +206,66 @@ Mybatis 作为一个优秀的持久层框架，针对以上问题提供了解决
 还是通过查询员工的例子来说明，代码如下：
 
 ```java
-	@Override
-	public Employee selectByPrimaryKey(String id) {
-		// 获取sqlSession
-		SqlSession sqlSession = MybatisUtils.getSqlSession();
+    @Override
+    public Employee selectByPrimaryKey(String id) {
+        // 获取sqlSession
+        SqlSession sqlSession = MybatisUtils.getSqlSession();
 
-		// 获取Mapper
-		EmployeeMapper baseMapper = sqlSession.getMapper(EmployeeMapper.class);
+        // 获取Mapper
+        EmployeeMapper baseMapper = sqlSession.getMapper(EmployeeMapper.class);
 
-		// 执行，获取员工对象
-		Employee employee = baseMapper.selectByPrimaryKey(id);
+        // 执行，获取员工对象
+        Employee employee = baseMapper.selectByPrimaryKey(id);
 
-		// 返回对象
-		return employee;
-	}	
+        // 返回对象
+        return employee;
+    }    
 ```
 
 上面的代码没有出现任何的 JDBC 代码和 sql 代码，因为 Mybatis 对 JDBC 进行了高级封装，并且采用 Mapper 的注解或 xml 文件来统一管理 sql 的定义、参数设置和结果集映射。下面看下 xml 文件的方式：
 
 ```xml
     <!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
-	   <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-	   <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
-	</resultMap>
-	<!-- 基础字段 -->
-	<sql id="Base_Column_List">
-		e.id, 
-		e.`name`, 
-		e.gender, 
-		e.no, 
-		e.password, 
-		e.phone, 
-		e.address, 
-		e.status, 
-		e.deleted, 
-		e.department_id, 
-		e.gmt_create, 
-		e.gmt_modified  
-	</sql>
-	<!-- 根据id查询 -->
-	<select id="selectByPrimaryKey" 
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
+       <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
+       <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
+       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
+       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        e.id, 
+        e.`name`, 
+        e.gender, 
+        e.no, 
+        e.password, 
+        e.phone, 
+        e.address, 
+        e.status, 
+        e.deleted, 
+        e.department_id, 
+        e.gmt_create, 
+        e.gmt_modified  
+    </sql>
+    <!-- 根据id查询 -->
+    <select id="selectByPrimaryKey" 
         parameterType="java.lang.String"
-		resultMap="BaseResultMap">
-		select
+        resultMap="BaseResultMap">
+        select
             <include refid="Base_Column_List" />
-		from 
+        from 
             demo_employee e 
-		where 
+        where 
             e.id = #{id}
-	</select>
+    </select>
 ```
 
 针对 sql 解耦的问题，早期的持久层框架都偏向于将 sql 独立在配置文件中，后来才逐渐引入注解的支持，如下是Mybatis 的注解方式（EmployeeMapper 接口）：
 
 ```java
-	@Select("SELECT e.id, e.`name`, e.gender, e.no, e.password, e.phone, e.address, e.status, e.deleted, e.department_id, e.gmt_create, e.gmt_modified FROM demo_employee e WHERE id = #{id}")
-	@resultMap("BaseResultMap")
-	Employee selectByPrimaryKey(String id);
+    @Select("SELECT e.id, e.`name`, e.gender, e.no, e.password, e.phone, e.address, e.status, e.deleted, e.department_id, e.gmt_create, e.gmt_modified FROM demo_employee e WHERE id = #{id}")
+    @resultMap("BaseResultMap")
+    Employee selectByPrimaryKey(String id);
 ```
 
 我认为，正如前面说到的，sql 在项目中存在形式不是重点，我们的目的是希望 sql 能被统一管理，基于这个目的实现的不同方案，都是合理的。
@@ -284,27 +284,27 @@ Mybatis 作为一款优秀的持久层框架，除了解决上面的两个基本
 
 ```java
 public interface IEmployeeRepository {
-	// 查询
-	Employee get(String id);//根据id查询
-	
-	List<Employee> list(EmployeeCondition con);//根据条件查询
+    // 查询
+    Employee get(String id);//根据id查询
+    
+    List<Employee> list(EmployeeCondition con);//根据条件查询
 
-	long count(EmployeeCondition con);//根据条件查询数量
+    long count(EmployeeCondition con);//根据条件查询数量
     
     // 删除
-	int delete(EmployeeCondition con);//根据条件删除
+    int delete(EmployeeCondition con);//根据条件删除
 
-	int delete(String id);//根据id删除
+    int delete(String id);//根据id删除
 
     // 新增
-	int save(Employee employee);//新增
+    int save(Employee employee);//新增
     
     int save(List<Employee> list);//批量新增
 
     // 更新
-	int update(Employee employee, EmployeeCondition con);//根据条件更新
+    int update(Employee employee, EmployeeCondition con);//根据条件更新
 
-	int update(Employee employee);//更新
+    int update(Employee employee);//更新
 }
 ```
 
@@ -366,7 +366,7 @@ PUBLIC "-//Mybatis.org//DTD Config 3.0//EN"
             <!-- 使用jdbc事务管理 -->
             <transactionManager type="JDBC"/>
             <!-- 数据源 -->
-			<dataSource type="cn.zzs.Mybatis.factory.HikariDataSourceFactory"/>
+            <dataSource type="cn.zzs.Mybatis.factory.HikariDataSourceFactory"/>
         </environment>
     </environments>
     
@@ -386,28 +386,28 @@ PUBLIC "-//Mybatis.org//DTD Config 3.0//EN"
 
 ```java
 public class HikariDataSourceFactory implements DataSourceFactory {
-   	
-   	private DataSource dataSource;
-   	
-   	public HikariDataSourceFactory() {
-   		super();
-   		try {
-   			HikariConfig config = new HikariConfig("/hikari.properties");
-   			dataSource = new HikariDataSource(config);
-   		} catch(Exception e) {
-   			throw new RuntimeException("创建数据源失败", e);
-   		}
-   	}
-   	@Override
-   	public DataSource getDataSource() {
-   		return dataSource;
-   	}
        
-   	@Override
-   	public void setProperties(Properties props) {
-   		// TODO Auto-generated method stub
+       private DataSource dataSource;
+       
+       public HikariDataSourceFactory() {
+           super();
+           try {
+               HikariConfig config = new HikariConfig("/hikari.properties");
+               dataSource = new HikariDataSource(config);
+           } catch(Exception e) {
+               throw new RuntimeException("创建数据源失败", e);
+           }
+       }
+       @Override
+       public DataSource getDataSource() {
+           return dataSource;
+       }
+       
+       @Override
+       public void setProperties(Properties props) {
+           // TODO Auto-generated method stub
    
-   	}
+       }
 }
 ```
 
@@ -451,48 +451,48 @@ Mybatis 的映射文件只有很少的几个顶级元素（按照应被定义的
 
 ```xml
     <!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
-	   <id column="id" property="id" />
-	   <result column="department_id" property="departmentId" />
-	   <result column="gmt_create" property="create" />
-	   <result column="gmt_modified" property="modified"/>
-	</resultMap>
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
+       <id column="id" property="id" />
+       <result column="department_id" property="departmentId" />
+       <result column="gmt_create" property="create" />
+       <result column="gmt_modified" property="modified"/>
+    </resultMap>
 
-	<!-- 基础字段 -->
-	<sql id="Base_Column_List">
-		e.id, 
-		e.`name`, 
-		e.gender, 
-		e.no, 
-		e.password, 
-		e.phone, 
-		e.address, 
-		e.status, 
-		e.deleted, 
-		e.department_id, 
-		e.gmt_create, 
-		e.gmt_modified  
-	</sql>
-	
-	<!-- 根据id查询 -->
-	<select id="selectByPrimaryKey" 
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        e.id, 
+        e.`name`, 
+        e.gender, 
+        e.no, 
+        e.password, 
+        e.phone, 
+        e.address, 
+        e.status, 
+        e.deleted, 
+        e.department_id, 
+        e.gmt_create, 
+        e.gmt_modified  
+    </sql>
+    
+    <!-- 根据id查询 -->
+    <select id="selectByPrimaryKey" 
         parameterType="string"
-		resultMap="BaseResultMap">
-		select
+        resultMap="BaseResultMap">
+        select
             <include refid="Base_Column_List" />
-		from 
+        from 
             demo_employee e 
-		where 
+        where 
             e.id = #{id}
-	</select>
+    </select>
 
-	<!-- 新增 -->
-	<insert id="insert"
-		parameterType="Employee">
-		insert into 
+    <!-- 新增 -->
+    <insert id="insert"
+        parameterType="Employee">
+        insert into 
             demo_employee 
         (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
-		values (
+        values (
             #{id,jdbcType=VARCHAR}, 
             #{name,jdbcType=VARCHAR},
             #{gender,jdbcType=BIT},
@@ -505,13 +505,13 @@ Mybatis 的映射文件只有很少的几个顶级元素（按照应被定义的
             #{departmentId,jdbcType=VARCHAR}, 
             #{create,jdbcType=TIMESTAMP}, 
             #{modified,jdbcType=TIMESTAMP}
-		)
-	</insert>
+        )
+    </insert>
 ```
 
 在以上配置中，使用了三个元素：
 
-1. **resultMap**：表列名（或查询出来的别名）与实体属性的映射关系。除了 id 和关联对象字段外，只要表列名（或查询出来的别名）与实体属性一致，可以不用配置。
+1. **resultMap**：表列名（或查询出来的别名）与实体属性的映射关系。除了 id 和关联对象字段外，只要表列名（或查询出来的别名）与实体属性一致，可以不用配置。 如果在主配置文件开启了驼峰命名自动映射`mapUnderscoreToCamelCase`，则遵循驼峰命名规则的字段都能自动映射。 
 2. **sql**： 用来定义可重用的 SQL 代码片段，可以在查询或变更语句中通过  include 引用。如果数据库的字段名和实体类的不一致，需要设置列别名。
 3. **select**： 查询语句。其中，id 是所在命名空间中唯一的标识符，可以被用来引用这条语句，与 mapper 文件中的，parameterType 是入参类型，resultMap 是映射表。
 4. **insert**：插入语句。
@@ -544,52 +544,52 @@ ORDER BY ${columnName}
 ```java
 public class MybatisUtils {
 
-	private static SqlSessionFactory sqlSessionFactory;
+    private static SqlSessionFactory sqlSessionFactory;
 
-	private static ThreadLocal<SqlSession> tl = new ThreadLocal<>();
+    private static ThreadLocal<SqlSession> tl = new ThreadLocal<>();
 
-	private static final Object obj = new Object();
+    private static final Object obj = new Object();
 
-	static {
-		init();
-	}
+    static {
+        init();
+    }
 
-	/**
-	 * 
-	 * <p>获取SqlSession对象的方法，线程安全</p>
-	 * @author: zzs
-	 * @date: 2019年8月31日 下午9:22:29
-	 * @return: SqlSession
-	 */
-	public static SqlSession getSqlSession() {
-		// 从当前线程中获取连接对象
-		SqlSession sqlSession = tl.get();
-		// 判断为空的话，创建连接并绑定到当前线程
-		if(sqlSession == null) {
-			synchronized(obj) {
-				if((sqlSession = tl.get()) == null) {
-					sqlSession = sqlSessionFactory.openSession();
-					tl.set(sqlSession);
-				}
-			}
-		}
-		return sqlSession;
-	}
+    /**
+     * 
+     * <p>获取SqlSession对象的方法，线程安全</p>
+     * @author: zzs
+     * @date: 2019年8月31日 下午9:22:29
+     * @return: SqlSession
+     */
+    public static SqlSession getSqlSession() {
+        // 从当前线程中获取连接对象
+        SqlSession sqlSession = tl.get();
+        // 判断为空的话，创建连接并绑定到当前线程
+        if(sqlSession == null) {
+            synchronized(obj) {
+                if((sqlSession = tl.get()) == null) {
+                    sqlSession = sqlSessionFactory.openSession();
+                    tl.set(sqlSession);
+                }
+            }
+        }
+        return sqlSession;
+    }
 
-	/**
-	 * <p>根据指定配置文件初始化SqlSessionFactory对象</p>
-	 * @author: zzs
-	 * @date: 2019年9月1日 上午10:53:05
-	 * @return: void
-	 */
-	private static void init() {
-		try (InputStream inputStream = Resources.getResourceAsStream("Mybatis-config.xml")) {
-			// 加载配置文件，初始化SqlSessionFactory对象
-			sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-		} catch(IOException e) {
-			throw new RuntimeException("创建sqlSessionFactory失败", e);
-		}
-	}
+    /**
+     * <p>根据指定配置文件初始化SqlSessionFactory对象</p>
+     * @author: zzs
+     * @date: 2019年9月1日 上午10:53:05
+     * @return: void
+     */
+    private static void init() {
+        try (InputStream inputStream = Resources.getResourceAsStream("Mybatis-config.xml")) {
+            // 加载配置文件，初始化SqlSessionFactory对象
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        } catch(IOException e) {
+            throw new RuntimeException("创建sqlSessionFactory失败", e);
+        }
+    }
 }
 
 ```
@@ -600,16 +600,16 @@ repository 的代码非常简单，只需要拿到 SqlSessionn 对象，就能�
 
 ```java
 public class EmployeeRepository implements IEmployeeRepository {
-	
-	@Override
-	public Employee get(String id) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
-	}
+    
+    @Override
+    public Employee get(String id) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+    }
 
-	@Override
-	public int save(Employee employee) {
-		return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
-	}
+    @Override
+    public int save(Employee employee) {
+        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
+    }
 }
 ```
 
@@ -620,36 +620,36 @@ public class EmployeeRepository implements IEmployeeRepository {
 ```java
 public class EmployeeRepositoryTest {
 
-	private IEmployeeRepository employeeRepository = new EmployeeRepository();
+    private IEmployeeRepository employeeRepository = new EmployeeRepository();
 
-	@Test
-	public void testGet() {
-		String id = "cc6b08506cdb11ea802000fffc35d9fe";
+    @Test
+    public void testGet() {
+        String id = "cc6b08506cdb11ea802000fffc35d9fe";
 
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession();) {
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession();) {
 
-			// 执行，获取员工对象
-			Employee employee = employeeRepository.get(id);
+            // 执行，获取员工对象
+            Employee employee = employeeRepository.get(id);
 
-			// 打印
-			System.out.println(employee);
-		}
-	}
+            // 打印
+            System.out.println(employee);
+        }
+    }
 }
-	@Test
-	public void testSave() {
-		// 创建用户
-		Employee employee = new Employee(UUID.randomUUID().toString().replace("-", ""), "zzs005", true, "zzs005", "admin", "18826****41", "广东", (byte)1, false, "94e2d2e56cd811ea802000fffc35d9fa", new Date(), new Date());
+    @Test
+    public void testSave() {
+        // 创建用户
+        Employee employee = new Employee(UUID.randomUUID().toString().replace("-", ""), "zzs005", true, "zzs005", "admin", "18826****41", "广东", (byte)1, false, "94e2d2e56cd811ea802000fffc35d9fa", new Date(), new Date());
 
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
 
-			// 保存
-			employeeRepository.save(employee);
+            // 保存
+            employeeRepository.save(employee);
 
-			// 提交事务
-			sqlSession.commit();
-		}
-	}
+            // 提交事务
+            sqlSession.commit();
+        }
+    }
 ```
 
 ### 测试
@@ -660,8 +660,8 @@ public class EmployeeRepositoryTest {
 2020-03-30 20:40:11.098 c.z.m.mapper.EmployeeMapper.selectByPrimaryKey - 
 ==>  Preparing: 
 SELECT e.id, e.`name`, e.gender, e.no, e.password
-	, e.phone, e.address, e.status, e.deleted, e.department_id
-	, e.gmt_create, e.gmt_modified
+    , e.phone, e.address, e.status, e.deleted, e.department_id
+    , e.gmt_create, e.gmt_modified
 FROM demo_employee e
 WHERE e.id = ?
 2020-03-30 20:40:11.121 c.z.m.mapper.EmployeeMapper.selectByPrimaryKey - 
@@ -674,11 +674,11 @@ Employee [id=cc6b08506cdb11ea802000fffc35d9fe, name=zzf001, gender=false, no=zzf
 2020-03-30 20:40:48.872 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
 ==>  Preparing: 
 INSERT INTO demo_employee (id, name, gender, no, password
-	, phone, address, status, deleted, department_id
-	, gmt_create, gmt_modified)
+    , phone, address, status, deleted, department_id
+    , gmt_create, gmt_modified)
 VALUES (?, ?, ?, ?, ?
-	, ?, ?, ?, ?, ?
-	, ?, ?)
+    , ?, ?, ?, ?, ?
+    , ?, ?)
 2020-03-30 20:40:48.899 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
 ==> Parameters: 517cabff75b24129b54048ce7d3280f9(String), zzs005(String), true(Boolean), zzs005(String), admin(String), 18826****41(String), 广东(String), 1(Byte), false(Boolean), 94e2d2e56cd811ea802000fffc35d9fa(String), 2020-03-30 20:40:47.808(Timestamp), 2020-03-30 20:40:47.808(Timestamp)
 2020-03-30 20:40:48.991 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
@@ -739,29 +739,29 @@ VALUES (?, ?, ?, ?, ?
 
 ```java
 public class BaseCondition {
-	/**
-	 * 页码
-	 */
-	private Integer pageNum;
-	/**
-	 * 每页记录数
-	 */
-	private Integer pageSize;
+    /**
+     * 页码
+     */
+    private Integer pageNum;
+    /**
+     * 每页记录数
+     */
+    private Integer pageSize;
 
-	/**
-	 * 排序语句
-	 */
-	private String orderByClause;
-	
-	/**
-	 * 关键字
-	 */
-	private String searchKeyWord;
-	
-	/**
-	 * 是否去重
-	 */
-	private boolean distinct;
+    /**
+     * 排序语句
+     */
+    private String orderByClause;
+    
+    /**
+     * 关键字
+     */
+    private String searchKeyWord;
+    
+    /**
+     * 是否去重
+     */
+    private boolean distinct;
     
     // 省略setter/getter方法
 }
@@ -771,36 +771,36 @@ AbstractEmployeeCondition 中定义属于员工类的条件，如下：
 
 ```java
 public abstract class AbstractEmployeeCondition extends BaseCondition {
-	/**
-	 * 注意，这里不要命名为id
-	 */
-	private String employeeId;
+    /**
+     * 注意，这里不要命名为id
+     */
+    private String employeeId;
 
-	private String name;
+    private String name;
 
-	private Boolean gender;
+    private Boolean gender;
 
-	private String no;
+    private String no;
 
-	private String password;
+    private String password;
 
-	private String phone;
+    private String phone;
 
-	private String address;
+    private String address;
 
-	private Byte status;
+    private Byte status;
 
-	private Boolean deleted;
+    private Boolean deleted;
 
-	private String departmentId;
+    private String departmentId;
 
-	private Date createStart;
-	
-	private Date createEnd;
+    private Date createStart;
+    
+    private Date createEnd;
 
-	private Date modifiedStart;
-	
-	private Date modifiedEnd;
+    private Date modifiedStart;
+    
+    private Date modifiedEnd;
     
     // 省略setter/getter方法
 }
@@ -810,20 +810,20 @@ public abstract class AbstractEmployeeCondition extends BaseCondition {
 
 ```java
 public class EmployeeCondition extends AbstractEmployeeCondition {
-	//============部门表============
-	/**
-	 * <p>部门编号</p>
-	 */
-	private String departmentNo;
-	
-	/**
-	 * <p>部门名</p>
-	 */
-	private String departmentName;
-	
-	public boolean isJoinDepartment() {
-		return (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
-	}
+    //============部门表============
+    /**
+     * <p>部门编号</p>
+     */
+    private String departmentNo;
+    
+    /**
+     * <p>部门名</p>
+     */
+    private String departmentName;
+    
+    public boolean isJoinDepartment() {
+        return (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
+    }
     // 省略setter/getter方法
 }
 ```
@@ -833,8 +833,8 @@ public class EmployeeCondition extends AbstractEmployeeCondition {
 Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查询的 sql 拼接。
 
 ```java
-	<!-- AbstractEmployeeCondition查询条件 -->
-	<sql id="Abstract_Condition_Where_Clause">
+    <!-- AbstractEmployeeCondition查询条件 -->
+    <sql id="Abstract_Condition_Where_Clause">
         <if test="con.name != null and con.name != ''">
         and 
            e.name = #{con.name} 
@@ -883,10 +883,10 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
         and 
            e.gmt_modified &lt; #{con.modifiedEnd} 
         </if>   
-	</sql>
-	
-	<!-- EmployeeCondition查询条件 -->
-	<sql id="Condition_Where_Clause">
+    </sql>
+    
+    <!-- EmployeeCondition查询条件 -->
+    <sql id="Condition_Where_Clause">
         <include refid="Abstract_Condition_Where_Clause"/>
         <if test="con.departmentNo != null and con.departmentNo != ''">
         and 
@@ -896,35 +896,35 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
         and 
             d.name = #{con.departmentName}
         </if>
-	</sql>
-	
-	
-	<!-- 关联表 -->
-	<sql id="Join_Clause">
+    </sql>
+    
+    
+    <!-- 关联表 -->
+    <sql id="Join_Clause">
         <if test="con.joinDepartment">
             inner join 
                 demo_department d 
         </if>
-	</sql>
-	
-	<!-- 根据条件查询 -->
-	<select id="selectByCondition"
-		parameterType="cn.zzs.Mybatis.condition.EmployeeCondition"
-		resultMap="BaseResultMap">
-		select
+    </sql>
+    
+    <!-- 根据条件查询 -->
+    <select id="selectByCondition"
+        parameterType="cn.zzs.Mybatis.condition.EmployeeCondition"
+        resultMap="BaseResultMap">
+        select
             <if test="con.distinct">
             distinct
             </if>
             <include refid="Base_Column_List" />
-		from 
+        from 
             demo_employee e 
             <include refid="Join_Clause"></include>
-		where 1=1 
+        where 1=1 
             <include refid="Condition_Where_Clause" />
-		<if test="con.orderByClause != null">
-			order by ${con.orderByClause}
-		</if>
-	</select>
+        <if test="con.orderByClause != null">
+            order by ${con.orderByClause}
+        </if>
+    </select>
 ```
 
 这里的 sql 将条件分离出来复用，并沿用了条件实体的继承关系，有利于后续项目维护和扩展。注意，千万不要等到项目很臃肿时再进行 sql 的抽取复用。
@@ -936,29 +936,29 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
 其实，这里存在一个问题，排序条件那里 sql 语句渗透到了 service 层，实际项目中，排序规则不会经常变动，我们可以在 xml 里直接使用默认排序条件，条件类增加 userDefaultSort 属性来判断。总之要记住一点，在 service 层中渗透 sql 代码，是非常不应该的！
 
 ```java
-	@Test
-	public void testList() {
-		EmployeeCondition con = new EmployeeCondition();
-		// 设置条件
-		con.setGender(false);
-		con.setAddress("北京");
-		con.setDeleted(false);
-		con.setPhone("18826****41");
-		con.setDistinct(true);
-		con.setDepartmentNo("202003230002");
+    @Test
+    public void testList() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setGender(false);
+        con.setAddress("北京");
+        con.setDeleted(false);
+        con.setPhone("18826****41");
+        con.setDistinct(true);
+        con.setDepartmentNo("202003230002");
 
-		// 设置排序规则
-		con.setOrderByClause("name desc");// 注意为数据库字段
+        // 设置排序规则
+        con.setOrderByClause("name desc");// 注意为数据库字段
 
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
 
-			// 执行
-			List<Employee> list = employeeRepository.list(con);
-			
-			// 遍历结果
-			list.forEach(System.out::println);
-		}
-	}
+            // 执行
+            List<Employee> list = employeeRepository.list(con);
+            
+            // 遍历结果
+            list.forEach(System.out::println);
+        }
+    }
 ```
 
 ### 测试
@@ -967,16 +967,16 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
 
 ```sql
 SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-	, e.phone, e.address, e.status, e.deleted, e.department_id
-	, e.gmt_create, e.gmt_modified
+    , e.phone, e.address, e.status, e.deleted, e.department_id
+    , e.gmt_create, e.gmt_modified
 FROM demo_employee e
-	INNER JOIN demo_department d
+    INNER JOIN demo_department d
 WHERE 1 = 1
-	AND e.gender = ?
-	AND e.phone = ?
-	AND e.address = ?
-	AND e.deleted = ?
-	AND d.no = ?
+    AND e.gender = ?
+    AND e.phone = ?
+    AND e.address = ?
+    AND e.deleted = ?
+    AND d.no = ?
 ORDER BY name DESC
 ```
 
@@ -992,10 +992,10 @@ ORDER BY name DESC
 
 ```java
 public class Employee {
-	
-	private Department department;
+    
+    private Department department;
 
-	private List<Role> roles = Collections.emptyList();
+    private List<Role> roles = Collections.emptyList();
     //······
 }
 ```
@@ -1006,21 +1006,21 @@ public class Employee {
 
 ```java
     <!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.Mybatis.entity.Employee">
-	   <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
-	   <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-	   <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
+    <resultMap id="BaseResultMap" type="cn.zzs.Mybatis.entity.Employee">
+       <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
+       <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
+       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
+       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
        <association 
-			property="department" 
-			column="department_id" 
-			select="cn.zzs.Mybatis.mapper.DepartmentMapper.selectByPrimaryKey"/>
+            property="department" 
+            column="department_id" 
+            select="cn.zzs.Mybatis.mapper.DepartmentMapper.selectByPrimaryKey"/>
        <collection 
-			property="roles"
-			column="id"
-			select="cn.zzs.Mybatis.mapper.RoleMapper.selectByEmployeeId"
-			/>
-	</resultMap>
+            property="roles"
+            column="id"
+            select="cn.zzs.Mybatis.mapper.RoleMapper.selectByEmployeeId"
+            />
+    </resultMap>
 ```
 
 以上增加了两个标签，association 和 collection 分别用于配置一方和多方的关联，其中 property 对应实体中的属性，column 对应执行语句返回的字段（如果没有使用别名的话，一般为列名），select 指向了其他 mapper 语句的 id。
@@ -1030,23 +1030,23 @@ public class Employee {
 我调用的还是 IEmployeeRepository 接口的 get 方法，只是增加了部门和角色的打印。
 
 ```java
-	@Test
-	public void testGetRelation() {
-		String id = "cc6b08506cdb11ea802000fffc35d9fe";
+    @Test
+    public void testGetRelation() {
+        String id = "cc6b08506cdb11ea802000fffc35d9fe";
 
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
 
-			// 执行，获取员工对象
-			Employee employee = employeeRepository.get(id);
+            // 执行，获取员工对象
+            Employee employee = employeeRepository.get(id);
 
-			// 打印员工
-			System.out.println(employee);
-			// 打印部门
-			System.out.println(employee.getDepartment());
-			// 打印角色
-			employee.getRoles().forEach(System.out::println);			
-		}
-	}
+            // 打印员工
+            System.out.println(employee);
+            // 打印部门
+            System.out.println(employee.getDepartment());
+            // 打印角色
+            employee.getRoles().forEach(System.out::println);            
+        }
+    }
 ```
 
 ### 测试
@@ -1082,24 +1082,24 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 还是使用前面的方法，这里我把 role 部分的代码注释掉。
 
 ```java
-	@Test
-	public void testGetLazy() {
-		String id = "cc6b08506cdb11ea802000fffc35d9fe";
+    @Test
+    public void testGetLazy() {
+        String id = "cc6b08506cdb11ea802000fffc35d9fe";
 
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
 
-			// 执行，获取员工对象
-			Employee employee = employeeRepository.get(id);
+            // 执行，获取员工对象
+            Employee employee = employeeRepository.get(id);
 
-			// 打印员工
-			System.out.println(employee);
-			// 打印部门
-			System.out.println(employee.getDepartment());
-			// 打印角色
-			// employee.getRoles().forEach(System.out::println);
-			
-		}
-	}
+            // 打印员工
+            System.out.println(employee);
+            // 打印部门
+            System.out.println(employee.getDepartment());
+            // 打印角色
+            // employee.getRoles().forEach(System.out::println);
+            
+        }
+    }
 ```
 
 #### 测试
@@ -1118,8 +1118,8 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 在项目 pom.xml 文件中增加以下依赖。
 
 ```xml
-		<!-- 分页插件 -->
-		<dependency>
+        <!-- 分页插件 -->
+        <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
             <version>5.1.10</version>
@@ -1141,30 +1141,30 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 ### 编写测试方法
 
 ```java
-	@Test
-	public void testlistPage() {
-		EmployeeCondition con = new EmployeeCondition();
-		// 设置条件
-		con.setGender(false);
-		con.setAddress("北京");
-		con.setDeleted(false);
-		con.setPhone("18826****41");
-		con.setDistinct(true);
-		
-		try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+    @Test
+    public void testlistPage() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setGender(false);
+        con.setAddress("北京");
+        con.setDeleted(false);
+        con.setPhone("18826****41");
+        con.setDistinct(true);
+        
+        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
             // 设置分页信息
             PageHelper.startPage(0, 3);
             
-			// 执行查询
-			List<Employee> list = employeeRepository.list(con);
+            // 执行查询
+            List<Employee> list = employeeRepository.list(con);
 
-			// 封装分页模型
-			PageInfo<Employee> pageInfo = new PageInfo<>(list);
+            // 封装分页模型
+            PageInfo<Employee> pageInfo = new PageInfo<>(list);
 
-			// 取分页模型的数据
-			System.out.println("查询总数" + pageInfo.getTotal());
-		}
-	}
+            // 取分页模型的数据
+            System.out.println("查询总数" + pageInfo.getTotal());
+        }
+    }
 ```
 
 ### 测试
@@ -1176,15 +1176,15 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 ==>  Preparing: 
 SELECT COUNT(0)
 FROM (
-	SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-		, e.phone, e.address, e.status, e.deleted, e.department_id
-		, e.gmt_create, e.gmt_modified
-	FROM demo_employee e
-	WHERE 1 = 1
-		AND e.gender = ?
-		AND e.phone = ?
-		AND e.address = ?
-		AND e.deleted = ?
+    SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
+        , e.phone, e.address, e.status, e.deleted, e.department_id
+        , e.gmt_create, e.gmt_modified
+    FROM demo_employee e
+    WHERE 1 = 1
+        AND e.gender = ?
+        AND e.phone = ?
+        AND e.address = ?
+        AND e.deleted = ?
 ) table_count
 2020-03-31 11:06:59.646 c.z.m.m.EmployeeMapper.selectByCondition_COUNT - 
 ==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean)
@@ -1193,14 +1193,14 @@ FROM (
 2020-03-31 11:06:59.693 c.z.m.mapper.EmployeeMapper.selectByCondition - 
 ==>  Preparing: 
 SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-	, e.phone, e.address, e.status, e.deleted, e.department_id
-	, e.gmt_create, e.gmt_modified
+    , e.phone, e.address, e.status, e.deleted, e.department_id
+    , e.gmt_create, e.gmt_modified
 FROM demo_employee e
 WHERE 1 = 1
-	AND e.gender = ?
-	AND e.phone = ?
-	AND e.address = ?
-	AND e.deleted = ?
+    AND e.gender = ?
+    AND e.phone = ?
+    AND e.address = ?
+    AND e.deleted = ?
 LIMIT ?
 2020-03-31 11:06:59.693 c.z.m.mapper.EmployeeMapper.selectByCondition - 
 ==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean), 3(Integer)

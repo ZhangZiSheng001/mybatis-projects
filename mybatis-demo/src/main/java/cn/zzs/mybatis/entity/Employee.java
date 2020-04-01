@@ -6,204 +6,203 @@ import java.util.List;
 
 public class Employee {
 
-	private String id;
+    private String id;
 
-	private String name;
+    private String name;
 
-	private Boolean gender;
+    private Boolean gender;
 
-	private String no;
+    private String no;
 
-	private String password;
+    private String password;
 
-	private String phone;
+    private String phone;
 
-	private String address;
+    private String address;
 
-	private Byte status;
+    private Byte status;
 
-	private Boolean deleted;
-	
-	private String departmentId;
+    private Boolean deleted;
 
-	private Date create;
+    private String departmentId;
 
-	private Date modified;
-	
-	private Department department;
+    private Date create;
 
-	private List<Role> roles = Collections.emptyList();
+    private Date modified;
 
-	private List<Menu> menus = Collections.emptyList();
-	
-	public Employee(String id, String name, Boolean gender, String no, String password, String phone, String address, Byte status, Boolean deleted, String departmentId, Date create, Date modified) {
-		this.id = id;
-		this.name = name;
-		this.gender = gender;
-		this.no = no;
-		this.password = password;
-		this.phone = phone;
-		this.address = address;
-		this.status = status;
-		this.deleted = deleted;
-		this.departmentId = departmentId;
-		this.create = create;
-		this.modified = modified;
-	}
+    private Department department;
 
-	public Employee() {
-		super();
-	}
+    private List<Role> roles = Collections.emptyList();
 
-	public String getId() {
-		return id;
-	}
+    private List<Menu> menus = Collections.emptyList();
 
-	public void setId(String id) {
-		this.id = id == null ? null : id.trim();
-	}
+    public Employee(String id, String name, Boolean gender, String no, String password, String phone, String address, Byte status, Boolean deleted, String departmentId, Date create, Date modified) {
+        this.id = id;
+        this.name = name;
+        this.gender = gender;
+        this.no = no;
+        this.password = password;
+        this.phone = phone;
+        this.address = address;
+        this.status = status;
+        this.deleted = deleted;
+        this.departmentId = departmentId;
+        this.create = create;
+        this.modified = modified;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Employee() {
+        super();
+    }
 
-	public void setName(String name) {
-		this.name = name == null ? null : name.trim();
-	}
+    public String getId() {
+        return id;
+    }
 
-	public Boolean getGender() {
-		return gender;
-	}
+    public void setId(String id) {
+        this.id = id == null ? null : id.trim();
+    }
 
-	public void setGender(Boolean gender) {
-		this.gender = gender;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getNo() {
-		return no;
-	}
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
+    }
 
-	public void setNo(String no) {
-		this.no = no == null ? null : no.trim();
-	}
+    public Boolean getGender() {
+        return gender;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setGender(Boolean gender) {
+        this.gender = gender;
+    }
 
-	public void setPassword(String password) {
-		this.password = password == null ? null : password.trim();
-	}
+    public String getNo() {
+        return no;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public void setNo(String no) {
+        this.no = no == null ? null : no.trim();
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone == null ? null : phone.trim();
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public void setPassword(String password) {
+        this.password = password == null ? null : password.trim();
+    }
 
-	public void setAddress(String address) {
-		this.address = address == null ? null : address.trim();
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public Byte getStatus() {
-		return status;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
+    }
 
-	public void setStatus(Byte status) {
-		this.status = status;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setAddress(String address) {
+        this.address = address == null ? null : address.trim();
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Byte getStatus() {
+        return status;
+    }
 
-	public String getDepartmentId() {
-		return departmentId;
-	}
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
 
-	public void setDepartmentId(String departmentId) {
-		this.departmentId = departmentId == null ? null : departmentId.trim();
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public Date getCreate() {
-		return create;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setCreate(Date create) {
-		this.create = create;
-	}
+    public String getDepartmentId() {
+        return departmentId;
+    }
 
-	public Date getModified() {
-		return modified;
-	}
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId == null ? null : departmentId.trim();
+    }
 
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
-	
-	
-	public Department getDepartment() {
-		return department;
-	}
+    public Date getCreate() {
+        return create;
+    }
 
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
+    public void setCreate(Date create) {
+        this.create = create;
+    }
 
-	public List<Role> getRoles() {
-		return roles;
-	}
+    public Date getModified() {
+        return modified;
+    }
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 
-	public List<Menu> getMenus() {
-		return menus;
-	}
+    public Department getDepartment() {
+        return department;
+    }
 
-	public void setMenus(List<Menu> menus) {
-		this.menus = menus;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Employee [id=");
-		builder.append(id);
-		builder.append(", name=");
-		builder.append(name);
-		builder.append(", gender=");
-		builder.append(gender);
-		builder.append(", no=");
-		builder.append(no);
-		builder.append(", password=");
-		builder.append(password);
-		builder.append(", phone=");
-		builder.append(phone);
-		builder.append(", address=");
-		builder.append(address);
-		builder.append(", status=");
-		builder.append(status);
-		builder.append(", deleted=");
-		builder.append(deleted);
-		builder.append(", departmentId=");
-		builder.append(departmentId);
-		builder.append(", create=");
-		builder.append(create);
-		builder.append(", modified=");
-		builder.append(modified);
-		builder.append("]");
-		return builder.toString();
-	}
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<Menu> getMenus() {
+        return menus;
+    }
+
+    public void setMenus(List<Menu> menus) {
+        this.menus = menus;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Employee [id=");
+        builder.append(id);
+        builder.append(", name=");
+        builder.append(name);
+        builder.append(", gender=");
+        builder.append(gender);
+        builder.append(", no=");
+        builder.append(no);
+        builder.append(", password=");
+        builder.append(password);
+        builder.append(", phone=");
+        builder.append(phone);
+        builder.append(", address=");
+        builder.append(address);
+        builder.append(", status=");
+        builder.append(status);
+        builder.append(", deleted=");
+        builder.append(deleted);
+        builder.append(", departmentId=");
+        builder.append(departmentId);
+        builder.append(", create=");
+        builder.append(create);
+        builder.append(", modified=");
+        builder.append(modified);
+        builder.append("]");
+        return builder.toString();
+    }
 }

@@ -2,7 +2,6 @@ package cn.zzs.mybatis.condition;
 
 import cn.zzs.mybatis.condition.base.AbstractRoleCondition;
 
-
 /**
  * <p>角色查询条件 </p>
  * @author: zzs

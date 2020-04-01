@@ -7,66 +7,64 @@ package cn.zzs.mybatis.condition.base;
  */
 public class BaseCondition {
 
-	private Integer pageNum;
+    private Integer pageNum;
 
-	private Integer pageSize;
+    private Integer pageSize;
 
-	/**
-	 * 排序语句
-	 */
-	private String orderByClause;
-	
-	/**
-	 * 关键字
-	 */
-	private String searchKeyWord;
-	
-	/**
-	 * 是否去重
-	 */
-	private boolean distinct;
+    /**
+     * 排序语句
+     */
+    private String orderByClause;
 
-	public BaseCondition() {}
+    /**
+     * 关键字
+     */
+    private String searchKeyWord;
 
-	public Integer getPageNum() {
-		return pageNum;
-	}
+    /**
+     * 是否去重
+     */
+    private boolean distinct;
 
-	public void setPageNum(Integer pageNum) {
-		this.pageNum = pageNum;
-	}
+    public BaseCondition() {}
 
-	public Integer getPageSize() {
-		return pageSize;
-	}
+    public Integer getPageNum() {
+        return pageNum;
+    }
 
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
 
-	public String getOrderByClause() {
-		return orderByClause;
-	}
+    public Integer getPageSize() {
+        return pageSize;
+    }
 
-	public void setOrderByClause(String orderByClause) {
-		this.orderByClause = orderByClause;
-	}
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
 
-	public String getSearchKeyWord() {
-		return searchKeyWord;
-	}
+    public String getOrderByClause() {
+        return orderByClause;
+    }
 
-	public void setSearchKeyWord(String searchKeyWord) {
-		this.searchKeyWord = searchKeyWord;
-	}
+    public void setOrderByClause(String orderByClause) {
+        this.orderByClause = orderByClause;
+    }
 
-	
-	public boolean isDistinct() {
-		return distinct;
-	}
+    public String getSearchKeyWord() {
+        return searchKeyWord;
+    }
 
-	
-	public void setDistinct(boolean distinct) {
-		this.distinct = distinct;
-	}
+    public void setSearchKeyWord(String searchKeyWord) {
+        this.searchKeyWord = searchKeyWord;
+    }
+
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
+    }
 }

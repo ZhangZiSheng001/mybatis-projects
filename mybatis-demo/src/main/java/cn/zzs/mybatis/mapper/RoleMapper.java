@@ -9,21 +9,21 @@ import cn.zzs.mybatis.entity.Role;
 
 public interface RoleMapper {
 
-	long countByCondition(@Param("con") RoleCondition con);
+    long countByCondition(@Param("con") RoleCondition con);
 
-	int deleteByCondition(@Param("con") RoleCondition con);
+    int deleteByCondition(@Param("con") RoleCondition con);
 
-	int deleteByPrimaryKey(String id);
+    int deleteByPrimaryKey(String id);
 
-	int insert(Role role);
+    int insert(Role role);
 
-	List<Role> selectByCondition(@Param("con") RoleCondition con);
+    List<Role> selectByCondition(@Param("con") RoleCondition con);
 
-	Role selectByPrimaryKey(String id);
+    Role selectByPrimaryKey(String id);
 
-	int updateByCondition(@Param("record") Role role, @Param("con") RoleCondition con);
+    int updateByCondition(@Param("record") Role role, @Param("con") RoleCondition con);
 
-	int updateByPrimaryKey(Role role);
-	
-	List<Role> selectByEmployeeId(String employeeId);
+    int updateByPrimaryKey(Role role);
+
+    List<Role> selectByEmployeeId(String employeeId);
 }

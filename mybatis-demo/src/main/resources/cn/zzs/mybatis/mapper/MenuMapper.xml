@@ -1,211 +1,201 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.zzs.mybatis.mapper.MenuMapper">
-	<!-- 基础映射表 -->
-	<resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Menu">
-		<id column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-		<result column="parent_id" property="parentId" javaType="string" jdbcType="VARCHAR"/>
-		<result column="is_parent" property="parent" javaType="boolean" jdbcType="BIT"/>
-		<result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-		<result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
+    <!-- 基础映射表 -->
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Menu">
+        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
+        <result column="parent_id" property="parentId" javaType="string" jdbcType="VARCHAR" />
+        <result column="is_parent" property="parent" javaType="boolean" jdbcType="BIT" />
+        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
     </resultMap>
-	
-	<!-- 查询条件 -->
-	<sql id="Condition_Where_Clause">
+
+    <!-- 查询条件 -->
+    <sql id="Condition_Where_Clause">
         <if test="con.parentId != null and con.parentId != ''">
-        and 
-           m.parent_id = #{con.parentId} 
+            and
+            m.parent_id = #{con.parentId}
         </if>
         <if test="con.name != null and con.name != ''">
-        and 
-           m.name = #{con.name} 
+            and
+            m.name = #{con.name}
         </if>
         <if test="con.order != null">
-        and 
-           m.order = #{con.order} 
+            and
+            m.order = #{con.order}
         </if>
         <if test="con.url != null and con.url != ''">
-        and 
-           m.url = #{con.url} 
-        </if>   
+            and
+            m.url = #{con.url}
+        </if>
         <if test="con.parent != null">
-        and 
-           m.is_parent = #{con.parent} 
-        </if>     
+            and
+            m.is_parent = #{con.parent}
+        </if>
         <if test="con.deleted != null">
-        and 
-           m.deleted = #{con.deleted} 
+            and
+            m.deleted = #{con.deleted}
         </if>
         <if test="con.create != null">
-        and 
-           m.gmt_create = #{con.create} 
-        </if> 
+            and
+            m.gmt_create = #{con.create}
+        </if>
         <if test="con.modified != null">
-        and 
-           m.gmt_modified = #{con.modified} 
-        </if> 
-	</sql>
-	
-	<!-- 基础字段 -->
-	<sql id="Base_Column_List">
-		m.id, 
-		m.parent_id, 
-		m.`name`, 
-		m.order, 
-		m.url, 
-		m.is_parent, 
-		m.deleted, 
-		m.gmt_create, 
-		m.gmt_modified 
-	</sql>
-	
-	<!-- 根据条件查询 -->
-	<select id="selectByCondition"
-		parameterType="cn.zzs.mybatis.condition.MenuCondition"
-		resultMap="BaseResultMap">
-		select
-            <if test="con.distinct">
+            and
+            m.gmt_modified = #{con.modified}
+        </if>
+    </sql>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        m.id,
+        m.parent_id,
+        m.`name`,
+        m.order,
+        m.url,
+        m.is_parent,
+        m.deleted,
+        m.gmt_create,
+        m.gmt_modified
+    </sql>
+
+    <!-- 根据条件查询 -->
+    <select id="selectByCondition" parameterType="cn.zzs.mybatis.condition.MenuCondition" resultMap="BaseResultMap">
+        select
+        <if test="con.distinct">
             distinct
-            </if>
-            <include refid="Base_Column_List" />
-		from 
-            demo_menu m 
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-		<if test="con.orderByClause != null">
-			order by ${con.orderByClause}
-		</if>
-	</select>
-	
-	<!-- 根据id查询 -->
-	<select id="selectByPrimaryKey" parameterType="java.lang.String"
-		resultMap="BaseResultMap">
-		select
-            <include refid="Base_Column_List" />
-		from 
-            demo_menu m
-		where 
-            m.id = #{id,jdbcType=VARCHAR}
-	</select>
-	
-	<!-- 根据id删除 -->
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-		delete m from
-            demo_menu m
-		where 
-            m.id = #{id,jdbcType=VARCHAR}
-	</delete>
-	
-	<!-- 根据条件删除 -->
-	<delete id="deleteByCondition"
-		parameterType="cn.zzs.mybatis.condition.MenuCondition">
-		delete m from 
-            demo_menu m 
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</delete>
-	
-	<!-- 新增 -->
-	<insert id="insert"
-		parameterType="cn.zzs.mybatis.entity.Menu">
-		insert into 
-            demo_menu 
+        </if>
+        <include refid="Base_Column_List" />
+        from
+        demo_menu m
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null">
+            order by ${con.orderByClause}
+        </if>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from
+        demo_menu m
+        where
+        m.id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据id删除 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete m from
+        demo_menu m
+        where
+        m.id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据条件删除 -->
+    <delete id="deleteByCondition" parameterType="cn.zzs.mybatis.condition.MenuCondition">
+        delete m from
+        demo_menu m
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </delete>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.zzs.mybatis.entity.Menu">
+        insert into
+        demo_menu
         (id, parent_id, name, order, url, is_parent, deleted, gmt_create, gmt_modified)
-		values (
-			#{id,jdbcType=VARCHAR}, 
-			#{parentId,jdbcType=VARCHAR},
-			#{name,jdbcType=VARCHAR},
-			#{order,jdbcType=TINYINT},
-			#{url,jdbcType=VARCHAR}, 
-			#{parent,jdbcType=BIT},
-			#{deleted,jdbcType=BIT},
-			#{create,jdbcType=TIMESTAMP},
-			#{modified,jdbcType=TIMESTAMP})
-	</insert>
-	
-	<!-- 根据条件查询数量 -->
-	<select id="countByCondition"
-		parameterType="cn.zzs.mybatis.condition.MenuCondition"
-		resultType="java.lang.Long">
-		select 
-            count(*) 
-        from 
-            demo_menu m 
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</select>
-	
-	<!-- 根据条件更新 -->
-	<update id="updateByCondition" parameterType="map">
-		update 
-            demo_menu m 
-    <set>
-      <if test="parentId != null">
+        values (
+        #{id,jdbcType=VARCHAR},
+        #{parentId,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR},
+        #{order,jdbcType=TINYINT},
+        #{url,jdbcType=VARCHAR},
+        #{parent,jdbcType=BIT},
+        #{deleted,jdbcType=BIT},
+        #{create,jdbcType=TIMESTAMP},
+        #{modified,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 根据条件查询数量 -->
+    <select id="countByCondition" parameterType="cn.zzs.mybatis.condition.MenuCondition" resultType="java.lang.Long">
+        select
+        count(*)
+        from
+        demo_menu m
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </select>
+
+    <!-- 根据条件更新 -->
+    <update id="updateByCondition" parameterType="map">
+        update
+        demo_menu m
+        <set>
+            <if test="parentId != null">
+                m.parent_id = #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                m.name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="order != null">
+                m.order = #{order,jdbcType=TINYINT},
+            </if>
+            <if test="url != null">
+                m.url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="isParent != null">
+                m.is_parent = #{isParent,jdbcType=BIT},
+            </if>
+            <if test="deleted != null">
+                m.deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="create != null">
+                m.gmt_create = #{create,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modified != null">
+                m.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+    </update>
+
+    <!-- 根据id更新 -->
+    <update id="updateByPrimaryKey" parameterType="cn.zzs.mybatis.entity.Menu">
+        update
+        demo_menu m
+        set
         m.parent_id = #{parentId,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null">
         m.name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="order != null">
         m.order = #{order,jdbcType=TINYINT},
-      </if>
-      <if test="url != null">
         m.url = #{url,jdbcType=VARCHAR},
-      </if>
-      <if test="isParent != null">
-        m.is_parent = #{isParent,jdbcType=BIT},
-      </if>
-      <if test="deleted != null">
+        m.is_parent = #{parent,jdbcType=BIT},
         m.deleted = #{deleted,jdbcType=BIT},
-      </if>
-      <if test="create != null">
         m.gmt_create = #{create,jdbcType=TIMESTAMP},
-      </if>
-      <if test="modified != null">
-        m.gmt_modified = #{modified,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-		where 1=1 
-			<include refid="Condition_Where_Clause" />
-	</update>
-	
-	<!-- 根据id更新 -->
-	<update id="updateByPrimaryKey"
-		parameterType="cn.zzs.mybatis.entity.Menu">
-		update 
-            demo_menu m
-		set 
-			m.parent_id = #{parentId,jdbcType=VARCHAR},
-			m.name = #{name,jdbcType=VARCHAR},
-			m.order = #{order,jdbcType=TINYINT},
-			m.url = #{url,jdbcType=VARCHAR},
-			m.is_parent = #{parent,jdbcType=BIT},
-			m.deleted = #{deleted,jdbcType=BIT},
-			m.gmt_create = #{create,jdbcType=TIMESTAMP},
-			m.gmt_modified = #{modified,jdbcType=TIMESTAMP}
-		where 
-            m.id = #{id,jdbcType=VARCHAR}
-	</update>
-	
-	<!-- 根据员工id查询菜单 -->
-	<select id="selectByEmployeeId"
-        parameterType="java.lang.String"
-        resultMap="BaseResultMap">
-        select 
-            distinct
-            <include refid="Base_Column_List"/>
-        from 
-            demo_menu m, demo_employee_role er, demo_role_menu rm 
-        where 
-            er.employee_id = #{id,jdbcType=VARCHAR} 
-        and 
-            er.role_id = rm.role_id 
-        and 
-            rm.menu_id = m.id 
-        and 
-            m.deleted = 0 
-        order by 
-            m.order 
-	</select>
-	
+        m.gmt_modified = #{modified,jdbcType=TIMESTAMP}
+        where
+        m.id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 根据员工id查询菜单 -->
+    <select id="selectByEmployeeId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        distinct
+        <include refid="Base_Column_List" />
+        from
+        demo_menu m, demo_employee_role er, demo_role_menu rm
+        where
+        er.employee_id = #{id,jdbcType=VARCHAR}
+        and
+        er.role_id = rm.role_id
+        and
+        rm.menu_id = m.id
+        and
+        m.deleted = 0
+        order by
+        m.order
+    </select>
+
 </mapper>
