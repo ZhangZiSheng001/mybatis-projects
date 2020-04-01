@@ -139,16 +139,32 @@
 	<update id="updateByCondition" parameterType="map">
 		update 
             demo_menu m 
-		set 
-            m.id = #{record.id,jdbcType=VARCHAR},
-			m.parent_id = #{record.parentId,jdbcType=VARCHAR},
-			m.name = #{record.name,jdbcType=VARCHAR},
-			m.order = #{record.order,jdbcType=TINYINT},
-			m.url = #{record.url,jdbcType=VARCHAR},
-			m.is_parent = #{record.parent,jdbcType=BIT},
-			m.deleted = #{record.deleted,jdbcType=BIT},
-			m.gmt_create = #{record.create,jdbcType=TIMESTAMP},
-			m.gmt_modified = #{record.modified,jdbcType=TIMESTAMP}
+    <set>
+      <if test="parentId != null">
+        m.parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        m.name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null">
+        m.order = #{order,jdbcType=TINYINT},
+      </if>
+      <if test="url != null">
+        m.url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="isParent != null">
+        m.is_parent = #{isParent,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        m.deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="create != null">
+        m.gmt_create = #{create,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        m.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
 		where 1=1 
 			<include refid="Condition_Where_Clause" />
 	</update>

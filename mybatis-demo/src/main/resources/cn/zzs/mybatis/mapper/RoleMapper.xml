@@ -118,12 +118,23 @@
 	<update id="updateByCondition" parameterType="map">
 		update 
             demo_role r
-		set 
-			r.name = #{record.name,jdbcType=VARCHAR},
-			r.is_general = #{record.general,jdbcType=BIT},
-			r.deleted = #{record.deleted,jdbcType=BIT},
-			r.gmt_create = #{record.create,jdbcType=TIMESTAMP},
-			r.gmt_modified = #{record.modified,jdbcType=TIMESTAMP}
+    <set>
+      <if test="name != null">
+        r.name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="isGeneral != null">
+        r.is_general = #{isGeneral,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        r.deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="create != null">
+        r.gmt_create = #{create,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        r.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
         where 1=1 
 			<include refid="Condition_Where_Clause" />
 	</update>

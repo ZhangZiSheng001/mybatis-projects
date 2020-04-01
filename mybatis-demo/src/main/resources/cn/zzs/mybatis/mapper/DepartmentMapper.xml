@@ -132,14 +132,29 @@
 	<update id="updateByCondition" parameterType="map">
 		update 
             demo_department d 
-		set 
-            d.no = #{record.no,jdbcType=VARCHAR},
-            d.parent_id = #{record.parentId,jdbcType=VARCHAR},
-            d.name = #{record.name,jdbcType=VARCHAR},
-            d.type = #{record.type,jdbcType=VARCHAR},
-            d.deleted = #{record.deleted,jdbcType=BIT},
-            d.gmt_create = #{record.create,jdbcType=TIMESTAMP},
-            d.gmt_modified = #{record.modified,jdbcType=TIMESTAMP}
+    <set>
+      <if test="no != null">
+        d.no = #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        d.parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        d.name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        d.type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        d.deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="create != null">
+        d.gmt_create = #{create,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        d.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
         where 1=1 
             <include refid="Condition_Where_Clause" />
 	</update>

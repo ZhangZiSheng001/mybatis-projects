@@ -225,18 +225,41 @@
 	<update id="updateByCondition" parameterType="map">
 		update 
             demo_employee e 
-		set 
-			e.name = #{record.name,jdbcType=VARCHAR},
-			e.gender = #{record.gender,jdbcType=BIT},
-			e.no = #{record.no,jdbcType=VARCHAR},
-			e.password = #{record.password,jdbcType=VARCHAR},
-			e.phone = #{record.phone,jdbcType=VARCHAR},
-			e.address = #{record.address,jdbcType=VARCHAR},
-			e.status = #{record.status,jdbcType=TINYINT},
-			e.deleted = #{record.deleted,jdbcType=BIT},
-			e.department_id = #{record.departmentId,jdbcType=VARCHAR},
-			e.gmt_create = #{record.create,jdbcType=TIMESTAMP},
-			e.gmt_modified = #{record.modified,jdbcType=TIMESTAMP}
+    <set>
+      <if test="name != null">
+        e.name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        e.gender = #{gender,jdbcType=BIT},
+      </if>
+      <if test="no != null">
+        e.no = #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        e.password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        e.phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        e.address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        e.status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="deleted != null">
+        e.deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="departmentId != null">
+        e.department_id = #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="create != null">
+        e.gmt_create = #{create,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        e.gmt_modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
 		where 1=1 
         <include refid="Condition_Where_Clause" />
 	</update>
