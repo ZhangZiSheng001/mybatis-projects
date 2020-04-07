@@ -23,7 +23,7 @@
     * [编写 mapper xml文件](#编写-mapper-xml文件)
     * [编写测试方法](#编写测试方法)
     * [测试](#测试-1)
-  * [关联查询](#关联查询)
+  * [关联查询--嵌套 select 查询](#关联查询--嵌套-select-查询)
     * [修改实体类](#修改实体类)
     * [修改 mapper xml文件](#修改-mapper-xml文件)
     * [编写测试方法](#编写测试方法-1)
@@ -32,11 +32,15 @@
       * [配置延迟加载](#配置延迟加载)
       * [编写测试方法](#编写测试方法-2)
       * [测试](#测试-3)
+  * [关联查询--嵌套结果映射](#关联查询--嵌套结果映射)
+    * [修改 mapper.xml 文件](#修改-mapperxml-文件)
+    * [编写测试方法](#编写测试方法-3)
+    * [测试](#测试-4)
   * [分页查询](#分页查询)
     * [引入插件依赖](#引入插件依赖)
     * [修改 mybatis 主配置文件](#修改-mybatis-主配置文件)
-    * [编写测试方法](#编写测试方法-3)
-    * [测试](#测试-4)
+    * [编写测试方法](#编写测试方法-4)
+    * [测试](#测试-5)
 * [参考资料](#参考资料)
 
 
@@ -131,7 +135,7 @@ Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的
 
 ```java
     @Override
-    public Employee selectByPrimaryKey(String id) throws SQLException {
+    public Employee get(String id) throws SQLException {
         Employee employee = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -206,20 +210,9 @@ Mybatis 作为一个优秀的持久层框架，针对以上问题提供了解决
 还是通过查询员工的例子来说明，代码如下：
 
 ```java
-    @Override
-    public Employee selectByPrimaryKey(String id) {
-        // 获取sqlSession
-        SqlSession sqlSession = MybatisUtils.getSqlSession();
-
-        // 获取Mapper
-        EmployeeMapper baseMapper = sqlSession.getMapper(EmployeeMapper.class);
-
-        // 执行，获取员工对象
-        Employee employee = baseMapper.selectByPrimaryKey(id);
-
-        // 返回对象
-        return employee;
-    }    
+    public Employee get(String id) {
+        return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+    }  
 ```
 
 上面的代码没有出现任何的 JDBC 代码和 sql 代码，因为 Mybatis 对 JDBC 进行了高级封装，并且采用 Mapper 的注解或 xml 文件来统一管理 sql 的定义、参数设置和结果集映射。下面看下 xml 文件的方式：
@@ -310,9 +303,9 @@ public interface IEmployeeRepository {
 
 下面的使用例子将针对这个接口进行展开，主要分成4个部分：
 
-1. 入门例子。通过 根据id查询员工和新增员工 的例子说明；
+1. 入门例子。通过根据id查询员工和新增员工的例子说明；
 2. 高级条件查询。
-3. 关联查询。这里会查询员工并带出部门、角色，并且结合懒加载使用。
+3. 关联查询。查询员工并带出部门、角色，这里会先使用**嵌套 select 查询**的方式，然后再给出可以解决 “N+1 查询问题” 的**嵌套结果映射**。
 
 ## 从入门例子开始
 
@@ -539,76 +532,123 @@ ORDER BY ${columnName}
     SqlSession sqlSession = sqlSessionFactory.openSession();
 ```
 
-为了保证同一个线程在 service 和 repository 中拿到同一个 SqlSession 对象，本项目中定义了工具类 cn.zzs.Mybatis.util.MybatisUtils 来获取 SqlSession。
+为了保证同一个线程在 service 和 repository 中拿到同一个 SqlSession 对象，本项目中定义了工具类 cn.zzs.Mybatis.util.MybatisUtils 来获取 SqlSession，并提供了事务管理和资源释放等方法。
 
 ```java
 public class MybatisUtils {
 
     private static SqlSessionFactory sqlSessionFactory;
 
-    private static ThreadLocal<SqlSession> tl = new ThreadLocal<>();
-
-    private static final Object obj = new Object();
+    private static ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
 
     static {
         init();
     }
 
-    /**
-     * 
-     * <p>获取SqlSession对象的方法，线程安全</p>
-     * @author: zzs
-     * @date: 2019年8月31日 下午9:22:29
-     * @return: SqlSession
-     */
-    public static SqlSession getSqlSession() {
-        // 从当前线程中获取连接对象
-        SqlSession sqlSession = tl.get();
-        // 判断为空的话，创建连接并绑定到当前线程
-        if(sqlSession == null) {
-            synchronized(obj) {
-                if((sqlSession = tl.get()) == null) {
-                    sqlSession = sqlSessionFactory.openSession();
-                    tl.set(sqlSession);
-                }
-            }
-        }
-        return sqlSession;
-    }
-
-    /**
-     * <p>根据指定配置文件初始化SqlSessionFactory对象</p>
-     * @author: zzs
-     * @date: 2019年9月1日 上午10:53:05
-     * @return: void
-     */
     private static void init() {
-        try (InputStream inputStream = Resources.getResourceAsStream("Mybatis-config.xml")) {
+        try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
             // 加载配置文件，初始化SqlSessionFactory对象
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        } catch(IOException e) {
-            throw new RuntimeException("创建sqlSessionFactory失败", e);
+        } catch(Exception e) {
+            throw new RuntimeException("初始化SqlSessionFactory失败", e);
         }
+    }
+
+    public static void startSqlSession() {
+        localSqlSession.set(sqlSessionFactory.openSession());
+    }
+
+    public static void commit() {
+        final SqlSession sqlSession = localSqlSession.get();
+        if(sqlSession == null) {
+            throw new SqlSessionException("sqlSession未创建");
+        }
+        sqlSession.commit();
+    }
+
+    public void rollback() {
+        final SqlSession sqlSession = localSqlSession.get();
+        if(sqlSession == null) {
+            throw new SqlSessionException("sqlSession未创建");
+        }
+        sqlSession.rollback();
+    }
+
+    public static void close() {
+        final SqlSession sqlSession = localSqlSession.get();
+        if(sqlSession == null) {
+            throw new SqlSessionException("sqlSession未创建");
+        }
+        try {
+            sqlSession.close();
+        } finally {
+            localSqlSession.set(null);
+        }
+    }
+    
+    public static <T> T getMapper(Class<T> type) {
+        final SqlSession sqlSession = localSqlSession.get();
+        if(sqlSession == null) {
+            throw new SqlSessionException("sqlSession未创建");
+        }
+        return sqlSession.getMapper(type);
     }
 }
 
 ```
 
+如果不想自己写工具类也行，mybatis 提供了`SqlSessionManager`来安全地获取 SqlSession，如下，使用时可以将它作为 repository/DAO 和 service 的全局对象，直接当成 sqlSession 对象来使用，但必须现在 service 层调用 startManagedSession 方法。
+
+```java
+public class SqlSessionManager implements SqlSessionFactory, SqlSession {
+
+  private final SqlSessionFactory sqlSessionFactory;
+
+  private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
+    
+  public static SqlSessionManager newInstance(InputStream inputStream) {
+    return new SqlSessionManager(new SqlSessionFactoryBuilder().build(inputStream, null, null));
+  }
+    
+  public void startManagedSession() {
+    this.localSqlSession.set(openSession());
+  }
+    
+  @Override
+  public void commit() {
+    final SqlSession sqlSession = localSqlSession.get();
+    if (sqlSession == null) {
+      throw new SqlSessionException("Error:  Cannot commit.  No managed session is started.");
+    }
+    sqlSession.commit();
+  }
+
+  @Override
+  public void rollback() {
+    final SqlSession sqlSession = localSqlSession.get();
+    if (sqlSession == null) {
+      throw new SqlSessionException("Error:  Cannot rollback.  No managed session is started.");
+    }
+    sqlSession.rollback();
+  }
+}
+```
+
 ### 编写 Repository
 
-repository 的代码非常简单，只需要拿到 SqlSessionn 对象，就能直接进行数据库操作了。注意，**这里的 SqlSession 不能作为实例变量**。
+repository 的代码非常简单，只需要拿到 Mapper 对象，就能直接进行数据库操作了。注意，**这里的 Mapper 不能作为实例变量**。
 
 ```java
 public class EmployeeRepository implements IEmployeeRepository {
     
     @Override
     public Employee get(String id) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+        return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
     }
 
     @Override
     public int save(Employee employee) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
+        return MybatisUtils.getMapper(EmployeeMapper.class).insert(employee);
     }
 }
 ```
@@ -622,34 +662,44 @@ public class EmployeeRepositoryTest {
 
     private IEmployeeRepository employeeRepository = new EmployeeRepository();
 
+    @Before
+    public void startSqlSession() {
+        MybatisUtils.startSqlSession();
+    }
+    
+    @After
+    public void endSqlSession() {
+        MybatisUtils.close();
+    }
+
+    /**
+     * <p>测试根据id查询</p>
+     */
     @Test
     public void testGet() {
         String id = "cc6b08506cdb11ea802000fffc35d9fe";
 
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession();) {
+        // 执行，获取员工对象
+        Employee employee = employeeRepository.get(id);
 
-            // 执行，获取员工对象
-            Employee employee = employeeRepository.get(id);
-
-            // 打印
-            System.out.println(employee);
-        }
+        // 打印
+        System.out.println(employee);
     }
-}
+    /**
+     * <p>测试保存</p>
+     */
     @Test
     public void testSave() {
         // 创建用户
         Employee employee = new Employee(UUID.randomUUID().toString().replace("-", ""), "zzs005", true, "zzs005", "admin", "18826****41", "广东", (byte)1, false, "94e2d2e56cd811ea802000fffc35d9fa", new Date(), new Date());
 
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        // 保存
+        employeeRepository.save(employee);
 
-            // 保存
-            employeeRepository.save(employee);
-
-            // 提交事务
-            sqlSession.commit();
-        }
+        // 提交事务
+        MybatisUtils.commit();
     }
+}
 ```
 
 ### 测试
@@ -821,8 +871,17 @@ public class EmployeeCondition extends AbstractEmployeeCondition {
      */
     private String departmentName;
     
+    /**
+     * <p>是否关联部门表</p>
+     */
+    private boolean joinDepartment = false;
+    
     public boolean isJoinDepartment() {
-        return (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
+        return joinDepartment ? true : (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
+    }
+    
+    public void setJoinDepartment(boolean joinDepartment) {
+        this.joinDepartment = joinDepartment;
     }
     // 省略setter/getter方法
 }
@@ -904,6 +963,8 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
         <if test="con.joinDepartment">
             inner join 
                 demo_department d 
+            on 
+            	d.id = e.department_id
         </if>
     </sql>
     
@@ -936,6 +997,9 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
 其实，这里存在一个问题，排序条件那里 sql 语句渗透到了 service 层，实际项目中，排序规则不会经常变动，我们可以在 xml 里直接使用默认排序条件，条件类增加 userDefaultSort 属性来判断。总之要记住一点，在 service 层中渗透 sql 代码，是非常不应该的！
 
 ```java
+    /**
+     * <p>测试高级条件查询--嵌套select查询</p>
+     */
     @Test
     public void testList() {
         EmployeeCondition con = new EmployeeCondition();
@@ -948,16 +1012,16 @@ Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查�
         con.setDepartmentNo("202003230002");
 
         // 设置排序规则
-        con.setOrderByClause("name desc");// 注意为数据库字段
+        con.setOrderByClause("e.name desc");// 注意为数据库字段
 
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
 
-            // 执行
-            List<Employee> list = employeeRepository.list(con);
-            
-            // 遍历结果
-            list.forEach(System.out::println);
-        }
+        // 执行
+        List<Employee> list = employeeRepository.list(con);
+
+        // 遍历结果
+        list.forEach(x -> {
+            System.out.println(x);
+        });
     }
 ```
 
@@ -980,11 +1044,19 @@ WHERE 1 = 1
 ORDER BY name DESC
 ```
 
-## 关联查询
+## 关联查询--嵌套 select 查询
 
 以上基本讲完 IEmployeeRepository 中的方法，我前面说过，IEmployeeRepository 接口中的方法可以满足大部分的使用需求，但是，如果我响应给前端的数据中，除了员工的字段，还需要员工所在部门和员工拥有的角色的字段，这时 IEmployeeRepository 的方法不就应付不了了吗?
 
 这种场景涉及到的就是关联查询，我需要在 repository 层查询员工对象时将部门和角色一并查出来，然后在前端转换为具体的 VO 对象。
+
+关联的不同之处是，你需要告诉 MyBatis 如何加载关联。MyBatis 有两种不同的方式加载关联：
+
+- **嵌套 Select 查询**：通过执行另外一个 SQL 映射语句来加载期望的复杂类型。
+
+- **嵌套结果映射**：使用嵌套的结果映射来处理连接结果的重复子集。
+
+这里先介绍第一种方式：
 
 ### 修改实体类
 
@@ -995,7 +1067,7 @@ public class Employee {
     
     private Department department;
 
-    private List<Role> roles = Collections.emptyList();
+    private List<Role> roles = new ArrayList<>();
     //······
 }
 ```
@@ -1030,22 +1102,33 @@ public class Employee {
 我调用的还是 IEmployeeRepository 接口的 get 方法，只是增加了部门和角色的打印。
 
 ```java
+    /**
+     * <p>测试高级条件查询--嵌套select查询</p>
+     */
     @Test
-    public void testGetRelation() {
-        String id = "cc6b08506cdb11ea802000fffc35d9fe";
+    public void testList() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setGender(false);
+        con.setAddress("北京");
+        con.setDeleted(false);
+        con.setPhone("18826****41");
+        con.setDistinct(true);
+        con.setDepartmentNo("202003230002");
 
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        // 设置排序规则
+        con.setOrderByClause("e.name desc");// 注意为数据库字段
 
-            // 执行，获取员工对象
-            Employee employee = employeeRepository.get(id);
 
-            // 打印员工
-            System.out.println(employee);
-            // 打印部门
-            System.out.println(employee.getDepartment());
-            // 打印角色
-            employee.getRoles().forEach(System.out::println);            
-        }
+        // 执行
+        List<Employee> list = employeeRepository.list(con);
+
+        // 遍历结果
+        list.forEach(x -> {
+            System.out.println(x);
+            System.out.println(x.getDepartment());
+            System.out.println(x.getRoles());
+        });
     }
 ```
 
@@ -1053,7 +1136,7 @@ public class Employee {
 
 测试上面的方法，可以看到控制台打印了三个查询语句，分别对应员工、部门和角色，这样，我们就可以在前端转换 VO 时，将部门和角色的字段都给到 VO 了。
 
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111740135-1826470931.png" alt="Mybatis_demo_relation" style="zoom:80%;" />
+<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111740135-1826470931.png" alt="mybatis_demo_relation" style="zoom:80%;" />
 
 
 
@@ -1082,23 +1165,33 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 还是使用前面的方法，这里我把 role 部分的代码注释掉。
 
 ```java
+    /**
+     * <p>测试高级条件查询--嵌套select查询</p>
+     */
     @Test
-    public void testGetLazy() {
-        String id = "cc6b08506cdb11ea802000fffc35d9fe";
+    public void testList() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setGender(false);
+        con.setAddress("北京");
+        con.setDeleted(false);
+        con.setPhone("18826****41");
+        con.setDistinct(true);
+        con.setDepartmentNo("202003230002");
 
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
+        // 设置排序规则
+        con.setOrderByClause("e.name desc");// 注意为数据库字段
 
-            // 执行，获取员工对象
-            Employee employee = employeeRepository.get(id);
 
-            // 打印员工
-            System.out.println(employee);
-            // 打印部门
-            System.out.println(employee.getDepartment());
-            // 打印角色
-            // employee.getRoles().forEach(System.out::println);
-            
-        }
+        // 执行
+        List<Employee> list = employeeRepository.list(con);
+
+        // 遍历结果
+        list.forEach(x -> {
+            System.out.println(x);
+            System.out.println(x.getDepartment());
+            // System.out.println(x.getRoles());
+        });
     }
 ```
 
@@ -1108,6 +1201,144 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 
 <img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111759225-838926719.png" alt="Mybatis_demo_relation2" style="zoom: 80%;" />
 
+
+## 关联查询--嵌套结果映射
+
+像 mybatis 的嵌套 select 查询，使用起来非常方便，但在大型数据集或大型数据表上表现不佳，会遇到 "N+1查询问题"。 因为这种方式 select 语句的数目太多，需要频繁的访问数据库，会在网络传输上浪费大量资源，同时会影响检索性能。 针对这个问题，mybatis 提供了嵌套结果映射的方式。
+
+我只要在上个例子的基础上修改就行：
+
+### 修改 mapper.xml 文件
+
+这里使用的是左关联查询，`resultMap`中的调用了 DepartmentMapper 的`resultMap`。
+
+```xml
+    <!-- 基础映射表：嵌套结果映射-->
+    <resultMap id="BaseResultMap2" type="Employee" autoMapping="true">
+        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
+        <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR" />
+        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
+        <association property="department" 
+            columnPrefix="d_"
+            resultMap="cn.zzs.mybatis.mapper.DepartmentMapper.BaseResultMap" />
+    </resultMap>
+	<!-- 关联表 -->
+    <sql id="Join_Clause">
+        <if test="con.joinDepartment">
+            left join
+                demo_department d 
+            on 
+                d.id = e.department_id
+        </if>
+    </sql>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        e.id,
+        e.`name`,
+        e.gender,
+        e.no,
+        e.password,
+        e.phone,
+        e.address,
+        e.status,
+        e.deleted,
+        e.department_id,
+        e.gmt_create,
+        e.gmt_modified 
+    </sql>
+    
+    <!-- 部门字段 -->
+    <sql id="Join_Column_List">
+        <include refid="Base_Column_List"/>
+        <if test="con.joinDepartment">
+        ,
+        d.id as d_id,
+        d.no as d_no,
+        d.parent_id as d_parent_id,
+        d.`name` as d_name,
+        d.type as d_type,
+        d.deleted as d_deleted,
+        d.gmt_create as d_gmt_create,
+        d.gmt_modified as d_gmt_modified 
+        </if>
+    </sql>
+    <!-- 根据条件查询：嵌套结果查询 -->
+    <select id="selectByCondition2" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap2">
+        select
+        <if test="con.distinct">
+            distinct
+        </if>
+        <include refid="Join_Column_List" />
+        from
+        demo_employee e
+        <include refid="Join_Clause"></include>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null">
+            order by ${con.orderByClause}
+        </if>
+    </select>
+```
+
+### 编写测试方法
+
+```java
+    /**
+     * <p>测试高级条件查询--嵌套结果查询</p>
+     */
+    @Test
+    public void testList2() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setGender(false);
+        con.setAddress("北京");
+        con.setDeleted(false);
+        con.setPhone("18826****41");
+        con.setDistinct(true);
+        //con.setDepartmentNo("202003230002");
+        con.setJoinDepartment(true);
+
+        // 设置排序规则
+        con.setOrderByClause("e.name desc");// 注意为数据库字段
+
+
+        // 执行
+        List<Employee> list = employeeRepository.list2(con);
+
+        // 遍历结果
+        list.forEach(x -> {
+            System.out.println(x);
+            System.out.println(x.getDepartment());
+        });
+    }
+```
+
+### 测试
+
+这里仅执行了一次 sql 查询，如果是嵌套 select 查询的话，没有触发缓存时需要执行 5 条 sql。相比之下，这种方式性能会更好一些。
+
+```sql
+2020-04-02 15:22:09.503 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
+==>  Preparing: 
+SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
+	, e.phone, e.address, e.status, e.deleted, e.department_id
+	, e.gmt_create, e.gmt_modified, d.id AS d_id, d.no AS d_no, d.parent_id AS d_parent_id
+	, d.`name` AS d_name, d.type AS d_type, d.deleted AS d_deleted, d.gmt_create AS d_gmt_create, d.gmt_modified AS d_gmt_modified
+FROM demo_employee e
+	LEFT JOIN demo_department d ON d.id = e.department_id
+WHERE 1 = 1
+	AND e.gender = ?
+	AND e.phone = ?
+	AND e.address = ?
+	AND e.deleted = ?
+ORDER BY e.name DESC
+2020-04-02 15:22:09.526 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
+==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean)
+2020-04-02 15:22:09.546 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
+<==      Total: 4
+```
 
 ## 分页查询
 
@@ -1141,6 +1372,9 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 ### 编写测试方法
 
 ```java
+    /**
+     * <p>测试分页插件</p>
+     */
     @Test
     public void testlistPage() {
         EmployeeCondition con = new EmployeeCondition();
@@ -1150,20 +1384,20 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
         con.setDeleted(false);
         con.setPhone("18826****41");
         con.setDistinct(true);
-        
-        try (SqlSession sqlSession = MybatisUtils.getSqlSession()) {
-            // 设置分页信息
-            PageHelper.startPage(0, 3);
-            
-            // 执行查询
-            List<Employee> list = employeeRepository.list(con);
 
-            // 封装分页模型
-            PageInfo<Employee> pageInfo = new PageInfo<>(list);
+        // 设置分页信息
+        PageHelper.startPage(0, 3);
 
-            // 取分页模型的数据
-            System.out.println("查询总数" + pageInfo.getTotal());
-        }
+        // 执行查询
+        List<Employee> list = employeeRepository.list(con);
+        // 遍历结果
+        list.forEach(System.out::println);
+
+        // 封装分页模型
+        PageInfo<Employee> pageInfo = new PageInfo<>(list);
+
+        // 取分页模型的数据
+        System.out.println("查询总数" + pageInfo.getTotal());
     }
 ```
 

@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.zzs.mybatis.mapper.EmployeeMapper">
-    <!-- 基础映射表 -->
-    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
+    <!-- 基础映射表：嵌套 Select查询映射 -->
+    <resultMap id="BaseResultMap" type="Employee">
         <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
         <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR" />
         <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
         <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
-        <association property="department" column="department_id" select="cn.zzs.mybatis.mapper.DepartmentMapper.selectByPrimaryKey" />
-        <collection property="roles" column="id" select="cn.zzs.mybatis.mapper.RoleMapper.selectByEmployeeId" />
-        <collection property="menus" column="id" select="cn.zzs.mybatis.mapper.MenuMapper.selectByEmployeeId" />
+        <association property="department" 
+            column="department_id"
+            select="cn.zzs.mybatis.mapper.DepartmentMapper.selectByPrimaryKey" />
+        <collection property="roles" 
+            column="id" 
+            select="cn.zzs.mybatis.mapper.RoleMapper.selectByEmployeeId" />
+        <collection property="menus" 
+            column="id" 
+            select="cn.zzs.mybatis.mapper.MenuMapper.selectByEmployeeId" />
+    </resultMap>
+    
+    <!-- 基础映射表：嵌套结果映射-->
+    <resultMap id="BaseResultMap2" type="Employee" autoMapping="true">
+        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
+        <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR" />
+        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
+        <association property="department" 
+            columnPrefix="d_"
+            resultMap="cn.zzs.mybatis.mapper.DepartmentMapper.BaseResultMap" />
     </resultMap>
 
     <!-- AbstractEmployeeCondition查询条件 -->
@@ -81,8 +98,10 @@
     <!-- 关联表 -->
     <sql id="Join_Clause">
         <if test="con.joinDepartment">
-            inner join
-            demo_department d
+            left join
+                demo_department d 
+            on 
+                d.id = e.department_id
         </if>
     </sql>
 
@@ -99,10 +118,26 @@
         e.deleted,
         e.department_id,
         e.gmt_create,
-        e.gmt_modified
+        e.gmt_modified 
     </sql>
-
-    <!-- 根据条件查询 -->
+    
+    <!-- 部门字段 -->
+    <sql id="Join_Column_List">
+        <include refid="Base_Column_List"/>
+        <if test="con.joinDepartment">
+        ,
+        d.id as d_id,
+        d.no as d_no,
+        d.parent_id as d_parent_id,
+        d.`name` as d_name,
+        d.type as d_type,
+        d.deleted as d_deleted,
+        d.gmt_create as d_gmt_create,
+        d.gmt_modified as d_gmt_modified 
+        </if>
+    </sql>
+    
+    <!-- 根据条件查询 ：嵌套select查询映射 -->
     <select id="selectByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap">
         select
         <if test="con.distinct">
@@ -118,17 +153,34 @@
             order by ${con.orderByClause}
         </if>
     </select>
+    
+    <!-- 根据条件查询：嵌套结果查询 -->
+    <select id="selectByCondition2" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap2">
+        select
+        <if test="con.distinct">
+            distinct
+        </if>
+        <include refid="Join_Column_List" />
+        from
+        demo_employee e
+        <include refid="Join_Clause"></include>
+        where 1=1
+        <include refid="Condition_Where_Clause" />
+        <if test="con.orderByClause != null">
+            order by ${con.orderByClause}
+        </if>
+    </select>
 
-    <!-- 根据id查询 -->
+    <!-- 根据id查询-->
     <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"></include>
         from
         demo_employee e
         where
         e.id = #{id,jdbcType=VARCHAR}
     </select>
-
+    
     <!-- 根据id删除 -->
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
         delete e from

@@ -10,9 +10,9 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     <settings>
         <setting name="lazyLoadingEnabled" value="true" />
         <setting name="aggressiveLazyLoading" value="false" />
-        <setting name="autoMappingUnknownColumnBehavior" value="WARNING" />
         <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode" />
-        <setting name="defaultExecutorType" value="REUSE" />
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <setting name="autoMappingUnknownColumnBehavior" value="WARNING" />
     </settings>
 
     <!-- 配置别名 -->

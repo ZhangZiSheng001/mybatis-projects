@@ -1,5 +1,6 @@
 package cn.zzs.mybatis.entity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +33,9 @@ public class Employee {
 
     private Department department;
 
-    private List<Role> roles = Collections.emptyList();
+    private List<Role> roles = new ArrayList<>();
 
-    private List<Menu> menus = Collections.emptyList();
+    private List<Menu> menus = new ArrayList<>();
 
     public Employee(String id, String name, Boolean gender, String no, String password, String phone, String address, Byte status, Boolean deleted, String departmentId, Date create, Date modified) {
         this.id = id;
@@ -174,7 +175,7 @@ public class Employee {
     public void setMenus(List<Menu> menus) {
         this.menus = menus;
     }
-
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

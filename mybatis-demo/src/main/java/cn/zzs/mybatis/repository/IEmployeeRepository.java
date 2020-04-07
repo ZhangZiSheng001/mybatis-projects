@@ -31,6 +31,17 @@ public interface IEmployeeRepository {
      * @return: List<Employee>
      */
     List<Employee> list(EmployeeCondition con);
+    
+    
+    /**
+     * 
+     * <p>根据条件查询--嵌套结果映射</p>
+     * @author: zzs
+     * @date: 2020年3月24日 下午1:19:57
+     * @param con
+     * @return: List<Employee>
+     */
+    List<Employee> list2(EmployeeCondition con);
 
     /**
      * 

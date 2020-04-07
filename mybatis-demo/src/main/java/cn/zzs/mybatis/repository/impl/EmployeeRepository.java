@@ -17,47 +17,52 @@ public class EmployeeRepository implements IEmployeeRepository {
 
     @Override
     public Employee get(String id) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+        return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
     }
 
     @Override
     public List<Employee> list(EmployeeCondition con) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).selectByCondition(con);
+        return MybatisUtils.getMapper(EmployeeMapper.class).selectByCondition(con);
+    }
+    
+    @Override
+    public List<Employee> list2(EmployeeCondition con) {
+        return MybatisUtils.getMapper(EmployeeMapper.class).selectByCondition2(con);
     }
 
     @Override
     public long count(EmployeeCondition con) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).countByCondition(con);
+        return MybatisUtils.getMapper(EmployeeMapper.class).countByCondition(con);
     }
 
     @Override
     public int delete(EmployeeCondition con) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByCondition(con);
+        return MybatisUtils.getMapper(EmployeeMapper.class).deleteByCondition(con);
     }
 
     @Override
     public int delete(String id) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).deleteByPrimaryKey(id);
+        return MybatisUtils.getMapper(EmployeeMapper.class).deleteByPrimaryKey(id);
     }
 
     @Override
     public int save(Employee employee) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insert(employee);
+        return MybatisUtils.getMapper(EmployeeMapper.class).insert(employee);
     }
 
     @Override
     public int saveBatch(List<Employee> list) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).insertBatch(list);
+        return MybatisUtils.getMapper(EmployeeMapper.class).insertBatch(list);
     }
 
     @Override
     public int update(Employee employee, EmployeeCondition con) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByCondition(employee, con);
+        return MybatisUtils.getMapper(EmployeeMapper.class).updateByCondition(employee, con);
     }
 
     @Override
     public int update(Employee employee) {
-        return MybatisUtils.getSqlSession().getMapper(EmployeeMapper.class).updateByPrimaryKey(employee);
+        return MybatisUtils.getMapper(EmployeeMapper.class).updateByPrimaryKey(employee);
     }
 
 }

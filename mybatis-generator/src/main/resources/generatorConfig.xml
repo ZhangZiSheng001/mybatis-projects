@@ -66,17 +66,15 @@
 		</javaClientGenerator>
 		
 		<!-- 指定数据库表 -->
-		<!-- <table tableName="demo_menu" domainObjectName="Menu" >
-		   <columnRenamingRule searchString="^(menu_)|(gmt_)" replaceString=""/>
+		<table tableName="sales_engineering_service_order" domainObjectName="SalesEngineeringServiceOrder" >
 		</table>
-		<table tableName="demo_role" domainObjectName="Role">
-		  <columnRenamingRule searchString="^(role_)|(gmt_)" replaceString=""/>
+		<table tableName="sales_engineering_order" domainObjectName="SalesEngineeringOrder">
 		</table>
-		<table tableName="demo_employee" domainObjectName="Employee">
+		<!-- <table tableName="demo_employee" domainObjectName="Employee">
 		  <columnRenamingRule searchString="^(employee_)|(gmt_)" replaceString=""/>
-		</table> -->
+		</table>
 		<table tableName="demo_department" domainObjectName="Department">
           <columnRenamingRule searchString="^(department_)|(gmt_)" replaceString=""/>
-        </table>
+        </table> -->
 	</context>
 </generatorConfiguration>

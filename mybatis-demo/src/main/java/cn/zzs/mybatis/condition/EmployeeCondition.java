@@ -19,9 +19,18 @@ public class EmployeeCondition extends AbstractEmployeeCondition {
      * <p>部门名</p>
      */
     private String departmentName;
-
+    
+    /**
+     * <p>是否关联部门表</p>
+     */
+    private boolean joinDepartment = false;
+    
     public boolean isJoinDepartment() {
-        return (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
+        return joinDepartment ? true : (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
+    }
+    
+    public void setJoinDepartment(boolean joinDepartment) {
+        this.joinDepartment = joinDepartment;
     }
 
     public String getDepartmentNo() {

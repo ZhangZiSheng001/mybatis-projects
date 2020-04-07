@@ -18,9 +18,17 @@ public interface EmployeeMapper {
     int insert(Employee employee);
 
     int insertBatch(List<Employee> list);
-
+    
+    /**
+     * <p>嵌套 Select查询映射</p>
+     */
     List<Employee> selectByCondition(@Param("con") EmployeeCondition con);
-
+    
+    /**
+     * <p>嵌套结果映射</p>
+     */
+    List<Employee> selectByCondition2(@Param("con") EmployeeCondition con);
+    
     Employee selectByPrimaryKey(String id);
 
     int updateByCondition(@Param("record") Employee employee, @Param("con") EmployeeCondition con);

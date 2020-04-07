@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.zzs.mybatis.mapper.DepartmentMapper">
     <!-- 基础映射表 -->
-    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Department">
+    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Department" autoMapping="true">
         <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
         <result column="parent_id" property="parentId" javaType="string" jdbcType="VARCHAR" />
         <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
