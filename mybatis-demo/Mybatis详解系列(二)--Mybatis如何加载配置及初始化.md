@@ -1,23 +1,3 @@
-# 目录
-
-* [简介](#简介)
-* [初始化的过程](#初始化的过程)
-* [构建xml节点树](#构建xml节点树)
-* [先认识下Configuration这个类](#先认识下configuration这个类)
-* [properties](#properties)
-* [settings](#settings)
-* [typeAliases](#typealiases)
-* [plugins](#plugins)
-* [environments](#environments)
-* [typeHandlers*](#typehandlers)
-  * [配置TypeHandler的规则](#配置typehandler的规则)
-  * [源码分析](#源码分析)
-* [mappers*](#mappers)
-  * [mapper 的节点对象](#mapper-的节点对象)
-  * [ResultMap的组成](#resultmap的组成)
-  * [源码分析](#源码分析-1)
-
-
 # 简介
 
 Mybatis 是一个持久层框架，它对 JDBC 进行了高级封装，使我们的代码中不会出现任何的 JDBC 代码，另外，它还通过 xml 或注解的方式将 sql 从 DAO/Repository 层中解耦出来，除了这些基本功能外，它还提供了动态 sql、延迟加载、缓存等功能。 相比 Hibernate，Mybatis 更面向数据库，可以灵活地对 sql 语句进行优化。
@@ -49,7 +29,7 @@ Employee employee = baseMapper.selectByPrimaryKey(id);
 
 这里简单概括下初始化的整个流程，如下图。
 
-<img src="D:\growUp\git_repository\10-mybatis-projects\mybatis-demo\img\mybatis_source_init01.png" alt="mybatis_source_init01" style="zoom:80%;" />
+<img src="https://img2020.cnblogs.com/blog/1731892/202004/1731892-20200415111752401-1326789387.png" style="zoom:80%;" />
 
 1. **构建 xml 的“节点树”**。`XPathParser`使用的是 JDK 自带的 JAXP API来解析并构建`Document`对象，并且支持 XPath 功能。
 2. **初始化`Configuration`对象的成员属性。**`XMLConfigBuilder`利用“节点树”来构建`Configuration`对象（也会去解析注解的配置），`Configuration`对象包含了 configuration 文件和 mapper 文件的所有配置信息。这部分内容比较难，尤其是初始化 mapper 相关的配置。
@@ -127,7 +107,7 @@ private XMLConfigBuilder(XPathParser parser, String environment, Properties prop
 
 在此之前，我们先认识下`Configurantion`这个类，如下图。可以看到，这些成员属性对应了 xml 文件中各个配置项，接下来讲的就是如何初始化这些属性。
 
-<img src="D:\growUp\git_repository\10-mybatis-projects\mybatis-demo\img\mybatis_source_init02.png" alt="mybatis_source_init02" style="zoom:100%;" />
+<img src="https://img2020.cnblogs.com/blog/1731892/202004/1731892-20200415111825208-854431018.png" alt="mybatis_source_init02" style="zoom:100%;" />
 
 进入到`XMLConfigBuilder.parse()`方法，可以看到所有配置项的初始化顺序。这里的`XNode`类是 mybatis 对`org.w3c.dom.Node`的包装，为后续操作 xml 节点提供了更加简便的接口。
 
@@ -234,7 +214,7 @@ private void settingsElement(Properties props) {
 
 通常情况下，如果要判断一个配置参数是否存在，可能会在代码中将参数集给写死，但是 mybatis 没有这么做，它提供了一个非常好用的工具类--`MetaClass`。**`MetaClass`可以用来初始化某个类的参数集，例如`Configuration`，并且提供了这些参数的`Invoker`对象，通过它可以进行值的设置和获取**。这个类将在后续源码分析中多次出现。
 
-![mybatis_source_init03](D:\growUp\git_repository\10-mybatis-projects\mybatis-demo\img\mybatis_source_init03.png)
+![mybatis_source_init03](https://img2020.cnblogs.com/blog/1731892/202004/1731892-20200415111851208-1674638691.png)
 
 # typeAliases
 
@@ -553,7 +533,7 @@ private void register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) 
 
 接下来就是初始化中最难的部分了。因为 mybatis 的 mapper 支持了非常多个语法，甚至还允许使用注解配置，所以，在对 mapper 的解析方面需要非常复杂的逻辑。我们先来看看 mapper 中的配置项，如下。
 
-![mybatis_source_init04](D:\growUp\git_repository\10-mybatis-projects\mybatis-demo\img\mybatis_source_init04.png)
+![mybatis_source_init04](https://img2020.cnblogs.com/blog/1731892/202004/1731892-20200415111931364-268239118.png)
 
 ## ResultMap的组成
 
@@ -597,7 +577,7 @@ private void register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) 
 2. **idArg、result、association 和 collection 节点都会被转换为`ResultMapping`对象被`ResultMap`对象持有**，区别在于 association 和 collection 的`ResultMapping`对象会持有 nestedResultMapId 来指向另外一个`ResultMap`对象，持有 nestedQueryId 来指向另外一个`MappedStatement`对象。
 3. discriminator 节点，将转换为`Discriminator`对象被`ResultMap`对象持有。
 
-![mybatis_source_init05](D:\growUp\git_repository\10-mybatis-projects\mybatis-demo\img\mybatis_source_init05.png)
+![mybatis_source_init05](https://img2020.cnblogs.com/blog/1731892/202004/1731892-20200415111953415-984761692.png)
 
 ## 源码分析
 
@@ -855,4 +835,4 @@ private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> addi
 
 > 相关源码请移步：[mybatis-demo](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-demo)
 
-> 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html)
+> 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/12704076.html](https://www.cnblogs.com/ZhangZiSheng001/p/12704076.html)
