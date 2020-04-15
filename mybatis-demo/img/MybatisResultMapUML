@@ -1,0 +1,46 @@
+@startuml
+scale 1.2
+
+class Configuration {
+    # Map<String, ResultMap> resultMaps
+    <font color="green" size="12">// ······</font> 
+}
+
+class ResultMap {
+    - String id
+    - Class<?> type
+    - List<ResultMapping> resultMappings
+    - Discriminator discriminator
+    - Boolean autoMapping
+    <font color="green" size="12">// ······</font> 
+}
+ResultMap -down-o Configuration
+
+class Discriminator {
+    - ResultMapping resultMapping
+    - Map<String, String> discriminatorMap
+}
+Discriminator -right-o ResultMap
+
+class ResultMapping {
+    - Configuration configuration
+    - String property
+    - String column
+    - Class<?> javaType
+    - JdbcType jdbcType
+    - TypeHandler<?> typeHandler
+    - String nestedResultMapId
+    - String nestedQueryId
+    - Set<String> notNullColumns
+    - String columnPrefix
+    - List<ResultFlag> flags
+    - List<ResultMapping> composites
+    - String resultSet
+    - String foreignColumn
+    - boolean lazy
+}
+ResultMapping -left-o ResultMap
+
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

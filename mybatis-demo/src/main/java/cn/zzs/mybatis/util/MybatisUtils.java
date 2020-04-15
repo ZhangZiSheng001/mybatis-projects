@@ -24,8 +24,9 @@ public class MybatisUtils {
     }
 
     private static void init() {
-        try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
+        try {
             // 加载配置文件，初始化SqlSessionFactory对象
+            InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         } catch(Exception e) {
             throw new RuntimeException("初始化SqlSessionFactory失败", e);
@@ -34,6 +35,14 @@ public class MybatisUtils {
 
     public static void startSqlSession() {
         localSqlSession.set(sqlSessionFactory.openSession());
+    }
+    
+    public static SqlSession getSqlSession() {
+        final SqlSession sqlSession = localSqlSession.get();
+        if(sqlSession == null) {
+            throw new SqlSessionException("sqlSession未创建");
+        }
+        return sqlSession;
     }
 
     public static void commit() {

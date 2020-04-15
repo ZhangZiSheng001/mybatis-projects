@@ -25,8 +25,6 @@ public class JDBCUtils {
 
     private static ThreadLocal<Connection> tl = new ThreadLocal<>();
 
-    private static final Object obj = new Object();
-
     private static final Logger log = LoggerFactory.getLogger(JDBCUtils.class);
 
     static {
@@ -39,18 +37,15 @@ public class JDBCUtils {
      * @author: zzs
      * @date: 2019年8月31日 下午9:22:29
      * @return: Connection
+     * @throws SQLException 
      */
-    public static Connection getConnection() {
+    public static Connection getConnection() throws SQLException {
         // 从当前线程中获取连接对象
         Connection connection = tl.get();
         // 判断为空的话，创建连接并绑定到当前线程
         if(connection == null) {
-            synchronized(obj) {
-                if((connection = tl.get()) == null) {
-                    connection = createConnection();
-                    tl.set(connection);
-                }
-            }
+            connection = createConnection();
+            tl.set(connection);
         }
         return connection;
     }
@@ -79,7 +74,6 @@ public class JDBCUtils {
                 log.error("关闭Statement对象异常", e);
             }
         }
-        // 注意：这里不关闭连接
         if(conn != null) {
             try {
                 conn.close();
@@ -98,14 +92,10 @@ public class JDBCUtils {
      * @return: Connection
      * @throws SQLException 
      */
-    private static Connection createConnection() {
+    private static Connection createConnection() throws SQLException {
         Connection conn = null;
         // 获得连接
-        try {
-            conn = dataSource.getConnection();
-        } catch(SQLException e) {
-            throw new RuntimeException("获取连接对象失败", e);
-        }
+        conn = dataSource.getConnection();
         return conn;
     }
 

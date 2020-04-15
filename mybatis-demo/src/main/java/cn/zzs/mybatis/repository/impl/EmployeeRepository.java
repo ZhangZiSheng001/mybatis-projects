@@ -18,6 +18,7 @@ public class EmployeeRepository implements IEmployeeRepository {
     @Override
     public Employee get(String id) {
         return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+        //return MybatisUtils.getSqlSession().selectOne("cn.zzs.mybatis.mapper.EmployeeMapper.selectByPrimaryKey", id);
     }
 
     @Override
@@ -48,6 +49,7 @@ public class EmployeeRepository implements IEmployeeRepository {
     @Override
     public int save(Employee employee) {
         return MybatisUtils.getMapper(EmployeeMapper.class).insert(employee);
+        // return MybatisUtils.getSqlSession().insert("cn.zzs.mybatis.mapper.EmployeeMapper.insert", employee);
     }
 
     @Override

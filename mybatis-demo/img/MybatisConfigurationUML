@@ -1,0 +1,58 @@
+@startuml
+scale 1.2
+
+class Configuration {
+    <font color="green" size="12">// 在xml中配置的以及我们构建SqlSessionFactory时传入的参数</font>
+    # Properties variables
+    <font color="green" size="12">// setting配置项</font>
+    # boolean mapUnderscoreToCamelCase
+    # boolean aggressiveLazyLoading
+    <font color="green" size="12">// ·······</font>
+    <font color="green" size="12">// mapper元素</font>
+    # Map<String, MappedStatement> mappedStatements;
+    # Map<String, Cache> caches;
+    # Map<String, ResultMap> resultMaps;
+    # Map<String, ParameterMap> parameterMaps;
+}
+
+class TypeAliasRegistry {
+    <font color="green" size="12">// 存放alias=class键值对</font>
+    - - Map<String, Class<?>> typeAliases
+}
+TypeAliasRegistry -left-o Configuration
+
+class InterceptorChain {
+    - List<Interceptor> interceptors
+}
+InterceptorChain -up-o Configuration
+
+interface ObjectFactory
+ObjectFactory -up-o Configuration
+
+interface ObjectWrapperFactory
+ObjectWrapperFactory -up-o Configuration
+
+interface ReflectorFactory
+ReflectorFactory -down-o Configuration
+
+class Environment {
+    - String id
+    - TransactionFactory transactionFactory
+    - DataSource dataSource
+}
+Environment -down-o Configuration
+
+class TypeHandlerRegistry {
+    - Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap
+}
+TypeHandlerRegistry -down-o Configuration
+
+class MapperRegistry {
+    - Map<Class<?>, MapperProxyFactory<?>> knownMappers
+}
+MapperRegistry -right-o Configuration
+
+
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

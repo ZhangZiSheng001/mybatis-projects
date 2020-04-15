@@ -1,0 +1,76 @@
+@startuml
+scale 1.5
+
+class MetaClass {
+  - ReflectorFactory reflectorFactory
+  - Reflector reflector
+  + {static} MetaClass forClass(Class<?> type, ReflectorFactory reflectorFactory)
+  + String findProperty(String name)
+  + String findProperty(String name, boolean useCamelCaseMapping)
+  + String[] getGetterNames()
+  + String[] getSetterNames()
+  + Class<?> getSetterType(String name)
+  + Class<?> getGetterType(String name)
+  + boolean hasSetter(String name)
+  + boolean hasGetter(String name)
+  + Invoker getGetInvoker(String name)
+  + Invoker getSetInvoker(String name)
+}
+
+interface ReflectorFactory {
+  boolean isClassCacheEnabled()
+  void setClassCacheEnabled(boolean classCacheEnabled)
+  Reflector findForClass(Class<?> type)
+}
+
+class DefaultReflectorFactory {
+  <font color="green" size="13">// 是否缓存，默认开启</font>
+  - boolean classCacheEnabled
+  <font color="green" size="13">// 缓存着 Class=Reflector 键值对</font>
+  - ConcurrentMap<Class<?>, Reflector> reflectorMap
+}
+
+DefaultReflectorFactory .left.|> ReflectorFactory
+
+class Reflector {
+  <font color="green" size="13">// 对应的类</font>
+  - Class<?> type
+  ..
+  <font color="green" size="13">// set方法或static属性的propertyName</font>
+  - String[] readablePropertyNames
+  <font color="green" size="13">// set方法或static属性的propertyName</font>
+  - String[] writablePropertyNames
+  ..
+  <font color="green" size="13">// set方法或static属性的propertyName=Invoker</font>
+  - Map<String, Invoker> setMethods
+  <font color="green" size="13">// get方法、is方法或static属性的propertyName=Invoker</font>
+  - Map<String, Invoker> getMethods
+  ..
+  <font color="green" size="13">// set方法或static属性的propertyName=returnType</font>
+  - Map<String, Class<?>> setTypes
+  <font color="green" size="13">// get方法、is方法或static属性的propertyName=returnType</font>
+  - Map<String, Class<?>> getTypes
+  ..
+  <font color="green" size="13">// 无参构造对象</font>
+  - Constructor<?> defaultConstructor
+  __
+  - Map<String, String> caseInsensitivePropertyMap
+  + Class<?> getType()
+  + Constructor<?> getDefaultConstructor()
+  + Invoker getSetInvoker(String propertyName)
+  + Invoker getGetInvoker(String propertyName)
+  + Class<?> getSetterType(String propertyName)
+  + Class<?> getGetterType(String propertyName)
+  + String[] getGetablePropertyNames()
+  + String[] getSetablePropertyNames()
+  + boolean hasSetter(String propertyName)
+  + boolean hasGetter(String propertyName)
+  + String findPropertyName(String name)
+}
+
+ReflectorFactory -up-o MetaClass
+Reflector -right-o MetaClass
+MetaClass .up.|> ReflectorFactory
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

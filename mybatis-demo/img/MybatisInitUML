@@ -1,0 +1,32 @@
+@startuml
+scale 1.2
+
+class SqlSessionFactoryBuilder
+note top:3.构建DefaultSqlSessionFactory对象
+interface SqlSessionFactory
+class DefaultSqlSessionFactory
+class XMLConfigBuilder
+note right: 2.构建Configuration对象
+abstract class BaseBuilder
+class XPathParser
+note top:1.解析xml
+class Configuration
+note bottom: 这个类非常重要
+class XMLMapperBuilder
+
+
+SqlSessionFactoryBuilder .right.> XMLConfigBuilder
+SqlSessionFactoryBuilder ..> Configuration
+SqlSessionFactoryBuilder .. DefaultSqlSessionFactory
+
+DefaultSqlSessionFactory ..|> SqlSessionFactory
+Configuration -right-o DefaultSqlSessionFactory
+
+XMLConfigBuilder --|> BaseBuilder
+Configuration -left-o BaseBuilder
+XMLConfigBuilder o-up- XPathParser
+XMLMapperBuilder o-left- XPathParser
+XMLMapperBuilder .. XMLConfigBuilder
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

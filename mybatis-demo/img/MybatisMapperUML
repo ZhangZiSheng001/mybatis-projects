@@ -1,0 +1,62 @@
+@startuml
+scale 1.2
+
+class Configuration {
+    <font color="green" size="12">// mapper元素</font>
+    # MapperRegistry mapperRegistry
+    # Map<String, MappedStatement> mappedStatements
+    # Map<String, ResultMap> resultMaps
+    # Map<String, ParameterMap> parameterMaps
+    # Map<String, String> cacheRefMap
+    # Map<String, Cache> caches
+    <font color="green" size="12">// ······</font> 
+}
+
+class MapperRegistry {
+    - Map<Class<?>, MapperProxyFactory<?>> knownMappers
+}
+note bottom
+Mapper注册器
+mapper接口=Mapper代理类工厂
+end note
+MapperRegistry -left-o Configuration
+
+class MappedStatement {
+    - String id
+    - SqlSource sqlSource
+    - Cache cache
+    - ParameterMap parameterMap
+    - List<ResultMap> resultMaps
+    <font color="green" size="12">// ······</font> 
+}
+note left
+select|insert|update|delete节点
+end note
+MappedStatement --o Configuration
+
+interface Cache
+note right:cache节点
+Cache --o Configuration
+
+class ResultMap {
+    - String id
+    - Class<?> type
+    - List<ResultMapping> resultMappings
+    - Discriminator discriminator
+    <font color="green" size="12">// ······</font> 
+}
+note top:resultMap节点
+ResultMap -right-o Configuration
+
+class ParameterMap {
+    - String id
+    - Class<?> type
+    - List<ParameterMapping> parameterMappings
+}
+note right:parameterMap节点
+ParameterMap -down-o Configuration
+
+
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

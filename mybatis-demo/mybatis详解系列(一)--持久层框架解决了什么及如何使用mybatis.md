@@ -546,8 +546,9 @@ public class MybatisUtils {
     }
 
     private static void init() {
-        try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
+        try {
             // 加载配置文件，初始化SqlSessionFactory对象
+            InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         } catch(Exception e) {
             throw new RuntimeException("初始化SqlSessionFactory失败", e);
@@ -636,7 +637,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
 ### 编写 Repository
 
-repository 的代码非常简单，只需要拿到 Mapper 对象，就能直接进行数据库操作了。注意，**这里的 Mapper 不能作为实例变量**。
+repository 的代码非常简单，只需要拿到 Mapper 或 SqlSession 对象，就能直接进行数据库操作了。注意，**这里的 Mapper 和 SqlSession 都不能作为实例变量**。
 
 ```java
 public class EmployeeRepository implements IEmployeeRepository {
@@ -644,11 +645,13 @@ public class EmployeeRepository implements IEmployeeRepository {
     @Override
     public Employee get(String id) {
         return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
+        //return MybatisUtils.getSqlSession().selectOne("cn.zzs.mybatis.mapper.EmployeeMapper.selectByPrimaryKey", id);
     }
 
     @Override
     public int save(Employee employee) {
         return MybatisUtils.getMapper(EmployeeMapper.class).insert(employee);
+        // return MybatisUtils.getSqlSession().insert("cn.zzs.mybatis.mapper.EmployeeMapper.insert", employee);
     }
 }
 ```

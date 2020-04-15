@@ -1,11 +1,17 @@
 package cn.zzs.mybatis.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.ibatis.builder.xml.XMLConfigBuilder;
+import org.apache.ibatis.exceptions.ExceptionFactory;
+import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionManager;
 import org.junit.After;
 import org.junit.Before;
@@ -110,6 +116,7 @@ public class EmployeeRepositoryTest {
             System.out.println(x);
             System.out.println(x.getDepartment());
         });
+
     }
 
 

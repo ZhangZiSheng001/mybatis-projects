@@ -9,7 +9,6 @@
         <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
         <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
     </resultMap>
-
     <!-- 查询条件 -->
     <sql id="Condition_Where_Clause">
         <if test="con.parentId != null and con.parentId != ''">
