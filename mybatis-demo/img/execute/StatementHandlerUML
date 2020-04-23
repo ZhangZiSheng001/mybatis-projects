@@ -1,0 +1,42 @@
+@startuml
+scale 1.2
+
+interface StatementHandler
+abstract class BaseStatementHandler implements StatementHandler
+class CallableStatementHandler extends BaseStatementHandler
+class PreparedStatementHandler extends BaseStatementHandler
+class SimpleStatementHandler extends BaseStatementHandler
+ResultSetHandler -right-o BaseStatementHandler
+ParameterHandler -left-o BaseStatementHandler
+
+interface ParameterHandler
+note top:用于设置参数
+class DefaultParameterHandler
+DefaultParameterHandler ..|> ParameterHandler
+
+interface ResultSetHandler
+note bottom
+用于映射结果集
+实际用的是ResultHandler
+end note
+class DefaultResultSetHandler
+DefaultResultSetHandler ..|> ResultSetHandler
+ResultHandler -right-o DefaultResultSetHandler
+
+interface ResultHandler<T>
+note right:用于映射结果集
+class DefaultMapResultHandler<K, V>
+DefaultMapResultHandler ..|> ResultHandler
+class DefaultResultHandler implements ResultHandler
+
+interface Executor
+Executor ..> StatementHandler
+note on link
+执行器依赖StatementHandler来:
+1. 设置参数
+2. 执行语句
+3. 映射结果集
+end note
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

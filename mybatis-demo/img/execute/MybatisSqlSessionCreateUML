@@ -1,0 +1,44 @@
+@startuml
+scale 1.2
+
+interface SqlSessionFactory
+class DefaultSqlSessionFactory implements SqlSessionFactory
+class Configuration
+Configuration -right-o DefaultSqlSessionFactory
+DefaultSqlSessionFactory .. DefaultSqlSession
+
+class Environment
+Environment -right-o Configuration
+interface DataSource
+DataSource --o Environment
+interface TransactionFactory
+TransactionFactory -right-o Environment
+class JdbcTransactionFactory
+JdbcTransactionFactory .up.|> TransactionFactory
+class ManagedTransactionFactory 
+ManagedTransactionFactory .up.|> TransactionFactory
+
+JdbcTransactionFactory .. JdbcTransaction
+ManagedTransactionFactory .. ManagedTransaction
+
+class DefaultSqlSession
+interface SqlSession
+DefaultSqlSession .up.|> SqlSession
+interface Executor
+abstract class BaseExecutor implements Executor
+class BatchExecutor extends BaseExecutor
+class ReuseExecutor extends BaseExecutor
+class SimpleExecutor extends BaseExecutor
+Executor --o BaseExecutor
+Configuration --o BaseExecutor
+Executor -down-o DefaultSqlSession
+
+interface Transaction
+class JdbcTransaction
+JdbcTransaction ..|> Transaction
+class ManagedTransaction
+ManagedTransaction ..|> Transaction
+Transaction -right-o BaseExecutor
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

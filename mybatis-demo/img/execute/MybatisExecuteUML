@@ -1,0 +1,56 @@
+@startuml
+scale 1.2
+interface EmployeeMapper
+class EmployeeMapperProxy
+EmployeeMapperProxy .left.|> EmployeeMapper
+SqlSession -right-o EmployeeMapperProxy
+
+interface SqlSession
+class DefaultSqlSession
+DefaultSqlSession .up.|> SqlSession
+
+interface Executor
+abstract class BaseExecutor implements Executor
+class BatchExecutor extends BaseExecutor
+class ReuseExecutor extends BaseExecutor
+class SimpleExecutor extends BaseExecutor
+Executor -down-o DefaultSqlSession
+Executor --o BaseExecutor
+
+interface Transaction
+class JdbcTransaction
+JdbcTransaction ..|> Transaction
+class ManagedTransaction
+ManagedTransaction ..|> Transaction
+Transaction -left-o BaseExecutor
+
+interface StatementHandler 
+BatchExecutor ..> StatementHandler
+ReuseExecutor ..> StatementHandler
+SimpleExecutor ..> StatementHandler
+note on link
+执行器依赖StatementHandler来:
+1. 设置参数
+2. 执行语句
+3. 映射结果集
+end note
+interface Executor
+
+interface StatementHandler
+abstract class BaseStatementHandler implements StatementHandler
+class CallableStatementHandler extends BaseStatementHandler
+class PreparedStatementHandler extends BaseStatementHandler
+class SimpleStatementHandler extends BaseStatementHandler
+ResultSetHandler -right-o BaseStatementHandler
+ParameterHandler -left-o BaseStatementHandler
+
+interface ParameterHandler
+class DefaultParameterHandler
+DefaultParameterHandler ..|> ParameterHandler
+
+interface ResultSetHandler
+class DefaultResultSetHandler
+DefaultResultSetHandler ..|> ResultSetHandler
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

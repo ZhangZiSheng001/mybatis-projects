@@ -1,0 +1,68 @@
+@startuml
+scale 1.2
+
+
+class MapperProxy<T> implements InvocationHandler {
+    - SqlSession sqlSession
+    - Class<T> mapperInterface
+    <font color="green" size="12">// 存放Mapper方法=Mapper方法调用对象</font>
+    - Map<Method, MapperMethodInvoker> methodCache
+}
+
+interface MapperMethodInvoker
+MapperMethodInvoker -right-o MapperProxy
+
+interface MapperMethodInvoker
+class PlainMethodInvoker
+note top:接口普通方法的方法调用
+PlainMethodInvoker .left.|> MapperMethodInvoker
+class DefaultMethodInvoker
+note left
+接口default方法的方法调用
+这个不管
+end note
+DefaultMethodInvoker .up.|> MapperMethodInvoker
+
+class MapperMethod
+MapperMethod -down-o PlainMethodInvoker
+
+class SqlCommand {
+    <font color="green" size="12">// Mapper方法的id</font>
+    - String name
+    <font color="green" size="12">// Mapper方法的类型，例如select、update</font>
+    - SqlCommandType type
+}
+SqlCommand -down-o MapperMethod
+
+class MethodSignature {
+    <font color="green" size="12">// Mapper方法的返回类型</font>
+    - Class<?> returnType
+    <font color="green" size="12">// 是否返回数组或集合</font>
+    - boolean returnsMany
+    <font color="green" size="12">// 是否返回Map</font>
+    - boolean returnsMap
+    <font color="green" size="12">// 是否返回void</font>
+    - boolean returnsVoid
+    <font color="green" size="12">// 是否返回Cursor</font>
+    - boolean returnsCursor
+    <font color="green" size="12">// 是否返回Optional</font>
+    - boolean returnsOptional
+    <font color="green" size="12">// 当返回Map时MapKey注解的value</font>
+    - String mapKey
+    <font color="green" size="12">// ResultHandler的参数索引</font>
+    - Integer resultHandlerIndex
+    <font color="green" size="12">// RowBounds（一般用于分页功能）的参数索引</font>
+    - Integer rowBoundsIndex
+    <font color="green" size="12">// 入参解析器</font>
+    - ParamNameResolver paramNameResolver
+}
+MethodSignature -down-o MapperMethod
+
+class ParamNameResolver {
+    - SortedMap<Integer, String> names
+    - boolean hasParamAnnotation
+}
+ParamNameResolver -down-o MethodSignature
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml

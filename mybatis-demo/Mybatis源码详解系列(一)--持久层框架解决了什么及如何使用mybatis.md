@@ -1213,7 +1213,7 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
 
 ### 修改 mapper.xml 文件
 
-这里使用的是左关联查询，`resultMap`中的调用了 DepartmentMapper 的`resultMap`。
+这里使用的是左关联查询，`resultMap`中的调用了`DepartmentMapper`的`resultMap`。
 
 ```xml
     <!-- 基础映射表：嵌套结果映射-->
@@ -1284,6 +1284,8 @@ Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，
         </if>
     </select>
 ```
+
+注意，这种用法存在一个问题：**嵌套结果里如果是`collection`的话，分页总数会存在问题，所以，嵌套结果映射的方式仅针对association使用**。
 
 ### 编写测试方法
 

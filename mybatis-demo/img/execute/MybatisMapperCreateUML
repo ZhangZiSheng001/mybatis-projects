@@ -1,0 +1,31 @@
+@startuml
+scale 1.2
+
+class DefaultSqlSession implements SqlSession
+
+class Configuration
+Configuration -down-o DefaultSqlSession
+
+class MapperRegistry {
+    <font color="green" size="12">// 存放Mapper类型=Mapper代理类工厂</font>
+    - Map<Class<?>, MapperProxyFactory<?>> knownMappers
+}
+MapperRegistry o-down-o Configuration
+
+class MapperProxyFactory<T> {
+    - Class<T> mapperInterface
+    <font color="green" size="12">// 存放Mapper方法=Mapper方法调用对象</font>
+    - Map<Method, MapperMethodInvoker> methodCache
+}
+MapperProxyFactory -down-o MapperRegistry
+
+class MapperProxy<T> implements InvocationHandler {
+    - SqlSession sqlSession
+    - Class<T> mapperInterface
+    <font color="green" size="12">// 存放Mapper方法=Mapper方法调用对象</font>
+    - Map<Method, MapperMethodInvoker> methodCache
+}
+MapperProxy .left. MapperProxyFactory
+
+right footer <font size="15" color="red">ZhangZiSheng001</font>
+@enduml
