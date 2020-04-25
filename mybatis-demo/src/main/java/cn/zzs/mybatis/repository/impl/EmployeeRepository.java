@@ -2,6 +2,9 @@ package cn.zzs.mybatis.repository.impl;
 
 import java.util.List;
 
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
+
 import cn.zzs.mybatis.condition.EmployeeCondition;
 import cn.zzs.mybatis.entity.Employee;
 import cn.zzs.mybatis.mapper.EmployeeMapper;
@@ -19,6 +22,16 @@ public class EmployeeRepository implements IEmployeeRepository {
     public Employee get(String id) {
         return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
         //return MybatisUtils.getSqlSession().selectOne("cn.zzs.mybatis.mapper.EmployeeMapper.selectByPrimaryKey", id);
+    }
+    
+    @Override
+    public void list(EmployeeCondition con, ResultHandler<Employee> resultHandler) {
+        MybatisUtils.getMapper(EmployeeMapper.class).selectByCondition(con, resultHandler);
+    }
+    
+    @Override
+    public List<Employee> list(EmployeeCondition con, RowBounds rowBounds) {
+        return  MybatisUtils.getMapper(EmployeeMapper.class).selectByCondition(con, rowBounds);
     }
 
     @Override

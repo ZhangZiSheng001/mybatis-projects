@@ -2,6 +2,9 @@ package cn.zzs.mybatis.repository;
 
 import java.util.List;
 
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
+
 import cn.zzs.mybatis.condition.EmployeeCondition;
 import cn.zzs.mybatis.entity.Employee;
 
@@ -21,7 +24,10 @@ public interface IEmployeeRepository {
      * @return: Employee
      */
     Employee get(String id);
-
+    
+    void list(EmployeeCondition con, ResultHandler<Employee> resultHandler);
+    List<Employee> list(EmployeeCondition con, RowBounds rowBounds);
+    
     /**
      * 
      * <p>根据条件查询</p>

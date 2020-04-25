@@ -12,7 +12,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         <setting name="aggressiveLazyLoading" value="false" />
         <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode" />
         <setting name="mapUnderscoreToCamelCase" value="true" />
-        <setting name="autoMappingUnknownColumnBehavior" value="WARNING" />
+        <!-- <setting name="autoMappingUnknownColumnBehavior" value="WARNING" /> -->
     </settings>
 
     <!-- 配置别名 -->

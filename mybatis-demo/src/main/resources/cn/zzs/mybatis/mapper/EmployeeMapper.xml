@@ -8,6 +8,7 @@
         <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
         <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
         <association property="department" 
+            fetchType="lazy"
             column="department_id"
             select="cn.zzs.mybatis.mapper.DepartmentMapper.selectByPrimaryKey" />
         <collection property="roles" 
@@ -136,6 +137,7 @@
         d.gmt_modified as d_gmt_modified 
         </if>
     </sql>
+    
     
     <!-- 根据条件查询 ：嵌套select查询映射 -->
     <select id="selectByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap">

@@ -1,17 +1,12 @@
 package cn.zzs.mybatis.repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.ibatis.builder.xml.XMLConfigBuilder;
-import org.apache.ibatis.exceptions.ExceptionFactory;
-import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSessionManager;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +19,10 @@ import cn.zzs.mybatis.condition.EmployeeCondition;
 import cn.zzs.mybatis.entity.Employee;
 import cn.zzs.mybatis.mapper.EmployeeMapper;
 import cn.zzs.mybatis.repository.impl.EmployeeRepository;
+import cn.zzs.mybatis.util.ConvertUtils;
 import cn.zzs.mybatis.util.MybatisUtils;
+import cn.zzs.mybatis.vo.EmployeeVO;
+import cn.zzs.mybatis.vo.MyResultHandler;
 
 /**
  * <p>测试EmployeeRepository</p>
@@ -58,6 +56,40 @@ public class EmployeeRepositoryTest {
         // 打印
         System.out.println(employee);
     }
+    
+    /**
+     * <p>测试ResultHandler</p>
+     */
+    @Test
+    public void testResultHandler() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setAddress("北京");
+
+        // 执行，获取员工对象
+        MyResultHandler<Employee, EmployeeVO> resultHandler = new MyResultHandler<>(new EmployeeVO());
+        employeeRepository.list(con, resultHandler);
+
+        // 打印
+        resultHandler.getList().forEach(System.out::println);
+    }
+    
+    /**
+     * <p>测试RowBounds</p>
+     */
+    @Test
+    public void testRowBounds() {
+        EmployeeCondition con = new EmployeeCondition();
+        // 设置条件
+        con.setAddress("北京");
+
+        // 执行，获取员工对象
+        RowBounds rowBounds = new RowBounds(1, 4);
+        List<Employee> list = employeeRepository.list(con, rowBounds);
+
+        // 打印
+        list.forEach(System.out::println);
+    }
 
     /**
      * <p>测试高级条件查询--嵌套select查询</p>
@@ -66,26 +98,22 @@ public class EmployeeRepositoryTest {
     public void testList() {
         EmployeeCondition con = new EmployeeCondition();
         // 设置条件
-        con.setGender(false);
+//        con.setGender(false);
         con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
-        con.setDepartmentNo("202003230002");
+//        con.setDeleted(false);
+//        con.setPhone("18826****41");
+//        con.setDistinct(true);
+//        con.setDepartmentNo("202003230002");
 
         // 设置排序规则
-        con.setOrderByClause("e.name desc");// 注意为数据库字段
+//        con.setOrderByClause("e.name desc");// 注意为数据库字段
 
 
         // 执行
-        List<Employee> list = employeeRepository.list(con);
-
+        List<EmployeeVO> list = ConvertUtils.convertList(employeeRepository.list(con), new EmployeeVO());
+        
         // 遍历结果
-        list.forEach(x -> {
-            System.out.println(x);
-            System.out.println(x.getDepartment());
-            System.out.println(x.getRoles());
-        });
+        list.forEach(System.out::println);
     }
     
     
@@ -204,9 +232,9 @@ public class EmployeeRepositoryTest {
         System.out.println("================");
         
         // 打印员工
-        System.out.println(employee.toString());
+        System.out.println(employee);
         // 打印部门
-        System.out.println(employee.getDepartment());
+        // System.out.println(employee.getDepartment());
         // 打印角色
         // employee.getRoles().forEach(System.out::println);
         // 打印菜单
@@ -221,17 +249,15 @@ public class EmployeeRepositoryTest {
     public void testlistPage() {
         EmployeeCondition con = new EmployeeCondition();
         // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
+        con.setName("zzs001");
+        con.setJoinDepartment(true);
+        
 
         // 设置分页信息
         PageHelper.startPage(0, 3);
 
         // 执行查询
-        List<Employee> list = employeeRepository.list(con);
+        List<Employee> list = employeeRepository.list2(con);
         // 遍历结果
         list.forEach(System.out::println);
 
@@ -239,7 +265,7 @@ public class EmployeeRepositoryTest {
         PageInfo<Employee> pageInfo = new PageInfo<>(list);
 
         // 取分页模型的数据
-        System.out.println("查询总数" + pageInfo.getTotal());
+        System.out.println(Long.valueOf(pageInfo.getTotal()).intValue() == list.size());
     }
     
     /**
