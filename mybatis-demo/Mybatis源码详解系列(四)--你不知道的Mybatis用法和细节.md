@@ -1,8 +1,8 @@
 # 简介
 
-这是 [Mybatis](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html) 系列博客的第四篇，我本来打算详细讲解 mybatis 的配置、映射器、动态 sql 等，但[Mybatis官方中文文档](https://Mybatis.org/Mybatis-3/zh/index.html/)对这部分内容的介绍已经足够详细了，有需要的可以直接参考。所以，我将扩展一些其他特性或使用细节，掌握它们可以更优雅、高效地使用 mybatis。
+这是 [Mybatis]( https://www.cnblogs.com/ZhangZiSheng001/category/1685176.html ) 系列博客的第四篇，我本来打算详细讲解 mybatis 的配置、映射器、动态 sql 等，但[Mybatis官方中文文档](https://Mybatis.org/Mybatis-3/zh/index.html/)对这部分内容的介绍已经足够详细了，有需要的可以直接参考。所以，我将扩展一些其他特性或使用细节，掌握它们可以更优雅、高效地使用 mybatis。
 
-这里补充一点，本文的所有测试例子都是基于本系列 [Mybatis](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html) 第一篇文章的项目，其他相关博客如下：
+这里补充一点，本文的所有测试例子都是基于本系列 [Mybatis]( https://www.cnblogs.com/ZhangZiSheng001/category/1685176.html ) 第一篇文章的项目，其他相关博客如下：
 
  [Mybatis源码详解系列(一)--持久层框架解决了什么及如何使用Mybatis](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html) 
 
@@ -167,7 +167,7 @@ WHERE 1 = 1
 LIMIT ?, ?
 ```
 
-相比使用插件，这种方式是否更加简单呢？
+相比使用插件，这种方式是否更加简单呢？但是，上一篇博客的源码分析中，我们发现**Mybatis 使用 `RowBounds`进行分页，发送 sql 时不会植入分页参数，而是将结果查出，然后在内存中进行分页，所以，这种方式不建议单独使用**。MybatisPlus 使用`RowBounds`参数时，配合了插件来解决这个问题。后面将 MybatisPlus 时再做补充吧。
 
 # 延迟加载
 

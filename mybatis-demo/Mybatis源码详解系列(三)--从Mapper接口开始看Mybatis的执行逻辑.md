@@ -356,7 +356,7 @@ public Object execute(SqlSession sqlSession, Object[] args) {
 
 增删改的我们不继续看了，至于查的，只看`method.returnsMany()`的情况。进入到`MapperMethod.executeForMany(SqlSession, Object[])`。通过这个方法可以知道，当返回多个对象时，Mapper 中我们可以使用`List`接收，也可以使用数组或者`Collection`的其他子类来接收，但是处于性能考虑，如果不是必须，建议还是使用`List`比较好。
 
-**将`RowBounds`作为 Mapper 方法的入参，可以支持自动分页功能，MybatisPlus就是利用这个类来实现分页的。**
+ **将`RowBounds`作为 Mapper 方法的入参，可以支持自动分页功能，但是，这种方式存在一个很大缺点，就是 Mybatis 会将所有结果查放入本地内存再进行分页，而不是查的时候嵌入分页参数。所以，这个分页入参建议不要单独使用，最好配合插件一起使用。** 
 
 ```java
 private <E> Object executeForMany(SqlSession sqlSession, Object[] args) {
@@ -751,7 +751,7 @@ public void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, ResultHan
 }
 ```
 
-这里我就不搞那么复杂了，就只看非嵌套结果的情况。进入`DefaultResultSetHandler.handleRowValuesForSimpleResultMap(ResultSetWrapper, ResultMap, ResultHandler<?>, RowBounds, ResultMapping)`。
+这里我就不搞那么复杂了，就只看非嵌套结果的情况。进入`DefaultResultSetHandler.handleRowValuesForSimpleResultMap(ResultSetWrapper, ResultMap, ResultHandler<?>, RowBounds, ResultMapping)`。 在这个方法中可以看到，使用`RowBounds`进行分页时，Mybatis 会查出所有数据到内存中，然后再分页，所以，不建议单独使用。 
 
 ```java
 private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping)
