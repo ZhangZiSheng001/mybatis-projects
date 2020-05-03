@@ -7,6 +7,7 @@
 	<properties resource="jdbc.properties"></properties>
     
 	<!-- context 一般是一个数据源一个context -->
+    <!-- MyBatis3Simple、MyBatis3 或 MyBatis3DynamicSql  -->
 	<context id="default" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <!-- 插件 -->
         <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin">
@@ -16,6 +17,7 @@
             <property name="useToStringFromRoot" value="true"/>
         </plugin>
         <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin"></plugin>
+        <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin"></plugin>
     
         <!-- 注释 -->
         <commentGenerator type="cn.zzs.mybatis.generator.MyCommentGenerator">
@@ -24,14 +26,14 @@
         </commentGenerator>
         
 		<!--jdbc的数据库连接 -->
-		<!-- <jdbcConnection 
+		<jdbcConnection 
 			driverClass="${jdbc.driver}"
 			connectionURL="${jdbc.url}" 
 			userId="${jdbc.username}"
 			password="${jdbc.password}">
-		</jdbcConnection> -->
-        <connectionFactory type="cn.zzs.mybatis.factory.HikariConnectionFactory">
-        </connectionFactory>
+		</jdbcConnection>
+        <!-- <connectionFactory type="cn.zzs.mybatis.factory.HikariConnectionFactory">
+        </connectionFactory> -->
         
         <!-- 类型解析器 -->
         <javaTypeResolver>

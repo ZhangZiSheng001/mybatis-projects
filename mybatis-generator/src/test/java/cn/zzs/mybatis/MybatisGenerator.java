@@ -20,6 +20,7 @@ public class MybatisGenerator {
         
         // LogFactory.forceSlf4jLogging();
         System.setProperty("user.name", "zzs");
+        
         // 这个集合记录着生成、合并、覆盖文件的信息
         List<String> warnings = new ArrayList<String>();
         InputStream in = MybatisGenerator.class.getClassLoader().getResourceAsStream("generatorConfig.xml");
@@ -33,7 +34,7 @@ public class MybatisGenerator {
         
         // 生成文件
         myBatisGenerator.generate(null);
-        // 打印信息
+        // 打印提醒信息
         warnings.forEach(System.err::println);
     }
 
