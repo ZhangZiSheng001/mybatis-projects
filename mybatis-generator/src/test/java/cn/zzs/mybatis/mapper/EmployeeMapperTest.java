@@ -1,11 +1,9 @@
 package cn.zzs.mybatis.mapper;
 
-import static org.junit.Assert.fail;
-import static org.mybatis.dynamic.sql.SqlBuilder.*;
 import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.*;
+import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mybatis.dynamic.sql.select.join.EqualTo;
-import org.mybatis.dynamic.sql.where.condition.IsEqualTo;
-import org.mybatis.dynamic.sql.where.condition.IsLikeWhenPresent;
 
 import cn.zzs.mybatis.entity.Employee;
 import cn.zzs.mybatis.util.MybatisUtils;
