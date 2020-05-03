@@ -4,5 +4,15 @@ Mybatis 是一个持久层框架，它对 JDBC 进行了高级封装，使我们
 
 针对 Mybatis 的分析，我会拆分成**使用、配置、源码、生成器**等部分，都放在 [Mybatis]( https://www.cnblogs.com/ZhangZiSheng001/category/1685176.html ) 这个系列里，内容将持续更新：
 
-[Mybatis详解系列(一)--持久层框架解决了什么及如何使用Mybatis
-](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html)
+[Mybatis详解系列(一)--持久层框架解决了什么及如何使用Mybatis](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html)
+
+ [Mybatis源码详解系列(二)--Mybatis如何加载配置及初始化](https://www.cnblogs.com/ZhangZiSheng001/p/12704076.html) 
+
+ [Mybatis源码详解系列(三)--从Mapper接口开始看Mybatis的执行逻辑](https://www.cnblogs.com/ZhangZiSheng001/p/12761376.html) 
+
+ [Mybatis源码详解系列(四)--你不知道的Mybatis用法和细节](https://www.cnblogs.com/ZhangZiSheng001/p/12773971.html) 
+
+ [Mybatis详解系列(五)--Mybatis Generator和全注解风格的MyBatis3DynamicSql](https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html) 
+
+
+
