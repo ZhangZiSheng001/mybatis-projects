@@ -738,14 +738,14 @@ MyBatis3DynamicSql 风格丢弃了 XML 文件，使用全注解形式并搭配�
     }
 ```
 
-我相信，MyBatis3DynamicSql 风格会被更多开发者使用，这里就不长篇大论的讲解如何使用它，因为它的 API 并不难操作。感兴趣的朋友可以移步到项目源码阅读：[测试例子](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis--generator/src/test/java/cn/zzs/mybatis/mapper)
+我相信，MyBatis3DynamicSql 风格会被更多开发者使用，这里就不长篇大论的讲解如何使用它，因为它的 API 并不难操作。感兴趣的朋友可以移步到项目源码阅读：[测试例子](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-generator/src/test/java/cn/zzs/mybatis/mapper)
 
 
 # 参考资料
 
 [MyBatis Generator官方文档](http://mybatis.org/generator/index.html)
 
-> 相关源码请移步：[mybatis--generator](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis--generator)
+> 相关源码请移步：[mybatis--generator](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-generator)
 
 > 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html](https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html)
 

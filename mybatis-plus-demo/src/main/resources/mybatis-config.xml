@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration> 
+    <!-- 全局配置 -->
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true" />
+        <setting name="aggressiveLazyLoading" value="false" />
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode" />
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <!-- <setting name="autoMappingUnknownColumnBehavior" value="WARNING" /> -->
+    </settings>
+
+    <!-- 配置别名 -->
+    <typeAliases>
+        <package name="cn.zzs.mybatis.entity" />
+    </typeAliases>
+
+    <!-- 配置插件 -->
+    <plugins>
+        <plugin interceptor="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor"></plugin>
+    </plugins>
+
+    <!-- 配置环境：可以有多个 -->
+    <environments default="development">
+        <environment id="development">
+            <!-- 使用jdbc事务管理 -->
+            <transactionManager type="JDBC" />
+            <!-- 数据源 -->
+            <dataSource type="cn.zzs.mybatis.factory.HikariDataSourceFactory" />
+        </environment>
+    </environments>
+
+    <!-- 映射器 -->
+    <mappers>
+        <package name="cn.zzs.mybatis.mapper" />
+    </mappers>
+
+</configuration>
