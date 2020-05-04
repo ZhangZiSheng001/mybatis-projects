@@ -1,6 +1,6 @@
 # 简介
 
-Mybatis Generator (MBG) 是 Mybatis 官方提供的代码生成器，通过它可以在项目中自动生成简单的 CRUD 方法，甚至**“无所不能”**的高级条件查询（**<font color='red'>MyBatis3DynamicSql</font>** ），让我们避免了进行数据库交互时需要手动创建对象和配置 Mybatis 映射等基础工作。
+Mybatis Generator (MBG) 是 Mybatis 官方提供的代码生成器，通过它可以在项目中自动生成简单的 CRUD 方法，甚至**“无所不能”**的高级条件查询（**<font color='red'>MyBatis3DynamicSql</font>**，有了它根本不需要 Mybatis Plus），让我们避免了进行数据库交互时需要手动创建对象和配置 Mybatis 映射等基础工作。
 
 另外，MBG 有很好地扩展性，它提供了大量的接口和插件用来给我们自定义生成的代码应该是什么样子，例如我们可以自定义注释、代码格式化、添加 toString 方法等。本文将讲解如何使用这些接口。
 
@@ -706,9 +706,12 @@ public class HikariConnectionFactory implements ConnectionFactory {
 
 在研究 MBG 之前，其实我并没有听说过 MyBatis3DynamicSql 风格，因为项目里一直使用的是 Mybatis3Simple，网上也很少人提起。
 
-Mybatis3Simple 可以生成简单的 CRUD，但是针对高级条件查询就无能为力了，实际项目中，我们有时必须手动地去编写高级查询的代码，当然，我们也可以自定义代码生成器来生成，但是这也只能针对单表，涉及到多表时，就不尽人意了。
+Mybatis3Simple 可以生成简单的 CRUD，但是针对高级条件查询就无能为力了，实际项目中，我们有时必须手动地去编写高级查询的代码，通常情况下，我们用不同的方案来处理：
 
-MyBatis3DynamicSql 风格丢弃了 XML 文件，使用全注解形式并搭配几个条件辅助类，刚接触时，我还是比较抗拒，因为前面**MyBatis3 中也尝试过全注解和条件类，当遇到某些复杂场景时，还是需要 XML，而且生成器提供的条件类会渗透到服务层**。
+1. 自定义代码生成器来生成高级条件查询的代码。针对复杂场景时，我们还是得手动改造。
+2. 使用 Mybatis Plus 的条件构造器。在 MP 3.0 之前，条件构造器会造成 sql 和代码的严重耦合。
+
+现在，Mybatis 官方为我们提供了新的方案，那就是 MyBatis3DynamicSql。MyBatis3DynamicSql 风格丢弃了 XML 文件，使用全注解形式并搭配几个条件辅助类，刚接触时，我还是比较抗拒，因为前面**MyBatis3 中也尝试过全注解和条件类，当遇到某些复杂场景时，还是需要 XML，而且生成器提供的条件类会渗透到服务层**。
 
 直到开始使用 MyBatis3DynamicSql，我才发现它的强大。它可以做到：
 
