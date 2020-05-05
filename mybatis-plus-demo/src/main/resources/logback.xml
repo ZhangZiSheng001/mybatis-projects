@@ -24,11 +24,11 @@
         </encoder>
     </appender>
 
-    <logger name="cn.zzs.mybatis.mapper" additivity="false" level="debug">
+    <logger name="cn.zzs" additivity="false" level="debug">
         <appender-ref ref="MAPPER_SQL" />
     </logger>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
