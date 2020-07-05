@@ -227,7 +227,7 @@ Mybatis 作为一款优秀的持久层框架，除了解决上面的两个基本
 
 # 如何使用 Mybatis
 
-本项目会模拟实际开发的各种场景来研究 Mybatis 的使用方法。在我看来，在项目创建时，repository/DAO 层只要有以下几个方法，已经可以满足大部分使用需求。**在 repository/DAO 层定义大量的`*By*`方法是非常低级和不负责任的**，然而，我接触过许多人都是这么搞的。
+本项目会模拟实际开发的各种场景来研究 Mybatis 的使用方法。在我看来，DAO 层只要有以下几个方法，已经可以满足大部分使用需求。**在 DAO 层定义大量的`*By*`方法是非常低级和不负责任的**，然而，我接触过许多人都是这么搞的。
 
 ```java
 public interface IEmployeeRepository {
@@ -267,7 +267,7 @@ public interface IEmployeeRepository {
 
 <img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111548084-67646466.png" alt="Mybatis_demo_package" style="zoom:80%;" />
 
-在进行下面工作之前，我们需要先创建好实体和 mapper 文件（如图圈红部分），实际项目中，我们可以使用 [Mybatis-generator]() 或者自定义的代码生成器生成，mapper 中将包含基本的 CRUD 代码。
+在进行下面工作之前，我们需要先创建好实体和 mapper 文件（如图圈红部分），实际项目中，我们可以使用 [Mybatis-generator]( https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html ) 或者自定义的代码生成器生成，mapper 中将包含基本的 CRUD 代码。
 
 ### 配置 configuration 文件
 

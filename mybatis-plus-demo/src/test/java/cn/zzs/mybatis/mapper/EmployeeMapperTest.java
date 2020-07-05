@@ -160,7 +160,7 @@ public class EmployeeMapperTest {
         List<Employee> list = baseMapper.selectList(
                     Wrappers.<Employee>lambdaQuery()
                     .select(Employee::getId, Employee::getName, Employee::getAddress)
-                    .eq(Employee::getName, "zzs005")
+                    .and(c -> c.eq(Employee::getName, "zzs005").or(i -> i.eq(Employee::getName, "zzs001")))
                     .eq(Employee::getDeleted, 0)
                     .eq(Employee::getStatus, 1)
                 );

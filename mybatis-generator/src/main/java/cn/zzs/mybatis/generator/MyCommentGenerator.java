@@ -150,7 +150,7 @@ public class MyCommentGenerator implements CommentGenerator {
         if (addRemarkComments && StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator")); //$NON-NLS-1$
             for (String remarkLine : remarkLines) {
-                innerClass.addJavaDocLine(" * <p>" + remarkLine + "</p>"); //$NON-NLS-1$
+                innerClass.addJavaDocLine(" * <p>" + remarkLine); //$NON-NLS-1$
             }
         }
         innerClass.addJavaDocLine(" * @author " + userName);
@@ -176,7 +176,7 @@ public class MyCommentGenerator implements CommentGenerator {
         if (addRemarkComments && StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator")); //$NON-NLS-1$
             for (String remarkLine : remarkLines) {
-                topLevelClass.addJavaDocLine(" * <p>" + remarkLine + "</p>"); //$NON-NLS-1$
+                topLevelClass.addJavaDocLine(" * " + remarkLine); //$NON-NLS-1$
             }
         }
         topLevelClass.addJavaDocLine(" * @author " + userName);
@@ -197,7 +197,7 @@ public class MyCommentGenerator implements CommentGenerator {
         if (addRemarkComments && StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator")); //$NON-NLS-1$
             for (String remarkLine : remarkLines) {
-                innerEnum.addJavaDocLine(" * <p>" + remarkLine + "</p>"); //$NON-NLS-1$
+                innerEnum.addJavaDocLine(" * " + remarkLine); //$NON-NLS-1$
             }
         }
         innerEnum.addJavaDocLine(" * @author " + userName);
@@ -220,7 +220,7 @@ public class MyCommentGenerator implements CommentGenerator {
         if (addRemarkComments && StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator")); //$NON-NLS-1$
             for (String remarkLine : remarkLines) {
-                field.addJavaDocLine(" * <p>" + remarkLine + "</p>"); //$NON-NLS-1$
+                field.addJavaDocLine(" * " + remarkLine); //$NON-NLS-1$
             }
         }
 
