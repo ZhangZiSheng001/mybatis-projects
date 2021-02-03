@@ -17,6 +17,12 @@
             <artifactId>mybatis</artifactId>
             <version>3.5.4</version>
         </dependency>
+        <!-- 分页插件 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.1.10</version>
+        </dependency>
         <!-- dynamic-sql -->
         <dependency>
             <groupId>org.mybatis.dynamic-sql</groupId>

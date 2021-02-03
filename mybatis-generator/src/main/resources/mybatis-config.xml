@@ -21,6 +21,10 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     </typeAliases>
 
     <!-- 配置插件 -->
+    <plugins>
+        <!-- 分页插件 -->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+    </plugins>
 
     <!-- 配置环境：可以有多个 -->
     <environments default="development">

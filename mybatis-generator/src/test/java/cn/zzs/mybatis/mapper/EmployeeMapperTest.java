@@ -14,6 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mybatis.dynamic.sql.select.join.EqualTo;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
 import cn.zzs.mybatis.entity.Employee;
 import cn.zzs.mybatis.util.MybatisUtils;
 
@@ -121,7 +124,6 @@ public class EmployeeMapperTest {
      */
     @Test
     public void testSelect() {
-        // 注意，当查询结果多于1时会报错
         List<Employee> lsit = baseMapper.select(c ->
                                         c.leftJoin(DepartmentDynamicSqlSupport.department)
                                         .on(departmentId, new EqualTo(DepartmentDynamicSqlSupport.id))
@@ -134,6 +136,27 @@ public class EmployeeMapperTest {
                                         .offset(1)
                                       );
         lsit.forEach(System.err::println);
+    }
+    
+    
+    @Test
+    public void testSelectPage() {
+        // 设置分页信息
+        PageHelper.startPage(2, 3);
+        List<Employee> list = baseMapper.select(c ->
+                                        c.leftJoin(DepartmentDynamicSqlSupport.department)
+                                        .on(departmentId, new EqualTo(DepartmentDynamicSqlSupport.id))
+                                        .where(name, isLikeWhenPresent("zzs%"), or(name, isLikeWhenPresent("zzf%")))
+                                        .and(status, isEqualTo((byte)1))
+                                        .and(address, isIn("北京", "广东"))
+                                        .and(DepartmentDynamicSqlSupport.name, isEqualToWhenPresent("质控部"))
+                                        .orderBy(gmtCreate.descending())
+                                      );
+        // 封装分页模型
+        PageInfo<Employee> pageInfo = new PageInfo<>(list);
+
+        // 取分页模型的数据
+        System.err.println("查询总数" + pageInfo.getTotal());
     }
 
 
