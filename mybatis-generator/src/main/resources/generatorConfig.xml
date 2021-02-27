@@ -18,7 +18,7 @@
         </plugin>
         <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin"></plugin>
         <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin"></plugin>
-    
+        <plugin type="cn.zzs.mybatis.plugin.RenameFilePlugin"></plugin>
         <!-- 注释 -->
         <commentGenerator type="cn.zzs.mybatis.generator.MyCommentGenerator">
             <property name="addRemarkComments" value="true"/>
@@ -65,5 +65,6 @@
         <table tableName="demo_%" >
             <domainObjectRenamingRule searchString="^Demo" replaceString=""/>
         </table>
+
 	</context>
 </generatorConfiguration>

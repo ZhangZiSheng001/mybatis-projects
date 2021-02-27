@@ -666,7 +666,9 @@ public class HikariConnectionFactory implements ConnectionFactory {
 
 `<plugin>`节点用于定义和配置插件。这个节点只有一个 type 属性，用于指定使用哪个插件，并通过子节点 property 来为这个插件设置参数。
 
-如果自定义的话需要实现`org.mybatis.generator.api.Plugin`接口，并提供无参构造。MBG 为我们提供了许多好用的插件，如下：
+### 官方提供的插件
+
+MBG 为我们提供了许多好用的插件，如下：
 
 | 插件                                                      | 描述                                                         |
 | --------------------------------------------------------- | ------------------------------------------------------------ |
@@ -699,6 +701,43 @@ public class HikariConnectionFactory implements ConnectionFactory {
 ```
 
 运行 Java 程序，可以看到实体类中生成类 toString 、hashCode 和 equals 方法。
+
+### 自定义插件
+
+如果自定义的话，需要实现`org.mybatis.generator.api.Plugin`接口，并提供无参构造，当然，这里推荐继承`org.mybatis.generator.api.PluginAdapter`来避免重写太多方法。下面举个例子来讲解自定义插件的使用。
+
+在上面的例子中，**我生成的实体名字是 Menu，如果我想命名为 MenuDomain，而生成的 Mapper 命名为 MenuDAO**。为了实现这种需求，我们可以先定义一个插件，如下：
+
+```java
+public class RenameFilePlugin extends PluginAdapter {
+
+    @Override
+    public boolean validate(List<String> warnings) {
+        return true;
+    }
+
+    @Override
+    public void initialized(IntrospectedTable introspectedTable) {
+        // 更改实体类名称，例如：cn.zzs.mybatis.entity.Menu => cn.zzs.mybatis.entity.MenuDomain
+        String oldType = introspectedTable.getBaseRecordType();
+        introspectedTable.setBaseRecordType(oldType + "Domain");
+        
+        // 更改Mapper名称
+        String mapperType = introspectedTable.getMyBatis3JavaMapperType();
+        introspectedTable.setMyBatis3JavaMapperType(mapperType.replace("Mapper", "DAO"));
+    }
+}
+```
+
+然后将插件配置：
+
+```xml
+<plugin type="cn.zzs.mybatis.plugin.RenameFilePlugin"></plugin>
+```
+
+生成文件如下：
+
+<img src="https://img2020.cnblogs.com/blog/1731892/202102/1731892-20210228005321883-1232686292.png" alt="mybatis_generator_05" style="zoom:80%;" />
 
 以上，基本讲完 MBG 的使用方法，涉及到的内容可以满足实际使用需求。
 
@@ -751,7 +790,3 @@ Mybatis3Simple 可以生成简单的 CRUD，但是针对高级条件查询就无
 > 相关源码请移步：[mybatis--generator](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-generator)
 
 > 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html](https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html)
-
-
-
-
