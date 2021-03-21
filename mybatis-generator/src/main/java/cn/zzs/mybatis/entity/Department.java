@@ -5,46 +5,46 @@ import java.util.Date;
 /**
  * 
  * @author zzs
- * @date 2020-05-03 10:54:09
+ * @date 2021-03-21 14:17:57
  */
 public class Department {
     /**
-     * <p>部门id</p>
+     * 部门id
      */
     private String id;
 
     /**
-     * <p>部门编码</p>
+     * 部门编码
      */
     private String no;
 
     /**
-     * <p>上级部门id</p>
+     * 上级部门id
      */
     private String parentId;
 
     /**
-     * <p>部门名称</p>
+     * 部门名称
      */
     private String name;
 
     /**
-     * <p>部门类型 department部门，group小组</p>
+     * 部门类型 department部门，group小组
      */
     private String type;
 
     /**
-     * <p>记录是否删除</p>
+     * 记录是否删除
      */
     private Boolean deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     private Date gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     private Date gmtModified;
 

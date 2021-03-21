@@ -8,17 +8,17 @@ public final class RoleMenuDynamicSqlSupport {
     public static final RoleMenu roleMenu = new RoleMenu();
 
     /**
-     * <p>主键</p>
+     * 主键
      */
     public static final SqlColumn<String> id = roleMenu.id;
 
     /**
-     * <p>角色id</p>
+     * 角色id
      */
     public static final SqlColumn<String> roleId = roleMenu.roleId;
 
     /**
-     * <p>菜单id</p>
+     * 菜单id
      */
     public static final SqlColumn<String> menuId = roleMenu.menuId;
 

@@ -9,42 +9,42 @@ public final class UserDynamicSqlSupport {
     public static final User user = new User();
 
     /**
-     * <p>用户id</p>
+     * 用户id
      */
     public static final SqlColumn<String> id = user.id;
 
     /**
-     * <p>用户名</p>
+     * 用户名
      */
     public static final SqlColumn<String> name = user.name;
 
     /**
-     * <p>性别</p>
+     * 性别
      */
     public static final SqlColumn<Boolean> gender = user.gender;
 
     /**
-     * <p>用户年龄</p>
+     * 用户年龄
      */
     public static final SqlColumn<Integer> age = user.age;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     public static final SqlColumn<Date> gmtCreate = user.gmtCreate;
 
     /**
-     * <p>记录最近修改时间</p>
+     * 记录最近修改时间
      */
     public static final SqlColumn<Date> gmtModified = user.gmtModified;
 
     /**
-     * <p>是否删除</p>
+     * 是否删除
      */
     public static final SqlColumn<Boolean> deleted = user.deleted;
 
     /**
-     * <p>电话号码</p>
+     * 电话号码
      */
     public static final SqlColumn<String> phone = user.phone;
 

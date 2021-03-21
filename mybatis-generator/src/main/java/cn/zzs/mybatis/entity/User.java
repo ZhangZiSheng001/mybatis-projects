@@ -5,46 +5,46 @@ import java.util.Date;
 /**
  * 
  * @author zzs
- * @date 2020-05-03 10:54:09
+ * @date 2021-03-21 14:17:57
  */
 public class User {
     /**
-     * <p>用户id</p>
+     * 用户id
      */
     private String id;
 
     /**
-     * <p>用户名</p>
+     * 用户名
      */
     private String name;
 
     /**
-     * <p>性别</p>
+     * 性别
      */
     private Boolean gender;
 
     /**
-     * <p>用户年龄</p>
+     * 用户年龄
      */
     private Integer age;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     private Date gmtCreate;
 
     /**
-     * <p>记录最近修改时间</p>
+     * 记录最近修改时间
      */
     private Date gmtModified;
 
     /**
-     * <p>是否删除</p>
+     * 是否删除
      */
     private Boolean deleted;
 
     /**
-     * <p>电话号码</p>
+     * 电话号码
      */
     private String phone;
 

@@ -3,21 +3,21 @@ package cn.zzs.mybatis.entity;
 /**
  * 
  * @author zzs
- * @date 2020-05-03 10:54:09
+ * @date 2021-03-21 14:17:57
  */
 public class RoleMenu {
     /**
-     * <p>主键</p>
+     * 主键
      */
     private String id;
 
     /**
-     * <p>角色id</p>
+     * 角色id
      */
     private String roleId;
 
     /**
-     * <p>菜单id</p>
+     * 菜单id
      */
     private String menuId;
 

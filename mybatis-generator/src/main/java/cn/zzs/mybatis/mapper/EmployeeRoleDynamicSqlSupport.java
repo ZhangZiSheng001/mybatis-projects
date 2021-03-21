@@ -8,17 +8,17 @@ public final class EmployeeRoleDynamicSqlSupport {
     public static final EmployeeRole employeeRole = new EmployeeRole();
 
     /**
-     * <p>主键</p>
+     * 主键
      */
     public static final SqlColumn<String> id = employeeRole.id;
 
     /**
-     * <p>用户id</p>
+     * 用户id
      */
     public static final SqlColumn<String> employeeId = employeeRole.employeeId;
 
     /**
-     * <p>角色id</p>
+     * 角色id
      */
     public static final SqlColumn<String> roleId = employeeRole.roleId;
 

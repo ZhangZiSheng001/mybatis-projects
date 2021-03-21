@@ -9,62 +9,62 @@ public final class EmployeeDynamicSqlSupport {
     public static final Employee employee = new Employee();
 
     /**
-     * <p>员工id</p>
+     * 员工id
      */
     public static final SqlColumn<String> id = employee.id;
 
     /**
-     * <p>员工姓名</p>
+     * 员工姓名
      */
     public static final SqlColumn<String> name = employee.name;
 
     /**
-     * <p>员工性别 0表示女，1表示男</p>
+     * 员工性别 0表示女，1表示男
      */
     public static final SqlColumn<Boolean> gender = employee.gender;
 
     /**
-     * <p>员工工号</p>
+     * 员工工号
      */
     public static final SqlColumn<String> no = employee.no;
 
     /**
-     * <p>员工密码</p>
+     * 员工密码
      */
     public static final SqlColumn<String> password = employee.password;
 
     /**
-     * <p>员工手机电话</p>
+     * 员工手机电话
      */
     public static final SqlColumn<String> phone = employee.phone;
 
     /**
-     * <p>员工住址</p>
+     * 员工住址
      */
     public static final SqlColumn<String> address = employee.address;
 
     /**
-     * <p>员工状态 0为禁用,1为启用,2为冻结</p>
+     * 员工状态 0为禁用,1为启用,2为冻结
      */
     public static final SqlColumn<Byte> status = employee.status;
 
     /**
-     * <p>记录是否已删除</p>
+     * 记录是否已删除
      */
     public static final SqlColumn<Boolean> deleted = employee.deleted;
 
     /**
-     * <p>员工所属部门id</p>
+     * 员工所属部门id
      */
     public static final SqlColumn<String> departmentId = employee.departmentId;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     public static final SqlColumn<Date> gmtCreate = employee.gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     public static final SqlColumn<Date> gmtModified = employee.gmtModified;
 

@@ -9,47 +9,47 @@ public final class MenuDynamicSqlSupport {
     public static final Menu menu = new Menu();
 
     /**
-     * <p>菜单id</p>
+     * 菜单id
      */
     public static final SqlColumn<String> id = menu.id;
 
     /**
-     * <p>父菜单id</p>
+     * 父菜单id
      */
     public static final SqlColumn<String> parentId = menu.parentId;
 
     /**
-     * <p>菜单名</p>
+     * 菜单名
      */
     public static final SqlColumn<String> name = menu.name;
 
     /**
-     * <p>菜单先后</p>
+     * 菜单先后
      */
     public static final SqlColumn<Byte> order = menu.order;
 
     /**
-     * <p>菜单url</p>
+     * 菜单url
      */
     public static final SqlColumn<String> url = menu.url;
 
     /**
-     * <p>是否父菜单</p>
+     * 是否父菜单
      */
     public static final SqlColumn<Boolean> isParent = menu.isParent;
 
     /**
-     * <p>记录是否已删除</p>
+     * 记录是否已删除
      */
     public static final SqlColumn<Boolean> deleted = menu.deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     public static final SqlColumn<Date> gmtCreate = menu.gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     public static final SqlColumn<Date> gmtModified = menu.gmtModified;
 

@@ -9,42 +9,42 @@ public final class DepartmentDynamicSqlSupport {
     public static final Department department = new Department();
 
     /**
-     * <p>部门id</p>
+     * 部门id
      */
     public static final SqlColumn<String> id = department.id;
 
     /**
-     * <p>部门编码</p>
+     * 部门编码
      */
     public static final SqlColumn<String> no = department.no;
 
     /**
-     * <p>上级部门id</p>
+     * 上级部门id
      */
     public static final SqlColumn<String> parentId = department.parentId;
 
     /**
-     * <p>部门名称</p>
+     * 部门名称
      */
     public static final SqlColumn<String> name = department.name;
 
     /**
-     * <p>部门类型 department部门，group小组</p>
+     * 部门类型 department部门，group小组
      */
     public static final SqlColumn<String> type = department.type;
 
     /**
-     * <p>记录是否删除</p>
+     * 记录是否删除
      */
     public static final SqlColumn<Boolean> deleted = department.deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     public static final SqlColumn<Date> gmtCreate = department.gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     public static final SqlColumn<Date> gmtModified = department.gmtModified;
 

@@ -8,7 +8,7 @@
     
 	<!-- context 一般是一个数据源一个context -->
     <!-- MyBatis3Simple、MyBatis3 或 MyBatis3DynamicSql  -->
-	<context id="default" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+	<context id="default" targetRuntime="MyBatis3DynamicSql" defaultModelType="flat">
         <!-- 插件 -->
         <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin">
             <property name="useEqualsHashCodeFromRoot" value="true"/>

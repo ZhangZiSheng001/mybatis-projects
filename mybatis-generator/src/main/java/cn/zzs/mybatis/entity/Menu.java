@@ -5,51 +5,51 @@ import java.util.Date;
 /**
  * 
  * @author zzs
- * @date 2020-05-03 10:54:09
+ * @date 2021-03-21 14:17:57
  */
 public class Menu {
     /**
-     * <p>菜单id</p>
+     * 菜单id
      */
     private String id;
 
     /**
-     * <p>父菜单id</p>
+     * 父菜单id
      */
     private String parentId;
 
     /**
-     * <p>菜单名</p>
+     * 菜单名
      */
     private String name;
 
     /**
-     * <p>菜单先后</p>
+     * 菜单先后
      */
     private Byte order;
 
     /**
-     * <p>菜单url</p>
+     * 菜单url
      */
     private String url;
 
     /**
-     * <p>是否父菜单</p>
+     * 是否父菜单
      */
     private Boolean isParent;
 
     /**
-     * <p>记录是否已删除</p>
+     * 记录是否已删除
      */
     private Boolean deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     private Date gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     private Date gmtModified;
 

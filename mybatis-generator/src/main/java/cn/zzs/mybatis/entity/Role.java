@@ -5,36 +5,36 @@ import java.util.Date;
 /**
  * 
  * @author zzs
- * @date 2020-05-03 10:54:09
+ * @date 2021-03-21 14:17:57
  */
 public class Role {
     /**
-     * <p>角色id</p>
+     * 角色id
      */
     private String id;
 
     /**
-     * <p>角色名称</p>
+     * 角色名称
      */
     private String name;
 
     /**
-     * <p>是否通用</p>
+     * 是否通用
      */
     private Boolean isGeneral;
 
     /**
-     * <p>记录是否已删除</p>
+     * 记录是否已删除
      */
     private Boolean deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     private Date gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     private Date gmtModified;
 

@@ -9,32 +9,32 @@ public final class RoleDynamicSqlSupport {
     public static final Role role = new Role();
 
     /**
-     * <p>角色id</p>
+     * 角色id
      */
     public static final SqlColumn<String> id = role.id;
 
     /**
-     * <p>角色名称</p>
+     * 角色名称
      */
     public static final SqlColumn<String> name = role.name;
 
     /**
-     * <p>是否通用</p>
+     * 是否通用
      */
     public static final SqlColumn<Boolean> isGeneral = role.isGeneral;
 
     /**
-     * <p>记录是否已删除</p>
+     * 记录是否已删除
      */
     public static final SqlColumn<Boolean> deleted = role.deleted;
 
     /**
-     * <p>记录创建时间</p>
+     * 记录创建时间
      */
     public static final SqlColumn<Date> gmtCreate = role.gmtCreate;
 
     /**
-     * <p>记录更新时间</p>
+     * 记录更新时间
      */
     public static final SqlColumn<Date> gmtModified = role.gmtModified;
 
