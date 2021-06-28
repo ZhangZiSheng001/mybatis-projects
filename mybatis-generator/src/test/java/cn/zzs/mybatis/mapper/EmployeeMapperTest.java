@@ -1,7 +1,15 @@
 package cn.zzs.mybatis.mapper;
 
-import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.*;
-import static org.mybatis.dynamic.sql.SqlBuilder.*;
+import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.address;
+import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.departmentId;
+import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.gmtCreate;
+import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.name;
+import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.status;
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualToWhenPresent;
+import static org.mybatis.dynamic.sql.SqlBuilder.isIn;
+import static org.mybatis.dynamic.sql.SqlBuilder.isLikeWhenPresent;
+import static org.mybatis.dynamic.sql.SqlBuilder.or;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +26,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import cn.zzs.mybatis.entity.Employee;
+import cn.zzs.mybatis.entity.EmployeeVO;
 import cn.zzs.mybatis.util.MybatisUtils;
 
 
@@ -186,6 +195,23 @@ public class EmployeeMapperTest {
             e.setStatus((byte)2);
             baseMapper.updateByPrimaryKeySelective(e);
         });
+    }
+    
+    /**
+     * 测试多表映射
+     * @author zzs
+     * @date 2021年6月28日 下午1:26:47 void
+     */
+    @Test
+    public void testMultiTableMap() {
+        List<EmployeeVO> list = baseMapper.selectVO(c ->
+                c.leftJoin(DepartmentDynamicSqlSupport.department)
+                .on(departmentId, new EqualTo(DepartmentDynamicSqlSupport.id))
+                .where(name, isLikeWhenPresent("zzs%"), or(name, isLikeWhenPresent("zzf%")))
+                .and(status, isEqualTo((byte)1))
+                .orderBy(gmtCreate.descending())
+      );
+      list.stream().forEach(System.err::println);
     }
 
 }
