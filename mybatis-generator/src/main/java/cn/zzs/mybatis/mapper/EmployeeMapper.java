@@ -3,13 +3,11 @@ package cn.zzs.mybatis.mapper;
 import static cn.zzs.mybatis.mapper.EmployeeDynamicSqlSupport.*;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
-import cn.zzs.mybatis.entity.Employee;
-import cn.zzs.mybatis.entity.EmployeeVO;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,10 +23,13 @@ import org.mybatis.dynamic.sql.delete.DeleteDSLCompleter;
 import org.mybatis.dynamic.sql.delete.render.DeleteStatementProvider;
 import org.mybatis.dynamic.sql.insert.render.InsertStatementProvider;
 import org.mybatis.dynamic.sql.insert.render.MultiRowInsertStatementProvider;
+import org.mybatis.dynamic.sql.render.MyBatis3RenderingStrategy;
+import org.mybatis.dynamic.sql.render.RenderingStrategies;
 import org.mybatis.dynamic.sql.select.CountDSLCompleter;
 import org.mybatis.dynamic.sql.select.QueryExpressionDSL;
 import org.mybatis.dynamic.sql.select.SelectDSLCompleter;
 import org.mybatis.dynamic.sql.select.SelectModel;
+import org.mybatis.dynamic.sql.select.join.EqualTo;
 import org.mybatis.dynamic.sql.select.render.SelectStatementProvider;
 import org.mybatis.dynamic.sql.update.UpdateDSL;
 import org.mybatis.dynamic.sql.update.UpdateDSLCompleter;
@@ -36,6 +37,9 @@ import org.mybatis.dynamic.sql.update.UpdateModel;
 import org.mybatis.dynamic.sql.update.render.UpdateStatementProvider;
 import org.mybatis.dynamic.sql.util.SqlProviderAdapter;
 import org.mybatis.dynamic.sql.util.mybatis3.MyBatis3Utils;
+
+import cn.zzs.mybatis.entity.Employee;
+import cn.zzs.mybatis.entity.EmployeeVO;
 
 @Mapper
 public interface EmployeeMapper {
@@ -300,6 +304,23 @@ public interface EmployeeMapper {
             .from(employee);
         return selectVOMany(MyBatis3Utils.select(start, completer));
     }
+    
+    default List<Employee> selectSub(SelectDSLCompleter completer) {
+        QueryExpressionDSL<SelectModel>.GroupByFinisher dsl0 = SqlBuilder.select(max(gmtCreate).as("maxGmtCreate"))
+                .from(employee)
+                .where(name, isLikeWhenPresent("zzs%"))
+                .groupBy(departmentId);
+        
+        SelectStatementProvider statementProvider = SqlBuilder
+            .select(selectList)
+            .from(employee, "employee")
+            .join(dsl0, "sub").on(constant("maxGmtCreate"), new EqualTo(gmtCreate))
+            .build()
+            .render(RenderingStrategies.MYBATIS3);
+            ;
+        return selectMany(statementProvider);
+    }
+    
     
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
     @Results(id="EmployeeVOResult", value = {

@@ -213,5 +213,18 @@ public class EmployeeMapperTest {
       );
       list.stream().forEach(System.err::println);
     }
+    
+    /**
+     * 测试子查询
+     * @author zzs
+     * @date 2021年6月28日 下午8:30:52 void
+     */
+    @Test
+    public void testSubQuery() {
+        List<Employee> list = baseMapper.selectSub(c -> 
+                c.orderBy(gmtCreate.descending())
+                );
+        list.stream().forEach(System.err::println);
+    }
 
 }
