@@ -73,13 +73,13 @@ MBG 支持使用**Java 代码、maven 插件、Eclipse 插件等**方式运行�
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.5.4</version>
+            <version>3.5.7</version>
         </dependency>
         <!-- dynamic-sql 用于测试MyBatis3DynamicSql生成的代码-->
         <dependency>
             <groupId>org.mybatis.dynamic-sql</groupId>
             <artifactId>mybatis-dynamic-sql</artifactId>
-            <version>1.1.4</version>
+            <version>1.3.0</version>
         </dependency>
         <!-- jdbc驱动 -->
         <dependency>
@@ -758,6 +758,8 @@ Mybatis3Simple 可以生成简单的 CRUD，但是针对高级条件查询就无
 2. **联表查询**。你可以像给单表一样给关联表设置条件。
 3. **分组、排序、分页**。
 4. **只返回你要的字段**。
+5. **多表结果集映射**。
+6. **子查询**。
 
 下面这个例子，涉及到了关联查询、排序、分页，而 MyBatis3DynamicSql 都能帮我们处理，并且**它利用 Lambda表达式来解耦条件类**。
 
