@@ -203,7 +203,7 @@ public class EmployeeMapperTest {
      * @date 2021年6月28日 下午1:26:47 void
      */
     @Test
-    public void testMultiTableMap() {
+    public void testSelectMultiTableMap() {
         List<EmployeeVO> list = baseMapper.selectVO(c ->
                 c.leftJoin(DepartmentDynamicSqlSupport.department)
                 .on(departmentId, new EqualTo(DepartmentDynamicSqlSupport.id))
@@ -220,7 +220,7 @@ public class EmployeeMapperTest {
      * @date 2021年6月28日 下午8:30:52 void
      */
     @Test
-    public void testSubQuery() {
+    public void testSelectSubQuery() {
         List<Employee> list = baseMapper.selectSub(c -> 
                 c.orderBy(gmtCreate.descending())
                 );

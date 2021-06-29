@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
+import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
@@ -78,7 +79,8 @@ public interface EmployeeMapper {
      * @return Optional<Employee>
      */
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
-    @ResultMap("EmployeeResult")
+    // @ResultMap("EmployeeResult")
+    @ResultType(Employee.class)
     Optional<Employee> selectOne(SelectStatementProvider selectStatement);
 
     /**
@@ -86,7 +88,7 @@ public interface EmployeeMapper {
      * @return List<Employee>
      */
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
-    @Results(id="EmployeeResult", value = {
+    /*@Results(id="EmployeeResult", value = {
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),
         @Result(column="name", property="name", jdbcType=JdbcType.VARCHAR),
         @Result(column="gender", property="gender", jdbcType=JdbcType.BIT),
@@ -99,7 +101,8 @@ public interface EmployeeMapper {
         @Result(column="department_id", property="departmentId", jdbcType=JdbcType.VARCHAR),
         @Result(column="gmt_create", property="gmtCreate", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="gmt_modified", property="gmtModified", jdbcType=JdbcType.TIMESTAMP)
-    })
+    })*/
+    @ResultType(Employee.class)
     List<Employee> selectMany(SelectStatementProvider selectStatement);
 
     /**
@@ -298,7 +301,7 @@ public interface EmployeeMapper {
     
     default List<EmployeeVO> selectVO(SelectDSLCompleter completer) {
         BasicColumn[] selectVOList = Arrays.copyOf(selectList, selectList.length + 1);
-        selectVOList[selectList.length] = DepartmentDynamicSqlSupport.name.as("departmentName");
+        selectVOList[selectList.length] = DepartmentDynamicSqlSupport.name.as("department_name");
         QueryExpressionDSL<SelectModel> start = SqlBuilder
             .select(selectVOList)
             .from(employee);
@@ -323,7 +326,7 @@ public interface EmployeeMapper {
     
     
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
-    @Results(id="EmployeeVOResult", value = {
+    /*@Results(id="EmployeeVOResult", value = {
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),
         @Result(column="name", property="name", jdbcType=JdbcType.VARCHAR),
         @Result(column="gender", property="gender", jdbcType=JdbcType.BIT),
@@ -337,6 +340,7 @@ public interface EmployeeMapper {
         @Result(column="gmt_create", property="gmtCreate", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="gmt_modified", property="gmtModified", jdbcType=JdbcType.TIMESTAMP), 
         @Result(column="departmentName", property="departmentName", jdbcType=JdbcType.TIMESTAMP)
-    })
+    })*/
+    @ResultType(EmployeeVO.class)
     List<EmployeeVO> selectVOMany(SelectStatementProvider selectStatement);
 }
