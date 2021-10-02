@@ -30,7 +30,6 @@ public class HikariDataSourceFactory implements DataSourceFactory {
 
     @Override
     public void setProperties(Properties props) {
-        // TODO Auto-generated method stub
 
     }
 

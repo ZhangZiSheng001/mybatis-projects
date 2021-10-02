@@ -1,4 +1,4 @@
-package cn.zzs.mybatis.repository;
+package cn.zzs.mybatis.mapper;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

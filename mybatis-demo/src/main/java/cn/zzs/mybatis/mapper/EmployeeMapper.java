@@ -8,37 +8,31 @@ import org.apache.ibatis.session.RowBounds;
 
 import cn.zzs.mybatis.condition.EmployeeCondition;
 import cn.zzs.mybatis.entity.Employee;
+import cn.zzs.mybatis.vo.EmployeeVO;
 
+/**
+ * 员工 Mapper接口
+ * @author zzs
+ * @date 2021年9月28日 下午2:45:40
+ */
 public interface EmployeeMapper {
 
-    long countByCondition(@Param("con") EmployeeCondition con);
-
-    int deleteByCondition(@Param("con") EmployeeCondition con);
-
-    int deleteByPrimaryKey(String id);
-
-    int insert(Employee employee);
-
-    int insertBatch(List<Employee> list);
+    /*@Select("select * from demo_employee where name = #{name} and gender = #{gender} and phone = #{phone} and deleted = 0")
+    @ResultType(Employee.class)*/
+    List<Employee> queryListByNameAndGenderAndPhone(@Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
     
-    /**
-     * <p>嵌套 Select查询映射</p>
-     */
-    List<Employee> selectByCondition(@Param("con") EmployeeCondition con);
     
-    /**
-     * <p>嵌套结果映射</p>
-     */
-    List<Employee> selectByCondition2(@Param("con") EmployeeCondition con);
+    List<Employee> queryByCondition(@Param("con") EmployeeCondition condition);
     
-    Employee selectByPrimaryKey(String id);
+    void queryByCondition(@Param("con") EmployeeCondition condition, ResultHandler<Employee> resultHandler);
     
-    void selectByCondition(@Param("con") EmployeeCondition con, ResultHandler<Employee> resultHandler);
+    List<Employee> queryByCondition(@Param("con") EmployeeCondition condition, RowBounds rowBounds);
     
-    List<Employee> selectByCondition(@Param("con") EmployeeCondition con, RowBounds rowBounds);
+    Employee queryById(String id);
+    
+    EmployeeVO queryVOById(String id);
 
-    int updateByCondition(@Param("record") Employee employee, @Param("con") EmployeeCondition con);
 
-    int updateByPrimaryKey(Employee employee);
-
+    Employee queryById2(String id);
+    
 }

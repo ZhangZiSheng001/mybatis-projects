@@ -1,12 +1,16 @@
 package cn.zzs.mybatis.condition;
 
 import cn.zzs.mybatis.condition.base.AbstractEmployeeCondition;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>员工查询条件</p>
  * @author: zzs
  * @date: 2020年3月23日 下午5:21:17
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class EmployeeCondition extends AbstractEmployeeCondition {
 
     // ============部门表============
@@ -21,34 +25,4 @@ public class EmployeeCondition extends AbstractEmployeeCondition {
     private String departmentName;
     
     
-    /**
-     * <p>是否关联部门表</p>
-     */
-    private boolean joinDepartment = false;
-    
-    
-    public boolean isJoinDepartment() {
-        return joinDepartment ? true : (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
-    }
-    
-    public void setJoinDepartment(boolean joinDepartment) {
-        this.joinDepartment = joinDepartment;
-    }
-    
-
-    public String getDepartmentNo() {
-        return departmentNo;
-    }
-
-    public void setDepartmentNo(String departmentNo) {
-        this.departmentNo = departmentNo;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
-    }
 }

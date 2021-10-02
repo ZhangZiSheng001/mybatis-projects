@@ -3,11 +3,11 @@
 DROP TABLE IF EXISTS `demo_department`;
 
 CREATE TABLE `demo_department` (
-  `id` varchar(63) NOT NULL COMMENT '部门id',
+  `id` varchar(64) NOT NULL COMMENT '部门id',
   `no` varchar(32) NOT NULL COMMENT '部门编码',
-  `parent_id` varchar(63) NOT NULL DEFAULT '0' COMMENT '上级部门id',
-  `name` varchar(63) NOT NULL COMMENT '部门名称',
-  `type` varchar(31) DEFAULT '''department''' COMMENT '部门类型 department部门，group小组',
+  `parent_id` varchar(64) NOT NULL DEFAULT '0' COMMENT '上级部门id',
+  `name` varchar(64) NOT NULL COMMENT '部门名称',
+  `type` varchar(32) DEFAULT '''department''' COMMENT '部门类型 department部门，group小组',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '记录是否删除',
   `gmt_create` datetime NOT NULL COMMENT '记录创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '记录更新时间',
@@ -22,16 +22,16 @@ insert  into `demo_department`(`id`,`no`,`parent_id`,`name`,`type`,`deleted`,`gm
 DROP TABLE IF EXISTS `demo_employee`;
 
 CREATE TABLE `demo_employee` (
-  `id` varchar(63) NOT NULL COMMENT '员工id',
-  `name` varchar(31) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '员工姓名',
+  `id` varchar(64) NOT NULL COMMENT '员工id',
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '员工姓名',
   `gender` bit(1) DEFAULT b'1' COMMENT '员工性别 0表示女，1表示男',
-  `no` varchar(31) NOT NULL COMMENT '员工工号',
-  `password` varchar(63) NOT NULL DEFAULT '123456' COMMENT '员工密码',
+  `no` varchar(32) NOT NULL COMMENT '员工工号',
+  `password` varchar(64) NOT NULL DEFAULT '123456' COMMENT '员工密码',
   `phone` varchar(11) NOT NULL COMMENT '员工手机电话',
-  `address` varchar(255) DEFAULT '' COMMENT '员工住址',
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '员工状态 0为禁用,1为启用,2为冻结',
+  `address` varchar(256) DEFAULT '' COMMENT '员工住址',
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '员工状态 0为禁用,1为启用,2为冻结',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '记录是否已删除',
-  `department_id` varchar(63) NOT NULL COMMENT '员工所属部门id',
+  `department_id` varchar(64) NOT NULL COMMENT '员工所属部门id',
   `gmt_create` datetime DEFAULT NULL COMMENT '记录创建时间',
   `gmt_modified` datetime DEFAULT NULL COMMENT '记录更新时间',
   PRIMARY KEY (`id`)
@@ -44,9 +44,9 @@ insert  into `demo_employee`(`id`,`name`,`gender`,`no`,`password`,`phone`,`addre
 DROP TABLE IF EXISTS `demo_employee_role`;
 
 CREATE TABLE `demo_employee_role` (
-  `id` varchar(63) NOT NULL COMMENT '主键',
-  `employee_id` varchar(63) NOT NULL COMMENT '用户id',
-  `role_id` varchar(63) NOT NULL COMMENT '角色id',
+  `id` varchar(64) NOT NULL COMMENT '主键',
+  `employee_id` varchar(64) NOT NULL COMMENT '用户id',
+  `role_id` varchar(64) NOT NULL COMMENT '角色id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -57,11 +57,11 @@ insert  into `demo_employee_role`(`id`,`employee_id`,`role_id`) values ('15ead6e
 DROP TABLE IF EXISTS `demo_menu`;
 
 CREATE TABLE `demo_menu` (
-  `id` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单id',
-  `parent_id` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '0' COMMENT '父菜单id',
-  `name` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单名',
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单id',
+  `parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '0' COMMENT '父菜单id',
+  `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单名',
   `order` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '菜单先后',
-  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '菜单url',
+  `url` varchar(256) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '菜单url',
   `is_parent` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否父菜单',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '记录是否已删除',
   `gmt_create` datetime DEFAULT NULL COMMENT '记录创建时间',
@@ -76,8 +76,8 @@ insert  into `demo_menu`(`id`,`parent_id`,`name`,`order`,`url`,`is_parent`,`dele
 DROP TABLE IF EXISTS `demo_role`;
 
 CREATE TABLE `demo_role` (
-  `id` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色id',
-  `name` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色名称',
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色id',
+  `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色名称',
   `is_general` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否通用',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '记录是否已删除',
   `gmt_create` datetime NOT NULL COMMENT '记录创建时间',
@@ -92,9 +92,9 @@ insert  into `demo_role`(`id`,`name`,`is_general`,`deleted`,`gmt_create`,`gmt_mo
 DROP TABLE IF EXISTS `demo_role_menu`;
 
 CREATE TABLE `demo_role_menu` (
-  `id` varchar(63) NOT NULL COMMENT '主键',
-  `role_id` varchar(63) NOT NULL COMMENT '角色id',
-  `menu_id` varchar(63) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单id',
+  `id` varchar(64) NOT NULL COMMENT '主键',
+  `role_id` varchar(64) NOT NULL COMMENT '角色id',
+  `menu_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '菜单id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

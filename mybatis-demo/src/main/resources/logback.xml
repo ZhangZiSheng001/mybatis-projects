@@ -19,7 +19,7 @@
         <target>system.err</target>
 
         <encoder charset="utf-8">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %logger{50} - %n%msg%n
+            <pattern> %msg%n
             </pattern>
         </encoder>
     </appender>
@@ -28,7 +28,7 @@
         <appender-ref ref="MAPPER_SQL" />
     </logger>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

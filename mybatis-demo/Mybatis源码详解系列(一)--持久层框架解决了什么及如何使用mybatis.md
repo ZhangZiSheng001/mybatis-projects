@@ -1,22 +1,115 @@
 # 简介
 
-Mybatis 是一个持久层框架，它对 JDBC 进行了高级封装，使我们的代码中不会出现任何的 JDBC 代码，另外，它还通过 xml 或注解的方式将 sql 从 DAO/Repository 层中解耦出来，除了这些基本功能外，它还提供了动态 sql、延迟加载、缓存等功能。 相比 Hibernate，Mybatis 更面向数据库，可以灵活地对 sql 语句进行优化。
+mybatis 是一个持久层框架，它让我们可以方便、解耦地操作数据库。 相比 hibernate，mybatis 在国内更受欢迎，而且 mybatis 更面向数据库，可以灵活地对 sql 语句进行优化。
 
-针对 Mybatis 的分析，我会拆分成**使用、配置、源码、生成器**等部分，都放在 [Mybatis]( https://www.cnblogs.com/ZhangZiSheng001/category/1685176.html ) 这个系列里，内容将持续更新。本文是这个系列的第一篇文章，将从以下两个问题展开 ：
+针对 mybatis 的分析，我会拆分成**使用、配置、源码、生成器**等部分，都放在 [Mybatis]( https://www.cnblogs.com/ZhangZiSheng001/category/1685176.html ) 这个系列里，内容将持续更新。这篇博客是系列里的第一篇文章，将从下面两个问题展开 ：
 
-1. 持久层框架解决了哪些问题？
+1. 为什么要用持久层框架？
 
-2. 如何使用 Mybatis（这里会从入门到深入）？
+2. 如何使用 mybatis？
 
-# 项目环境的说明
+# 为什么要用持久层框架
 
-为了更好地分析 Mybatis 的特性，本项目不会引入任何的依赖注入框架，将使用比较原生态的方式来使用 Mybatis。
+**在分析如何用之前，我们先来分析为什么要用**？和往常一样，我们只会回答为什么要使用某种类库，而不会去回答为什么要使用某个具体的类库。说来惭愧，用了这么久 mybatis，我从来没有认真思考过这个问题，要不是写这篇博客的缘故，估计永远也不会思考。
+
+## 我们与数据库的交互过程
+
+首先，先从一张图开始，这张图大致描述了我们与数据库交互的过程。这里我结合查询员工的例子来说明。
+
+![mybatis_demo_01](https://img2020.cnblogs.com/blog/1731892/202110/1731892-20211002112151956-1120058221.png)
+
+根据分层抽象的思想，接口 B 不应该对外暴露任何的数据库细节，从调用者的角度看，我们只需要想着从一堆员工里找出符合条件的那几个就行，而不需要去考虑从哪查、如何查。接口示例如下：
+
+```java
+List<Employee> queryListByNameAndGenderAndPhone(String name, Integer gender, String phone);
+```
+
+而在接口 B 里面，逻辑就比较复杂了，需要先将入参对象映射到 sql 里面，然后执行 sql，最后将结果集映射为出参对象。那么，这段逻辑应该怎么实现呢？
+
+## 使用JDBC实现接口B
+
+在没有持久层框架之前，最直接的做法就是用 JDBC API 来实现接口 B 的逻辑。代码大致如下：
+
+```java
+    public List<Employee> queryListByNameAndGenderAndPhone(String name, Integer gender, String phone) throws SQLException{
+        
+        String sql = "select * from demo_employee where name = ? and gender = ? and phone = ? and deleted = 0";
+        
+        // 获得连接、语句对象
+        PreparedStatement statement = connection.prepareStatement(sql);
+        
+        // 入参映射
+        statement.setString(1, name);
+        statement.setInt(2, gender);
+        statement.setString(3, phone);
+        
+        // 执行sql
+        ResultSet resultSet = statement.executeQuery();
+        
+        // 出参映射
+        List<Employee> employees = new ArrayList<>();
+        while(resultSet.next()) {
+            Employee employee = new Employee();
+            employee.setId(resultSet.getString("id"));
+            employee.setName(resultSet.getString("name"));
+            employee.setGender(resultSet.getInt("gender"));
+            employee.setNo(resultSet.getString("no"));
+            employee.setAddress(resultSet.getString("address"));
+            employee.setDeleted(resultSet.getInt("deleted"));
+            employee.setDepartmentId(resultSet.getString("department_id"));
+            employee.setPassword(resultSet.getString("password"));
+            employee.setPhone(resultSet.getString("phone"));
+            employee.setStatus(resultSet.getInt("status"));
+            employee.setGmtCreate(resultSet.getDate("gmt_create"));
+            employee.setGmtModified(resultSet.getDate("gmt_modified"));
+            employees.add(employee);
+        }
+        
+        // 释放资源
+        resultSet.close();
+        statement.close();
+        
+        return employees;
+    }
+```
+
+我们会发现，直接使用 JDBC API 操作数据库还是比较繁琐，尤其是出入参的映射。如果每个持久层方法都这么搞，麻烦程度可想而知。出于程序员的本能，我们自然会想要优化它。当我们尝试从这类代码中抽取共性时，将会发现一些规律：查询员工也好，查询部门也好，它们用的 JDBC 代码几乎是一模一样的，要说不一样的地方，只有三个：
+
+1. **我们要执行什么 sql**；
+2. **入参对象如何映射进 sql**；
+3. **结果集如何映射成出参对象**。
+
+基于以上思考，这里提供其中一种优化思路：**我们可以将 JDBC 代码抽取为公共方法，而“三个不同“采用单独配置实现**。mybatis、hibernate 就是按照这种思路设计的。
+
+其实，分析到这一步，我们已经得到了答案，**使用持久层框架本质上就是为了更简单地实现接口 B**。
+
+## 使用mybatis实现接口B
+
+接下来，我们看看 mybatis 是如何实现上述思路的。
+
+使用 mybatis 实现 B 接口时，我们不需要写任何 JDBC 代码，甚至 B 接口的实现类都不需要我们自己写，只需要把“三个不同“配置好就行（xml 或注解配置），**mybatis 会自动帮我们生成 B 接口的实现类**。
+
+以下是 mybatis 注解版的员工查询，两个注解就完成了“三个不同”的配置，除此之外，我不需要增加任何多余代码，是不是相当方便呢？
+
+```java
+    @Select("select * from demo_employee where name = #{name} and gender = #{gender} and phone = #{phone} and deleted = 0")
+    @ResultType(Employee.class)
+    List<Employee> queryListByNameAndGenderAndPhone(@Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
+```
+
+所以，**使用持久层框架，可以让我们更方便、更解耦地操作数据库**。任何的持久层框架，都不应该脱离这个核心。
+
+搞清楚为什么要用之后，我们接着分析如何用。
+
+# 项目环境
+
+这里先介绍下项目的一些“基础设施”。为了让 mybatis 更加纯粹，本项目不会引入任何的依赖注入框架，将使用 mybatis 原生的 API。
 
 ## 工程环境
 
 JDK：1.8.0_231
 
-maven：3.6.1 
+maven：3.6.3 
 
 IDE：Spring Tool Suites4 for Eclipse 4.12 （装有 Mybatipse 插件）
 
@@ -24,7 +117,7 @@ mysql：5.7.28
 
 ## 依赖引入
 
-Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的比较好。
+mybatis 有自带的数据源，但实际项目中建议还是引入第三方的比较好。这里使用 HikariCP。
 
 ```xml
         <!-- Mybatis -->
@@ -33,26 +126,13 @@ Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的
             <artifactId>Mybatis</artifactId>
             <version>3.5.4</version>
         </dependency>
-        <!-- mysql驱动-->
+        <!-- 数据库驱动-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.15</version>
         </dependency>
-        <!-- logback -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-            <type>jar</type>
-        </dependency>
-        <!-- 连接池 -->
+        <!-- 数据库连接池 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
@@ -69,243 +149,45 @@ Mybatis 有自带的连接池，但实际项目中建议还是引入第三方的
 
 ## 数据库脚本
 
-在这个项目里面，我希望尽可能地模拟出实际项目的各种场景，例如，高级条件查询、关联查询（一对一关联、多对多关联和自关联），并研究在对应场景下如何使用 Mybatis 解决问题。本项目的 ER 图如下，涉及到 4 张主表和 2 张中间表，具体的 sql 脚本也提供好了（[脚本路径]( https://github.com/ZhangZiSheng001/mybatis-projects /sql)）：
+本项目的数据库概念模型如下。为了尽可能模拟出更多的场景，本项目给出的表会比较复杂，涉及到 4 张主表和 2 张中间表，具体的 sql 脚本也提供好了（[脚本路径]( https://github.com/ZhangZiSheng001/mybatis-projects /sql)）：
 
-![Mybatis_demo项目的ER图](https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111457093-813152020.png)
+![Mybatis_demo项目的数据库概念模型](https://img2020.cnblogs.com/blog/1731892/202109/1731892-20210928132405404-231694101.png)
 
+# 入门例子
 
-# 持久层框架解决了哪些问题
+入门例子需要实现：从数据库中查询出符合条件的员工。
 
-在分析如何使用 mybatis 之前，我们先来研究一个问题：持久层框架解决了哪些问题？
+## 配置configuration xml文件
 
-假设没有持久层框架，首先想到的就是使用 JDBC 来操作数据库。这里我简单地引入一个需求，就是我想通过 id 查询出一个员工对象。下面仅会从repository/DAO 层的角度来考虑如何实现，所以我们不需要去考虑 service 层中**事务提交**和**连接关闭**的问题，当然，这样会遇到一个问题，就是我们必须保证 service 层的事务和持久层的是同一个，这一点会通过 **Utils 来解决，因为不是本文重点，这里不展开。
-
-## 用 JDBC 方式查询一个员工
-
-下面用 JDBC 查询员工对象。
-
-有人可能会问，就算你不适用持久层框架，你还可以使用 DBUtils 或者自己封装 JDBC 代码啊？这里需要强调下，这种封装其实是持久层框架应该做的事，我们自己手动封装，其实已经在实现一个持久层框架了。所以，为了暴露纯粹的 JDBC 实现的缺点，这里尽量不去封装。
-
-
-```java
-    @Override
-    public Employee get(String id) throws SQLException {
-        Employee employee = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        
-        // 创建sql
-        String sql = "select * from demo_employee where id = ?";
-        try {
-            // 获得连接（JDBCUtils保证同一线程获得同一个连接对象）
-            Connection connection = JDBCUtils.getConnection();
-            // 获得Statement对象
-            statement = connection.prepareStatement(sql);
-
-            // 设置参数
-            statement.setObject(1, id);
-
-            // 执行，获取结果集
-            resultSet = statement.executeQuery();
-
-            if(resultSet.next()) {
-                // 映射结果集
-                employee = convert(resultSet);
-            }
-            // 返回员工对象
-            return employee;
-
-        } finally {
-            // 释放资源
-            JDBCUtils.release(null, statement, resultSet);
-        }
-    }
-
-    /**
-     * <p>通过结果集构造员工对象</p>
-     * @author: zzs
-     * @date: 2020年3月28日 下午12:20:02
-     * @param resultSet
-     * @return: Employee
-     * @throws SQLException 
-     */
-    private Employee convert(ResultSet resultSet) throws SQLException {
-        Employee employee = new Employee();
-        employee.setId(resultSet.getString("id"));
-        employee.setName(resultSet.getString("name"));
-        employee.setGender(resultSet.getBoolean("gender"));
-        employee.setNo(resultSet.getString("no"));
-        employee.setAddress(resultSet.getString("address"));
-        employee.setDeleted(resultSet.getBoolean("deleted"));
-        employee.setDepartmentId(resultSet.getString("department_id"));
-        employee.setPassword(resultSet.getString("password"));
-        employee.setPhone(resultSet.getString("phone"));
-        employee.setStatus(resultSet.getByte("status"));
-        employee.setCreate(resultSet.getDate("gmt_create"));
-        employee.setModified(resultSet.getDate("gmt_modified"));
-        return employee;
-    }
-```
-
-通过上面的代码，我们可以看到两个主要的问题：
-
-1. **每个 Repository/DAO 方法都会出现繁琐、重复的 JDBC 代码**。
-2. **sql 和 DAO/Repository 的程序代码耦合度太高，不能统一管理**。这里的 sql 包括了 sql 的定义、参数设置和结果集映射，强调一点，**不是说 sql 不能出现在 java 类中，而是说应该从 DAO/Repository 的程序代码中解耦出来，进行集中管理**。
-
-说到这里，我们可以总结出来，为了项目的方便和解耦，一个基本的持久层框架需要做到：
-
-1. **对 JDBC 代码进行高级封装，为我们提供更简单的接口**。
-2. **将 sql 从 DAO/Repository 中解耦出来**。
-
-Mybatis 作为一个优秀的持久层框架，针对以上问题提供了解决方案，下面我们再看看使用 Mybatis 如何实现上面的需求。
-
-## 用 Mybatis 方式查询一个员工
-
-还是通过查询员工的例子来说明，代码如下：
-
-```java
-    public Employee get(String id) {
-        return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
-    }  
-```
-
-上面的代码没有出现任何的 JDBC 代码和 sql 代码，因为 Mybatis 对 JDBC 进行了高级封装，并且采用 Mapper 的注解或 xml 文件来统一管理 sql 的定义、参数设置和结果集映射。下面看下 xml 文件的方式：
-
-```xml
-    <!-- 基础映射表 -->
-    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
-       <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-       <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
-       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
-    </resultMap>
-    <!-- 基础字段 -->
-    <sql id="Base_Column_List">
-        e.id, 
-        e.`name`, 
-        e.gender, 
-        e.no, 
-        e.password, 
-        e.phone, 
-        e.address, 
-        e.status, 
-        e.deleted, 
-        e.department_id, 
-        e.gmt_create, 
-        e.gmt_modified  
-    </sql>
-    <!-- 根据id查询 -->
-    <select id="selectByPrimaryKey" 
-        parameterType="java.lang.String"
-        resultMap="BaseResultMap">
-        select
-            <include refid="Base_Column_List" />
-        from 
-            demo_employee e 
-        where 
-            e.id = #{id}
-    </select>
-```
-
-针对 sql 解耦的问题，早期的持久层框架都偏向于将 sql 独立在配置文件中，后来才逐渐引入注解的支持，如下是Mybatis 的注解方式（EmployeeMapper 接口）：
-
-```java
-    @Select("SELECT e.id, e.`name`, e.gender, e.no, e.password, e.phone, e.address, e.status, e.deleted, e.department_id, e.gmt_create, e.gmt_modified FROM demo_employee e WHERE id = #{id}")
-    @resultMap("BaseResultMap")
-    Employee selectByPrimaryKey(String id);
-```
-
-我认为，正如前面说到的，sql 在项目中存在形式不是重点，我们的目的是希望 sql 能被统一管理，基于这个目的实现的不同方案，都是合理的。
-
-Mybatis 作为一款优秀的持久层框架，除了解决上面的两个基本问题，还为我们提供了懒加载、缓存、动态语句、插件等功能，下文会讲到。
-
-## 补充
-
-通过上面的内容，我们已经回答了问题：持久层框架解决了哪些问题？这里需要补充一点：
-
-本文只是指出持久层框架的需要解决的基本问题，并没有强调必须使用 Mybatis 或 Hibernate 等通用框架。出于性能方面的考虑，部分开发者可能会采用更轻量的实现，而不是使用流行的通用框架。当然，这也是自己造轮子和使用通用轮子的区别了。
-
-# 如何使用 Mybatis
-
-本项目会模拟实际开发的各种场景来研究 Mybatis 的使用方法。在我看来，DAO 层只要有以下几个方法，已经可以满足大部分使用需求。DAO 层有以下几个方法，已经可以满足大部分使用需求。
-
-```java
-public interface IEmployeeRepository {
-    // 查询
-    Employee get(String id);//根据id查询
-    
-    List<Employee> list(EmployeeCondition con);//根据条件查询
-
-    long count(EmployeeCondition con);//根据条件查询数量
-    
-    // 删除
-    int delete(EmployeeCondition con);//根据条件删除
-
-    int delete(String id);//根据id删除
-
-    // 新增
-    int save(Employee employee);//新增
-    
-    int save(List<Employee> list);//批量新增
-
-    // 更新
-    int update(Employee employee, EmployeeCondition con);//根据条件更新
-
-    int update(Employee employee);//更新
-}
-```
-
-下面的使用例子将针对这个接口进行展开，主要分成4个部分：
-
-1. 入门例子。通过根据id查询员工和新增员工的例子说明；
-2. 高级条件查询。
-3. 关联查询。查询员工并带出部门、角色，这里会先使用**嵌套 select 查询**的方式，然后再给出可以解决 “N+1 查询问题” 的**嵌套结果映射**。
-
-## 从入门例子开始
-
-本文的包结构如下。test 里的测试简单看成是 service 层在调用 respository 层的方法，由于我必须在 service 层 和 respository 层中拿到同一个“连接”来管理事务或释放资源，所有 util 中将“连接”绑定到了当前线程。
-
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111548084-67646466.png" alt="Mybatis_demo_package" style="zoom:80%;" />
-
-在进行下面工作之前，我们需要先创建好实体和 mapper 文件（如图圈红部分），实际项目中，我们可以使用 [Mybatis-generator]( https://www.cnblogs.com/ZhangZiSheng001/p/12820344.html ) 或者自定义的代码生成器生成，mapper 中将包含基本的 CRUD 代码。
-
-### 配置 configuration 文件
-
-这个是 Mybatis 的主配置文件，它**影响着 Mybatis 的行为和属性信息**。配置文件的层级结构如下：
+首先，需要在 classpath （一般为 src\main\resources 目录）下新增 mybatis 的主配置文件 mybatis-config.xml，具体文件名无要求，随便取都行。配置文件的层级结构如下（注意：**配置文件里的 xml 节点必须严格按以下顺序写，不然会报`SAXParseException`** ）：
 
 configuration（配置）
 
-- properties（属性）
-- settings（设置）
+- properties（全局参数）
+- **settings**（全局行为配置）
 - typeAliases（类型别名）
 - typeHandlers（类型处理器）
 - objectFactory（对象工厂）
-- plugins（插件）
-- environments（环境配置）
+- **plugins**（插件）
+- **environments**（环境配置）
   - environment（环境变量）
     - transactionManager（事务管理器）
     - dataSource（数据源）
 - databaseIdProvider（数据库厂商标识）
-- mappers（映射器）
+- **mappers**（映射器）
 
-作为入门例子，这里只进行了简单的配置，本系列的第二篇博客将详细讲解这些配置。
-
-注意：**configuration 的标签必须按顺序写，不然会报错。** 
+作为入门例子，这里只进行了简单的配置（实际项目中其实也差不多，一般也只会用到加粗的几个节点）。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
 PUBLIC "-//Mybatis.org//DTD Config 3.0//EN"
 "http://Mybatis.org/dtd/Mybatis-3-config.dtd">
-<!-- 注意：configuration的标签必须按顺序写，不然会报错 -->
-<!-- properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?
-,reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers? -->
 <configuration>
-    
-    <!-- 配置别名 -->
-    <typeAliases>
-        <package name="cn.zzs.Mybatis.entity"/>
-    </typeAliases>    
+    <!-- 全局配置 -->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
     
     <!-- 配置环境：可以有多个 -->
     <environments default="development">
@@ -313,52 +195,28 @@ PUBLIC "-//Mybatis.org//DTD Config 3.0//EN"
             <!-- 使用jdbc事务管理 -->
             <transactionManager type="JDBC"/>
             <!-- 数据源 -->
-            <dataSource type="cn.zzs.Mybatis.factory.HikariDataSourceFactory"/>
+            <!-- <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}" />
+                <property name="url" value="${jdbc.url}" />
+                <property name="username" value="${jdbc.username}" />
+                <property name="password" value="${jdbc.password}" />
+            </dataSource> -->
+            <dataSource type="cn.zzs.mybatis.factory.HikariDataSourceFactory" />
         </environment>
     </environments>
     
     <!-- 映射器 -->
     <mappers>
-        <package name="cn.zzs.Mybatis.mapper"/>
+        <package name="cn.zzs.mybatis.mapper"/>
     </mappers>
-    
 </configuration>
 ```
 
 以上配置作用如下：
 
-1. **typeAliases**：类型别名，仅在 *Mapper.xml 中使用。通过配置实体类的包名，我们可以在 xml 中直接通过 Employee 来表示员工类型，而不需要使用全限定类名；
-
-2. **environments**：环境配置。下篇文章再详细讲吧。这里简单说下 dataSource，由于引入的是第三方数据源，所以得重写 org.apache.ibatis.datasource.DataSourceFactory接口，如下：
-
-```java
-public class HikariDataSourceFactory implements DataSourceFactory {
-       
-       private DataSource dataSource;
-       
-       public HikariDataSourceFactory() {
-           super();
-           try {
-               HikariConfig config = new HikariConfig("/hikari.properties");
-               dataSource = new HikariDataSource(config);
-           } catch(Exception e) {
-               throw new RuntimeException("创建数据源失败", e);
-           }
-       }
-       @Override
-       public DataSource getDataSource() {
-           return dataSource;
-       }
-       
-       @Override
-       public void setProperties(Properties props) {
-           // TODO Auto-generated method stub
-   
-       }
-}
-```
-
-3. **mappers**：映射器。其实就是告诉 Mybatis 映射器放在哪里，注意，Mapper 接口和 xml 文件**编译打包后**必须在同一个路径下。如果你的 xml 文件放在 src/main/java 中（不建议），需要在 pom 文件中增加以下配置：
+2. **settings**：一些影响 mybatis 行为的全局配置。例如，上面配置了 mapUnderscoreToCamelCase 为 true，在进行结果集映射时，只要对象字段和数据库字段之间遵循驼峰命名，mybatis 就能自动将它们映射好，而不需要我们手动配置映射。可配置参数见`org.apache.ibatis.builder.xml.XMLConfigBuilder.settingsElement(Properties)`。
+2. **environments**：环境配置。这里简单说下 dataSource，如果使用 mybatis 自带的数据源，则直接配置数据源参数就行，如果引入第三方数据源，则需要配置你自己重写的`org.apache.ibatis.datasource.DataSourceFactory`实现类。建议使用第三方数据源。
+3. **mappers**：其实就是告诉 mybatis 你的 Mapper 接口和 Mapper xml 文件放在哪里。这里需要注意下，如果我们把 Mapper 接口放在 src/main/java 下的 cn.zzs.mybatis.mapper，那么 Mapper xml 文件就应该放在 src\main\resources 下的 cn\zzs\mybatis\mapper。当然，你也可以把 Mapper xml 文件放在 src/main/java 下的 cn.zzs.mybatis.mapper（不建议），这种情况你就需要在 pom.xml 文件中额外增加以下配置。事实上，你怎么骚操作都可以，只要保证项目编译打包后 Mapper 接口和 xml 文件在你指定的路径下就行。
 
 ```xml
     <build>
@@ -380,932 +238,288 @@ public class HikariDataSourceFactory implements DataSourceFactory {
     </build>
 ```
 
-### 配置 mapper xml文件
+## 创建Mapper接口
 
-Mybatis 的映射文件只有很少的几个顶级元素（按照应被定义的顺序列出）：
+然后，我们需要在指定的包下创建好 EmployeeMapper 接口。上面的配置文件中，我们已经指定 Mapper 接口放在`cn.zzs.Mybatis.mapper`包下面，所以要保持一致才行。这里的`@Param`用来给入参配置别名。
+
+```java
+public interface EmployeeMapper {
+    List<Employee> queryListByNameAndGenderAndPhone(@Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
+}
+```
+
+## 配置mapper xml文件
+
+接着，我们需要在指定路径下创建好 EmployeeMapper.xml 文件。EmployeeMapper.xml 只有很少的几个顶级元素：
 
 - `cache` – 该命名空间的缓存配置。
 - `cache-ref` – 引用其它命名空间的缓存配置。
-- `resultMap` – 描述如何从数据库结果集中加载对象，是最复杂也是最强大的元素。
-- `parameterMap` – 老式风格的参数映射。此元素已被废弃，并可能在将来被移除！请使用行内参数映射。文档中不会介绍此元素。
+- `resultMap` – 描述如何将结果集映射为出参对象。
+- `parameterMap` – 此元素已被废弃，并可能在将来被移除！
 - `sql` – 可被其它语句引用的可重用语句块。
 - `insert` – 映射插入语句。
 - `update` – 映射更新语句。
 - `delete` – 映射删除语句。
 - `select` – 映射查询语句。
 
-这里也只进行了简单的配置，本系列的第二篇博客再详细讲。
+作为入门例子，这里只给出了简单的配置。其中，select 节点中配置了 queryListByNameAndGenderAndPhone 方法的“三个不同”，即需要执行的 sql、入参映射和出参映射。
 
 ```xml
-    <!-- 基础映射表 -->
-    <resultMap id="BaseResultMap" type="cn.zzs.mybatis.entity.Employee">
-       <id column="id" property="id" />
-       <result column="department_id" property="departmentId" />
-       <result column="gmt_create" property="create" />
-       <result column="gmt_modified" property="modified"/>
-    </resultMap>
-
-    <!-- 基础字段 -->
-    <sql id="Base_Column_List">
-        e.id, 
-        e.`name`, 
-        e.gender, 
-        e.no, 
-        e.password, 
-        e.phone, 
-        e.address, 
-        e.status, 
-        e.deleted, 
-        e.department_id, 
-        e.gmt_create, 
-        e.gmt_modified  
-    </sql>
-    
-    <!-- 根据id查询 -->
-    <select id="selectByPrimaryKey" 
-        parameterType="string"
-        resultMap="BaseResultMap">
-        select
-            <include refid="Base_Column_List" />
-        from 
-            demo_employee e 
-        where 
-            e.id = #{id}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zzs.mybatis.mapper.EmployeeMapper">
+    <select id="queryListByNameAndGenderAndPhone" parameterType="map" resultType="cn.zzs.mybatis.entity.Employee">
+        select * from demo_employee where name = #{name} and gender = #{gender} and phone = #{phone} and deleted = 0
     </select>
-
-    <!-- 新增 -->
-    <insert id="insert"
-        parameterType="Employee">
-        insert into 
-            demo_employee 
-        (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
-        values (
-            #{id,jdbcType=VARCHAR}, 
-            #{name,jdbcType=VARCHAR},
-            #{gender,jdbcType=BIT},
-            #{no,jdbcType=VARCHAR}, 
-            #{password,jdbcType=VARCHAR}, 
-            #{phone,jdbcType=VARCHAR},
-            #{address,jdbcType=VARCHAR}, 
-            #{status,jdbcType=TINYINT},
-            #{deleted,jdbcType=BIT},
-            #{departmentId,jdbcType=VARCHAR}, 
-            #{create,jdbcType=TIMESTAMP}, 
-            #{modified,jdbcType=TIMESTAMP}
-        )
-    </insert>
+</mapper>
 ```
 
-在以上配置中，使用了三个元素：
+在本例中，我们指定了把结果集映射为`Employee`，通常情况下，只要对象字段和数据库字段遵循驼峰命名，都能自动映射成功。但是，总会有例外嘛，如果我的字段命名不遵循驼峰命名怎么办？这里我给出了两种可选方案：
 
-1. **resultMap**：表列名（或查询出来的别名）与实体属性的映射关系。除了 id 和关联对象字段外，只要表列名（或查询出来的别名）与实体属性一致，可以不用配置。 如果在主配置文件开启了驼峰命名自动映射`mapUnderscoreToCamelCase`，则遵循驼峰命名规则的字段都能自动映射。 
-2. **sql**： 用来定义可重用的 SQL 代码片段，可以在查询或变更语句中通过  include 引用。如果数据库的字段名和实体类的不一致，需要设置列别名。
-3. **select**： 查询语句。其中，id 是所在命名空间中唯一的标识符，可以被用来引用这条语句，与 mapper 文件中的，parameterType 是入参类型，resultMap 是映射表。
-4. **insert**：插入语句。
+```xml
+    <!-- 特殊字段的映射方法1：resultMap -->
+    <resultMap id ="BaseResultMap" type = "cn.zzs.mybatis.entity.Employee">
+        <result column="gmt_create" property="create" />
+    </resultMap>
+    
+    <select id="queryListByNameAndGenderAndPhone" parameterType="map" resultMap="BaseResultMap">
+        select * from demo_employee where name = #{name} and gender = #{gender} and phone = #{phone} and deleted = 0
+    </select>
 
-注意下参数符号 #{id }， 它告诉 Mybatis 创建一个预处理语句（PreparedStatement）参数，在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中。不过有时你就是想直接在 SQL 语句中直接插入一个不转义的字符串。 比如 ORDER BY 子句，这时候你可以使用 “$” 字符：
+    <!-- 特殊字段的映射方法2：as -->
+    <select id="queryListByNameAndGenderAndPhone" parameterType="map" resultType="cn.zzs.mybatis.entity.Employee">
+        select *, gmt_create as `create` from demo_employee where name = #{name} and gender = #{gender} and phone = #{phone} and deleted = 0
+    </select>
+```
+
+注意下参数符号 #{name}， 它告诉 mybatis 创建一个预处理语句（PreparedStatement）参数，在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中。不过有时你就是想直接在 SQL 语句中直接插入一个不转义的字符串。 这时候你可以使用 “$” 字符：
 
 ```xml
 ORDER BY ${columnName}
 ```
 
-### 获取 SqlSession
+## 编写测试类
 
-在以下代码中，存在三个主要对象：
+在以下代码中，存在四个主要对象：
 
 1. `SqlSessionFactoryBuilder` ：一旦创建了 SqlSessionFactory，就不再需要它了，因此  SqlSessionFactoryBuilder 实例的最佳作用域是方法作用域。
 2. `SqlSessionFactory`：一旦被创建就应该在应用的运行期间一直存在，没有任何理由丢弃它或重新创建另一个实例， 因此 SqlSessionFactory 的最佳作用域是应用作用域。 
-3. `SqlSession`：每个线程都应该有它自己的 SqlSession 实例。SqlSession 的实例不是线程安全的，因此是不能被共享的，所以它的最佳的作用域是请求或方法作用域。 **SqlSession 的作用类似于 JDBC 的`Connection`**，使用完后必须 close。
+3. `SqlSession`：每个线程都应该有它自己的 SqlSession 实例。SqlSession 实例不是线程安全的，因此不能被共享，所以它的最佳的作用域是请求或方法作用域。 SqlSession 的作用类似于 JDBC 的 Connection ，使用完后必须 close。
+4. `EmployeeMapper`：**默认情况下，因为 EmployeeMapper 和 SqlSession 绑定在一起，所以，EmployeeMapper 也是线程不安全的**。有的人可能会问，既然 EmployeeMapper 是线程不安全的，那为什么 spring 把它作为单例使用？其实并不矛盾，EmployeeMapper 是否线程安全取决于 SqlSession，而 spring 中使用的 SqlSession 实现类是线程安全的，原理也并不复杂，具体见`org.mybatis.spring.SqlSessionTemplate`。
 
 ```java
-    // 加载配置文件，初始化SqlSessionFactory对象
-    String resource = "Mybatis-config.xml";
-    InputStream in = Resources.getResourceAsStream(resource));
-    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(in);
-    // 获取sqlSession 注意，这种方式获取的 SqlSession 需手动提交事务。
-    SqlSession sqlSession = sqlSessionFactory.openSession();
-```
-
-为了保证同一个线程在 service 和 repository 中拿到同一个 SqlSession 对象，本项目中定义了工具类 cn.zzs.Mybatis.util.MybatisUtils 来获取 SqlSession，并提供了事务管理和资源释放等方法。
-
-```java
-public class MybatisUtils {
-
-    private static SqlSessionFactory sqlSessionFactory;
-
-    private static ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
-
-    static {
-        init();
-    }
-
-    private static void init() {
-        try {
-            // 加载配置文件，初始化SqlSessionFactory对象
-            InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        } catch(Exception e) {
-            throw new RuntimeException("初始化SqlSessionFactory失败", e);
-        }
-    }
-
-    public static void startSqlSession() {
-        localSqlSession.set(sqlSessionFactory.openSession());
-    }
-
-    public static void commit() {
-        final SqlSession sqlSession = localSqlSession.get();
-        if(sqlSession == null) {
-            throw new SqlSessionException("sqlSession未创建");
-        }
-        sqlSession.commit();
-    }
-
-    public void rollback() {
-        final SqlSession sqlSession = localSqlSession.get();
-        if(sqlSession == null) {
-            throw new SqlSessionException("sqlSession未创建");
-        }
-        sqlSession.rollback();
-    }
-
-    public static void close() {
-        final SqlSession sqlSession = localSqlSession.get();
-        if(sqlSession == null) {
-            throw new SqlSessionException("sqlSession未创建");
-        }
-        try {
-            sqlSession.close();
-        } finally {
-            localSqlSession.set(null);
-        }
-    }
+public class EmployeeMapperTest {
     
-    public static <T> T getMapper(Class<T> type) {
-        final SqlSession sqlSession = localSqlSession.get();
-        if(sqlSession == null) {
-            throw new SqlSessionException("sqlSession未创建");
-        }
-        return sqlSession.getMapper(type);
-    }
-}
-
-```
-
-如果不想自己写工具类也行，mybatis 提供了`SqlSessionManager`来安全地获取 SqlSession，如下，使用时可以将它作为 repository/DAO 和 service 的全局对象，直接当成 sqlSession 对象来使用，但必须现在 service 层调用 startManagedSession 方法。
-
-```java
-public class SqlSessionManager implements SqlSessionFactory, SqlSession {
-
-  private final SqlSessionFactory sqlSessionFactory;
-
-  private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
-    
-  public static SqlSessionManager newInstance(InputStream inputStream) {
-    return new SqlSessionManager(new SqlSessionFactoryBuilder().build(inputStream, null, null));
-  }
-    
-  public void startManagedSession() {
-    this.localSqlSession.set(openSession());
-  }
-    
-  @Override
-  public void commit() {
-    final SqlSession sqlSession = localSqlSession.get();
-    if (sqlSession == null) {
-      throw new SqlSessionException("Error:  Cannot commit.  No managed session is started.");
-    }
-    sqlSession.commit();
-  }
-
-  @Override
-  public void rollback() {
-    final SqlSession sqlSession = localSqlSession.get();
-    if (sqlSession == null) {
-      throw new SqlSessionException("Error:  Cannot rollback.  No managed session is started.");
-    }
-    sqlSession.rollback();
-  }
-}
-```
-
-### 编写 Repository
-
-repository 的代码非常简单，只需要拿到 Mapper 或 SqlSession 对象，就能直接进行数据库操作了。注意，**这里的 Mapper 和 SqlSession 都不能作为实例变量**。
-
-```java
-public class EmployeeRepository implements IEmployeeRepository {
-    
-    @Override
-    public Employee get(String id) {
-        return MybatisUtils.getMapper(EmployeeMapper.class).selectByPrimaryKey(id);
-        //return MybatisUtils.getSqlSession().selectOne("cn.zzs.mybatis.mapper.EmployeeMapper.selectByPrimaryKey", id);
-    }
-
-    @Override
-    public int save(Employee employee) {
-        return MybatisUtils.getMapper(EmployeeMapper.class).insert(employee);
-        // return MybatisUtils.getSqlSession().insert("cn.zzs.mybatis.mapper.EmployeeMapper.insert", employee);
-    }
-}
-```
-
-### 编写测试类
-
-测试类简单看成是一个 service 类（当然，它不完全是），这里需要手动地提交事务和释放资源。
-
-```java
-public class EmployeeRepositoryTest {
-
-    private IEmployeeRepository employeeRepository = new EmployeeRepository();
-
-    @Before
-    public void startSqlSession() {
-        MybatisUtils.startSqlSession();
-    }
-    
-    @After
-    public void endSqlSession() {
-        MybatisUtils.close();
-    }
-
-    /**
-     * <p>测试根据id查询</p>
-     */
     @Test
-    public void testGet() {
-        String id = "cc6b08506cdb11ea802000fffc35d9fe";
-
-        // 执行，获取员工对象
-        Employee employee = employeeRepository.get(id);
-
-        // 打印
-        System.out.println(employee);
-    }
-    /**
-     * <p>测试保存</p>
-     */
-    @Test
-    public void testSave() {
-        // 创建用户
-        Employee employee = new Employee(UUID.randomUUID().toString().replace("-", ""), "zzs005", true, "zzs005", "admin", "18826****41", "广东", (byte)1, false, "94e2d2e56cd811ea802000fffc35d9fa", new Date(), new Date());
-
-        // 保存
-        employeeRepository.save(employee);
-
-        // 提交事务
-        MybatisUtils.commit();
+    public void testSample() throws SQLException {
+        // 加载配置文件
+        InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+        
+        // 获取sqlSession
+        // 第一种获取sqlSession方法：同一线程每次获取都是同一个sqlSession
+        /*SqlSessionManager sqlSessionManager = SqlSessionManager.newInstance(inputStream);
+        SqlSession sqlSession = sqlSessionManager.openSession();*/
+        
+        // 第二种获取sqlSession方法：同一线程每次获取都是不同的sqlSession
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        
+        // 获取Mapper代理类
+        EmployeeMapper employeeMapper = sqlSession.getMapper(EmployeeMapper.class);
+        
+        // 执行查询
+        List<Employee> employees = employeeMapper.queryListByNameAndGenderAndPhone("zzs001", 1, "18826****41");
+        
+        // 测试
+        assertTrue(!CollectionUtils.isEmpty(employees));
+        employees.stream().forEach(System.err::println);
+        
+        // 释放资源
+        sqlSession.close();
     }
 }
 ```
 
-### 测试
+## 运行测试
 
-测试上面两个方法，会在控制台输出了 sql。为了直观点，我这里格式化了一下。
+运行上面的方法，会在控制台输出了 sql 和匹配的员工数据。
 
 ```sql
-2020-03-30 20:40:11.098 c.z.m.mapper.EmployeeMapper.selectByPrimaryKey - 
-==>  Preparing: 
-SELECT e.id, e.`name`, e.gender, e.no, e.password
-    , e.phone, e.address, e.status, e.deleted, e.department_id
-    , e.gmt_create, e.gmt_modified
-FROM demo_employee e
-WHERE e.id = ?
-2020-03-30 20:40:11.121 c.z.m.mapper.EmployeeMapper.selectByPrimaryKey - 
-==> Parameters: cc6b08506cdb11ea802000fffc35d9fe(String)
-2020-03-30 20:40:11.170 c.z.m.mapper.EmployeeMapper.selectByPrimaryKey - 
+==>  Preparing: select * from demo_employee where name = ? and gender = ? and phone = ? and deleted = 0 
+==> Parameters: zzs001(String), 1(Integer), 18826****41(String)
 <==      Total: 1
-
-Employee [id=cc6b08506cdb11ea802000fffc35d9fe, name=zzf001, gender=false, no=zzf001, password=123456, phone=18826****41, address=北京, status=1, deleted=false, departmentId=65684a126cd811ea802000fffc35d9fa, create=Wed Sep 04 21:54:49 CST 2019, modified=Wed Sep 04 21:54:51 CST 2019]
-
-2020-03-30 20:40:48.872 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
-==>  Preparing: 
-INSERT INTO demo_employee (id, name, gender, no, password
-    , phone, address, status, deleted, department_id
-    , gmt_create, gmt_modified)
-VALUES (?, ?, ?, ?, ?
-    , ?, ?, ?, ?, ?
-    , ?, ?)
-2020-03-30 20:40:48.899 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
-==> Parameters: 517cabff75b24129b54048ce7d3280f9(String), zzs005(String), true(Boolean), zzs005(String), admin(String), 18826****41(String), 广东(String), 1(Byte), false(Boolean), 94e2d2e56cd811ea802000fffc35d9fa(String), 2020-03-30 20:40:47.808(Timestamp), 2020-03-30 20:40:47.808(Timestamp)
-2020-03-30 20:40:48.991 cn.zzs.Mybatis.mapper.EmployeeMapper.insert - 
-<==    Updates: 1
+Employee(id=cc6b08506cdb11ea802000fffc35d9fa, name=zzs001, gender=1, no=zzs001, password=666666, phone=18826****41, address=北京, status=1, deleted=0, departmentId=65684a126cd811ea802000fffc35d9fa, gmtCreate=Wed Sep 04 21:48:28 CST 2019, gmtModified=Wed Mar 25 10:44:51 CST 2020)
 ```
 
-### 补充--批量新增
+# 高级条件查询
 
-这里我再补充下批量新增的实现。只要在上面 insert 语句的基础上增加一个 foreach 标签就可以，非常方便。在本系列第二篇文章中我将说到这些动态 sql 的用法。
-
-```xml
-    <!-- 批量新增 -->
-    <insert id="insertBatch"
-        parameterType="Employee">
-        insert into 
-            demo_employee 
-        (id, name, gender,no, password, phone,address, status, deleted,department_id, gmt_create, gmt_modified)
-        values 
-        <foreach item="item" index="index" collection="list" separator=",">
-            (
-                #{item.id}, 
-                #{item.name},
-                #{item.gender},
-                #{item.no}, 
-                #{item.password}, 
-                #{item.phone},
-                #{item.address}, 
-                #{item.status},
-                #{item.deleted},
-                #{item.departmentId}, 
-                #{item.create}, 
-                #{item.modified}
-            )
-        </foreach>
-    </insert>
-```
-
-## 高级条件查询
-
-还是回到下面这个接口，经过上面的例子，圈红的几个方法，相信大家已经知道如何使用。现在看看高级条件查询。
-
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111642015-572561495.png" alt="mybatis_demo_crud" style="zoom: 80%;" />
-
-### 条件类和它的继承体系
-
-在项目中，条件类经常会被用来接收各种查询条件，当业务比较复杂时，条件类会非常臃肿，大部分原因都是写代码不遵循规范。我们的条件封装类的条件由三个部分组成（以员工条件类为例）：
-
-1. 不同实体都会用到的条件，例如页码页数；
-2. 对应实体的属性，例如员工性别、电话号码；
-3. 与对应实体关联的实体属性，例如员工所在部门名。
-
-根据这种结构可以形成以下的继承结构：
-
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111703941-2005930568.png" alt="Mybatis_demo_codition" style="zoom:80%;" />
-
-
-其中，`BaseCondition`中用于定义一些不同实体都通用的条件，如下：
+在实际项目中，我们经常需要用到高级条件查询。这类查询和入门例子的查询最大的不同在于，高级条件查询的某个条件可能为空，所以，在配置入参映射时需要进行判断。mybatis 提供了丰富的动态 sql 语法以支持此类入参映射，如下：
 
 ```java
-public class BaseCondition {
-    /**
-     * 页码
-     */
-    private Integer pageNum;
-    /**
-     * 每页记录数
-     */
-    private Integer pageSize;
-
-    /**
-     * 排序语句
-     */
-    private String orderByClause;
-    
-    /**
-     * 关键字
-     */
-    private String searchKeyWord;
-    
-    /**
-     * 是否去重
-     */
-    private boolean distinct;
-    
-    // 省略setter/getter方法
-}
-```
-
-AbstractEmployeeCondition 中定义属于员工类的条件，如下：
-
-```java
-public abstract class AbstractEmployeeCondition extends BaseCondition {
-    /**
-     * 注意，这里不要命名为id
-     */
-    private String employeeId;
-
-    private String name;
-
-    private Boolean gender;
-
-    private String no;
-
-    private String password;
-
-    private String phone;
-
-    private String address;
-
-    private Byte status;
-
-    private Boolean deleted;
-
-    private String departmentId;
-
-    private Date createStart;
-    
-    private Date createEnd;
-
-    private Date modifiedStart;
-    
-    private Date modifiedEnd;
-    
-    // 省略setter/getter方法
-}
-```
-
-接下来是具体实现类 EmployeeCondition，这里用于定义一些关联实体的条件，也就是说使用到这些条件时必须 join 表。
-
-```java
-public class EmployeeCondition extends AbstractEmployeeCondition {
-    //============部门表============
-    /**
-     * <p>部门编号</p>
-     */
-    private String departmentNo;
-    
-    /**
-     * <p>部门名</p>
-     */
-    private String departmentName;
-    
-    /**
-     * <p>是否关联部门表</p>
-     */
-    private boolean joinDepartment = false;
-    
-    public boolean isJoinDepartment() {
-        return joinDepartment ? true : (departmentNo != null && !departmentNo.isEmpty()) || (departmentName != null && !departmentName.isEmpty());
-    }
-    
-    public void setJoinDepartment(boolean joinDepartment) {
-        this.joinDepartment = joinDepartment;
-    }
-    // 省略setter/getter方法
-}
-```
-
-### 编写 mapper xml文件
-
-Mybatis 提供了丰富的动态 sql 语法，以下可以完成高级条件查询的 sql 拼接。
-
-```java
-    <!-- AbstractEmployeeCondition查询条件 -->
-    <sql id="Abstract_Condition_Where_Clause">
-        <if test="con.name != null and con.name != ''">
-        and 
-           e.name = #{con.name} 
-        </if>
-        <if test="con.gender != null">
-        and 
-           e.gender = #{con.gender} 
-        </if>
-        <if test="con.no !=null and con.no != ''">
-        and 
-            e.no = #{con.no}
-        </if>
-        <if test="con.password != null and con.password != ''">
-        and 
-           e.password = #{con.password} 
-        </if>
-        <if test="con.phone != null and con.phone != ''">
-        and 
-           e.phone = #{con.phone} 
-        </if>
-        <if test="con.address != null and con.address != ''">
-        and 
-            e.address = #{con.address}
-        </if>
-        <if test="con.status != null">
-        and 
-            e.status = #{con.status} 
-        </if>
+    <select id = "queryByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultType="cn.zzs.mybatis.entity.Employee">
+        select e.* from demo_employee e where 1 = 1 
+        <!-- 一般条件 -->
         <if test="con.deleted != null">
-        and 
-           e.deleted = #{con.deleted} 
+            and e.deleted = #{con.deleted}
         </if>
+        <!-- 字符类条件 -->
+        <if test="con.name != null and con.name != ''">
+            and e.name = #{con.name}
+        </if>
+        <!-- 大于类条件 -->
         <if test="con.createStart != null">
-        and 
-           e.gmt_create &gt; #{con.createStart} 
-        </if> 
-        <if test="con.createEnd != null">
-        and 
-           e.gmt_create &lt; #{con.createEnd} 
-        </if> 
-        <if test="con.modifiedStart != null">
-        and 
-           e.gmt_modified &gt; #{con.modifiedStart} 
-        </if> 
-        <if test="con.modifiedEnd != null">
-        and 
-           e.gmt_modified &lt; #{con.modifiedEnd} 
-        </if>   
-    </sql>
-    
-    <!-- EmployeeCondition查询条件 -->
-    <sql id="Condition_Where_Clause">
-        <include refid="Abstract_Condition_Where_Clause"/>
-        <if test="con.departmentNo != null and con.departmentNo != ''">
-        and 
-            d.no = #{con.departmentNo}
+            and e.gmt_create &gt; #{con.createStart}
         </if>
-        <if test="con.departmentName != null and con.departmentName != ''">
-        and 
-            d.name = #{con.departmentName}
-        </if>
-    </sql>
-    
-    
-    <!-- 关联表 -->
-    <sql id="Join_Clause">
-        <if test="con.joinDepartment">
-            inner join 
-                demo_department d 
-            on 
-            	d.id = e.department_id
-        </if>
-    </sql>
-    
-    <!-- 根据条件查询 -->
-    <select id="selectByCondition"
-        parameterType="cn.zzs.Mybatis.condition.EmployeeCondition"
-        resultMap="BaseResultMap">
-        select
-            <if test="con.distinct">
-            distinct
-            </if>
-            <include refid="Base_Column_List" />
-        from 
-            demo_employee e 
-            <include refid="Join_Clause"></include>
-        where 1=1 
-            <include refid="Condition_Where_Clause" />
-        <if test="con.orderByClause != null">
-            order by ${con.orderByClause}
+        <!-- 集合类条件 -->
+        <if test="con.phoneInclude != null and con.phoneInclude.size() > 0">
+            and e.phone in 
+            <foreach collection="con.phoneInclude" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
     </select>
 ```
 
-这里的 sql 将条件分离出来复用，并沿用了条件实体的继承关系，有利于后续项目维护和扩展。注意，千万不要等到项目很臃肿时再进行 sql 的抽取复用。
+# 多表查询
 
-上面高级条件查询的代码，实际项目中可以通过代码生成器生成，扩展的条件再手动添加就行了。
+大多数情况下，我们对外提供的查询员工接口，只是返回员工的字段是远远不够的，还需要返回员工关联对象的字段，例如，员工所属部门、员工管理的菜单等等。
 
-### 编写测试方法
+这时，我们的查询将涉及到多个表，针对这种情况，我认为有三种解决方案：
 
-其实，这里存在一个问题，排序条件那里 sql 语句渗透到了 service 层，实际项目中，排序规则不会经常变动，我们可以在 xml 里直接使用默认排序条件，条件类增加 userDefaultSort 属性来判断。总之要记住一点，在 service 层中渗透 sql 代码，是非常不应该的！
+1. 手动分表查询；
+2. 自动分表查询；
+3. 联表查询。
+
+## 手动分表查询
+
+手动分表查询代码如下。顾名思义，我需要在代码中单独查每个表，再将查到的数据组装起来。
 
 ```java
-    /**
-     * <p>测试高级条件查询--嵌套select查询</p>
-     */
     @Test
-    public void testList() {
-        EmployeeCondition con = new EmployeeCondition();
-        // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
-        con.setDepartmentNo("202003230002");
-
-        // 设置排序规则
-        con.setOrderByClause("e.name desc");// 注意为数据库字段
-
-
-        // 执行
-        List<Employee> list = employeeRepository.list(con);
-
-        // 遍历结果
-        list.forEach(x -> {
-            System.out.println(x);
-        });
+    public void testMultiTableQuery1() throws Exception {
+        // 先查员工
+        Employee employee = employeeMapper.queryById("cc6b08506cdb11ea802000fffc35d9fe");
+        
+        // 再查部门
+        Department department = departmentMapper.queryById(employee.getDepartmentId());
+        
+        // 组装数据
+        EmployeeVO employeeVO = new EmployeeVO();
+        BeanUtils.copyProperties(employeeVO, employee);
+        employeeVO.setDepartmentName(department.getName());
+        employeeVO.setDepartmentNo(department.getNo());
+        
+        // 测试
+        System.err.println(employeeVO);
     }
 ```
 
-### 测试
+这种方案的优点在于；
 
-测试以上方法，在控制台打印以下sql，我格式化了下，可以打看到 mybatis 帮我们拼接好了查询条件。
+1. **如果后期多表分库，代码无需改动**；
+2. **Mapper 接口中只要提供通用的基本方法就行，无需增加任何个性化方法**；
+3. **在应对各种场景的不同 VO 时，这种方案非常灵活**。
 
-```sql
-SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-    , e.phone, e.address, e.status, e.deleted, e.department_id
-    , e.gmt_create, e.gmt_modified
-FROM demo_employee e
-    INNER JOIN demo_department d
-WHERE 1 = 1
-    AND e.gender = ?
-    AND e.phone = ?
-    AND e.address = ?
-    AND e.deleted = ?
-    AND d.no = ?
-ORDER BY name DESC
-```
+至于缺点嘛，就是会遇到**N+1 查询问题**，列表查询尤甚。
 
-## 关联查询--嵌套 select 查询
+## 自动分表查询
 
-以上基本讲完 IEmployeeRepository 中的方法，我前面说过，IEmployeeRepository 接口中的方法可以满足大部分的使用需求，但是，如果我响应给前端的数据中，除了员工的字段，还需要员工所在部门和员工拥有的角色的字段，这时 IEmployeeRepository 的方法不就应付不了了吗?
-
-这种场景涉及到的就是关联查询，我需要在 repository 层查询员工对象时将部门和角色一并查出来，然后在前端转换为具体的 VO 对象。
-
-关联的不同之处是，你需要告诉 MyBatis 如何加载关联。MyBatis 有两种不同的方式加载关联：
-
-- **嵌套 Select 查询**：通过执行另外一个 SQL 映射语句来加载期望的复杂类型。
-
-- **嵌套结果映射**：使用嵌套的结果映射来处理连接结果的重复子集。
-
-这里先介绍第一种方式：
-
-### 修改实体类
-
-在员工的实体增加以下两个属性，项目中也可以创建一个 Employee 的子类，将关联的属性放入到子类里，以便于管理。
+自动分表查询的代码如下。与手动分表查询不同，这里的查部门，不是我们自己手动查，而是由 mybatis 帮我们查。
 
 ```java
-public class Employee {
-    
-    private Department department;
-
-    private List<Role> roles = new ArrayList<>();
-    //······
-}
+    @Test
+    public void testMultiTableQuery2() throws Exception {
+        // 查员工（部门也会一起查）
+        Employee employee = employeeMapper.queryById("cc6b08506cdb11ea802000fffc35d9fe");
+        
+        // 取出部门对象
+        Department department = employee.getDepartment();
+        
+        // 组装数据
+        EmployeeVO employeeVO = new EmployeeVO();
+        BeanUtils.copyProperties(employeeVO, employee);
+        employeeVO.setDepartmentName(department.getName());
+        employeeVO.setDepartmentNo(department.getNo());
+        
+        // 测试
+        System.err.println(employeeVO);
+    }
 ```
 
-### 修改 mapper xml文件
+与手动分表查询不同，这里第一步返回的 employee 是一个非常“完整”的对象，它包括部门、角色等，如果你使用过 hibernate，对此应该并不陌生。所以，在某种程度上，**这种方案更加面向对象**。为了查出这样一个“完整”的对象，我们需要进行如下配置：
 
-关联查询时，我们不需要修改原来的查询语句，只需要修改 resultMap 就行。
-
-```java
-    <!-- 基础映射表 -->
-    <resultMap id="BaseResultMap" type="cn.zzs.Mybatis.entity.Employee">
-       <result column="id" property="id" javaType="string" jdbcType="VARCHAR"/>
-       <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR"/>
-       <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP"/>
-       <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP"/>
-       <association 
+```xml
+    <resultMap id = "EmployResultMap" type = "cn.zzs.mybatis.entity.Employee">
+        <result column="id" property="id"/>
+        <result column="department_id" property="departmentId"/>
+        <association 
             property="department" 
             column="department_id" 
-            select="cn.zzs.Mybatis.mapper.DepartmentMapper.selectByPrimaryKey"/>
-       <collection 
+            select="cn.zzs.mybatis.mapper.DepartmentMapper.queryById"/>
+        <collection 
             property="roles"
             column="id"
-            select="cn.zzs.Mybatis.mapper.RoleMapper.selectByEmployeeId"
+            select="cn.zzs.mybatis.mapper.RoleMapper.queryByEmployeeId"
             />
     </resultMap>
+    
+    <!-- 多表查询1和2 -->
+    <select id = "queryById" parameterType = "string" resultMap = "EmployResultMap">
+        select e.* 
+        from demo_employee e 
+        where e.id = #{value}
+    </select>
 ```
 
-以上增加了两个标签，association 和 collection 分别用于配置一方和多方的关联，其中 property 对应实体中的属性，column 对应执行语句返回的字段（如果没有使用别名的话，一般为列名），select 指向了其他 mapper 语句的 id。
-
-### 编写测试方法
-
-我调用的还是 IEmployeeRepository 接口的 get 方法，只是增加了部门和角色的打印。
-
-```java
-    /**
-     * <p>测试高级条件查询--嵌套select查询</p>
-     */
-    @Test
-    public void testList() {
-        EmployeeCondition con = new EmployeeCondition();
-        // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
-        con.setDepartmentNo("202003230002");
-
-        // 设置排序规则
-        con.setOrderByClause("e.name desc");// 注意为数据库字段
-
-
-        // 执行
-        List<Employee> list = employeeRepository.list(con);
-
-        // 遍历结果
-        list.forEach(x -> {
-            System.out.println(x);
-            System.out.println(x.getDepartment());
-            System.out.println(x.getRoles());
-        });
-    }
-```
-
-### 测试
-
-测试上面的方法，可以看到控制台打印了三个查询语句，分别对应员工、部门和角色，这样，我们就可以在前端转换 VO 时，将部门和角色的字段都给到 VO 了。
-
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111740135-1826470931.png" alt="mybatis_demo_relation" style="zoom:80%;" />
-
-
-
-### 补充--延迟加载
-
-上面的关联查询存在一个问题：如果我前端的 VO 只想要部门的字段而不需要角色，或者我就只要员工的字段，但是，这个时候还是会把部门和角色统统查出来，将会产生不必要的性能损耗。
-
-这种情况，就需要使用延迟加载了。延迟加载可以保证关联对象只有在用到的时候才去执行数据库查询。
-
-#### 配置延迟加载
-
-Mybatis 延迟加载功能默认是不开启的，但配置开启也很简单，只要在主配置文件中增加：
+需要注意的是，**自动分表查询最好结合延迟加载使用**，即当调用 getDepartment 时才触发查部门的动作。因为不是每种场景都需要查出那么“完整”的对象，延迟加载很好地避免不必要的性能开销。延迟加载的配置如下（默认不开启）：
 
 ```xml
     <!-- 全局配置 -->
     <settings>
-        <setting name="lazyLoadingEnabled" value="true"/>
-        <setting name="aggressiveLazyLoading" value="false"/>
-        <!-- 为了演示效果才设置这一项，它默认是toString,equals,clone,hashCode，这里暂时取消了toString的触发 -->
-        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode"/>
+        <setting name="lazyLoadingEnabled" value="true" />
     </settings>
 ```
 
-#### 编写测试方法
+和手动多表查询一样，**自动分表查询不需要在 Mapper 中增加个性化方法，但是呢，因为耦合多表的关联，所以，如果后期多表分库，改动就比较大了。而且，在应对各种场景的 VO 时，这种方案灵活性要比手动多表查询稍差**。
 
-还是使用前面的方法，这里我把 role 部分的代码注释掉。
+当然，这种方案也有**N+1查询问题**。
+
+## 联表查询
+
+联表查询代码如下。这种方案不需要分表查询，多表数据一次查出。
 
 ```java
-    /**
-     * <p>测试高级条件查询--嵌套select查询</p>
-     */
     @Test
-    public void testList() {
-        EmployeeCondition con = new EmployeeCondition();
-        // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
-        con.setDepartmentNo("202003230002");
-
-        // 设置排序规则
-        con.setOrderByClause("e.name desc");// 注意为数据库字段
-
-
-        // 执行
-        List<Employee> list = employeeRepository.list(con);
-
-        // 遍历结果
-        list.forEach(x -> {
-            System.out.println(x);
-            System.out.println(x.getDepartment());
-            // System.out.println(x.getRoles());
-        });
+    public void testMultiTableQuery3() {
+        // 执行查询
+        EmployeeVO employeeVO = employeeMapper.queryVOById("cc6b08506cdb11ea802000fffc35d9fe");
+        
+        // 测试
+        System.err.println(employeeVO);
     }
 ```
 
-#### 测试
-
-测试上面的方法，可以看到只关联查出了部门，角色并没有查出来，因为我们程序代码中没有触发 getRoles() 或 lazyLoadTriggerMethods 的操作。实际项目中，我们在前端转换 VO 时，如果需要用到关联对象的字段，才会触发查询。
-
-<img src="https://img2020.cnblogs.com/blog/1731892/202003/1731892-20200331111759225-838926719.png" alt="Mybatis_demo_relation2" style="zoom: 80%;" />
-
-
-## 关联查询--嵌套结果映射
-
-像 mybatis 的嵌套 select 查询，使用起来非常方便，但在大型数据集或大型数据表上表现不佳，会遇到 "N+1查询问题"。 因为这种方式 select 语句的数目太多，需要频繁的访问数据库，会在网络传输上浪费大量资源，同时会影响检索性能。 针对这个问题，mybatis 提供了嵌套结果映射的方式。
-
-我只要在上个例子的基础上修改就行：
-
-### 修改 mapper.xml 文件
-
-这里使用的是左关联查询，`resultMap`中的调用了`DepartmentMapper`的`resultMap`。
+具体做法就是采用联表查询，xml 配置如下。
 
 ```xml
-    <!-- 基础映射表：嵌套结果映射-->
-    <resultMap id="BaseResultMap2" type="Employee" autoMapping="true">
-        <id column="id" property="id" javaType="string" jdbcType="VARCHAR" />
-        <result column="department_id" property="departmentId" javaType="string" jdbcType="VARCHAR" />
-        <result column="gmt_create" property="create" javaType="date" jdbcType="TIMESTAMP" />
-        <result column="gmt_modified" property="modified" javaType="date" jdbcType="TIMESTAMP" />
-        <association property="department" 
-            columnPrefix="d_"
-            resultMap="cn.zzs.mybatis.mapper.DepartmentMapper.BaseResultMap" />
-    </resultMap>
-	<!-- 关联表 -->
-    <sql id="Join_Clause">
-        <if test="con.joinDepartment">
-            left join
-                demo_department d 
-            on 
-                d.id = e.department_id
-        </if>
-    </sql>
-
-    <!-- 基础字段 -->
-    <sql id="Base_Column_List">
-        e.id,
-        e.`name`,
-        e.gender,
-        e.no,
-        e.password,
-        e.phone,
-        e.address,
-        e.status,
-        e.deleted,
-        e.department_id,
-        e.gmt_create,
-        e.gmt_modified 
-    </sql>
-    
-    <!-- 部门字段 -->
-    <sql id="Join_Column_List">
-        <include refid="Base_Column_List"/>
-        <if test="con.joinDepartment">
-        ,
-        d.id as d_id,
-        d.no as d_no,
-        d.parent_id as d_parent_id,
-        d.`name` as d_name,
-        d.type as d_type,
-        d.deleted as d_deleted,
-        d.gmt_create as d_gmt_create,
-        d.gmt_modified as d_gmt_modified 
-        </if>
-    </sql>
-    <!-- 根据条件查询：嵌套结果查询 -->
-    <select id="selectByCondition2" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultMap="BaseResultMap2">
-        select
-        <if test="con.distinct">
-            distinct
-        </if>
-        <include refid="Join_Column_List" />
-        from
-        demo_employee e
-        <include refid="Join_Clause"></include>
-        where 1=1
-        <include refid="Condition_Where_Clause" />
-        <if test="con.orderByClause != null">
-            order by ${con.orderByClause}
-        </if>
+    <select id = "queryVOById" parameterType = "string" resultType = "cn.zzs.mybatis.vo.EmployeeVO">
+        select e.*, d.name as departmentName, d.no as departmentNo 
+        from demo_employee e left join demo_department d on e.department_id = d.id 
+        where e.id = #{value}
     </select>
 ```
 
-### 编写测试方法
+因为不需要分表查询，所以**联表查询可以避免N+1查询问题**，所以，相比前两种方案，它的性能一般是最好的。但是呢，**联表查询严重耦合了多表的关联，如果后期多表分库，改动会比较大。而且，这种方案的灵活性非常差，它几乎需要在 Mapper 接口中为每个 VO 提供个性化方法。**
 
-```java
-    /**
-     * <p>测试高级条件查询--嵌套结果查询</p>
-     */
-    @Test
-    public void testList2() {
-        EmployeeCondition con = new EmployeeCondition();
-        // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
-        //con.setDepartmentNo("202003230002");
-        con.setJoinDepartment(true);
+以上三种方案，各有优缺点，实际项目中采用哪种，需要结合多表分库、性能等因素具体分析。
 
-        // 设置排序规则
-        con.setOrderByClause("e.name desc");// 注意为数据库字段
+# 分页查询
 
+最后再简单说下分页查询吧。其实，**mybatis 提供了`RowBounds`来支持分页，但是呢，这种分页不是数据库分页，而是应用内存分页，非常的不友好**，所以，分页查询还是得另辟蹊径。
 
-        // 执行
-        List<Employee> list = employeeRepository.list2(con);
+## 引入插件依赖
 
-        // 遍历结果
-        list.forEach(x -> {
-            System.out.println(x);
-            System.out.println(x.getDepartment());
-        });
-    }
-```
-
-### 测试
-
-这里仅执行了一次 sql 查询，如果是嵌套 select 查询的话，没有触发缓存时需要执行 5 条 sql。相比之下，这种方式性能会更好一些。
-
-```sql
-2020-04-02 15:22:09.503 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
-==>  Preparing: 
-SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-	, e.phone, e.address, e.status, e.deleted, e.department_id
-	, e.gmt_create, e.gmt_modified, d.id AS d_id, d.no AS d_no, d.parent_id AS d_parent_id
-	, d.`name` AS d_name, d.type AS d_type, d.deleted AS d_deleted, d.gmt_create AS d_gmt_create, d.gmt_modified AS d_gmt_modified
-FROM demo_employee e
-	LEFT JOIN demo_department d ON d.id = e.department_id
-WHERE 1 = 1
-	AND e.gender = ?
-	AND e.phone = ?
-	AND e.address = ?
-	AND e.deleted = ?
-ORDER BY e.name DESC
-2020-04-02 15:22:09.526 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
-==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean)
-2020-04-02 15:22:09.546 c.z.m.mapper.EmployeeMapper.selectByCondition2 - 
-<==      Total: 4
-```
-
-注意，这种用法存在一个问题：**嵌套结果里如果是`collection`的话，分页总数会存在问题，所以，嵌套结果映射的方式最好仅针对association使用**。
-
-## 分页查询
-
-最后再简单查下分页查询，这里使用 pagehelper 插件来实现。
-
-### 引入插件依赖
-
-在项目 pom.xml 文件中增加以下依赖。
+本项目使用 pagehelper 插件来实现分页，首先，我们需要在 pom.xml 文件中增加以下依赖。
 
 ```xml
         <!-- 分页插件 -->
@@ -1316,9 +530,9 @@ ORDER BY e.name DESC
         </dependency>
 ```
 
-### 修改 mybatis 主配置文件
+## 修改 mybatis 主配置文件
 
-在 mybatis 主配置文件中增加 plugins 元素，并引入分页插件。
+然后，在 mybatis 主配置文件中增加 plugins 元素，并配置分页插件。
 
 ```xml
     <!-- 配置插件 -->
@@ -1328,85 +542,62 @@ ORDER BY e.name DESC
     </plugins>
 ```
 
-### 编写测试方法
+## 编写测试方法
+
+这里调用 startPage 相当于告诉分页插件对**本线程的下一个列表查询 sql **进行分页处理。
 
 ```java
-    /**
-     * <p>测试分页插件</p>
-     */
     @Test
-    public void testlistPage() {
+    public void testPageQuery() {
+        // 构建条件
         EmployeeCondition con = new EmployeeCondition();
-        // 设置条件
-        con.setGender(false);
-        con.setAddress("北京");
-        con.setDeleted(false);
-        con.setPhone("18826****41");
-        con.setDistinct(true);
+        con.setDeleted(0);
 
         // 设置分页信息
         PageHelper.startPage(0, 3);
 
         // 执行查询
-        List<Employee> list = employeeRepository.list(con);
+        List<Employee> employees = employeeMapper.queryByCondition(con);
+        
         // 遍历结果
-        list.forEach(System.out::println);
+        employees.forEach(System.err::println);
 
         // 封装分页模型
-        PageInfo<Employee> pageInfo = new PageInfo<>(list);
+        PageInfo<Employee> pageInfo = new PageInfo<>(employees);
 
         // 取分页模型的数据
-        System.out.println("查询总数" + pageInfo.getTotal());
+        System.err.println("结果总数:" + pageInfo.getTotal());
     }
 ```
 
-### 测试
+## 测试
 
-测试上面的方法，可以看到先进行了总数的查询，再进行分页查询。
+运行上面的方法，会在控制台输出了 sql 和匹配的员工数据。我们发现，这里竟然多了一句查数量的 sql，而且，列表查询的 sql 被嵌入了分页参数。到底是怎么做到的呢？这个问题等我们分析源码的时候再解答吧。
 
 ```sql
-2020-03-31 11:06:59.618 c.z.m.m.EmployeeMapper.selectByCondition_COUNT - 
-==>  Preparing: 
-SELECT COUNT(0)
-FROM (
-    SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-        , e.phone, e.address, e.status, e.deleted, e.department_id
-        , e.gmt_create, e.gmt_modified
-    FROM demo_employee e
-    WHERE 1 = 1
-        AND e.gender = ?
-        AND e.phone = ?
-        AND e.address = ?
-        AND e.deleted = ?
-) table_count
-2020-03-31 11:06:59.646 c.z.m.m.EmployeeMapper.selectByCondition_COUNT - 
-==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean)
-2020-03-31 11:06:59.678 c.z.m.m.EmployeeMapper.selectByCondition_COUNT - 
+==>  Preparing: SELECT count(0) FROM demo_employee e WHERE 1 = 1 AND e.deleted = ? 
+==> Parameters: 0(Integer)
 <==      Total: 1
-2020-03-31 11:06:59.693 c.z.m.mapper.EmployeeMapper.selectByCondition - 
-==>  Preparing: 
-SELECT DISTINCT e.id, e.`name`, e.gender, e.no, e.password
-    , e.phone, e.address, e.status, e.deleted, e.department_id
-    , e.gmt_create, e.gmt_modified
-FROM demo_employee e
-WHERE 1 = 1
-    AND e.gender = ?
-    AND e.phone = ?
-    AND e.address = ?
-    AND e.deleted = ?
-LIMIT ?
-2020-03-31 11:06:59.693 c.z.m.mapper.EmployeeMapper.selectByCondition - 
-==> Parameters: false(Boolean), 18826****41(String), 北京(String), false(Boolean), 3(Integer)
-2020-03-31 11:06:59.724 c.z.m.mapper.EmployeeMapper.selectByCondition - 
+==>  Preparing: select e.id,e.`name`,e.gender,e.no,e.password,e.phone,e.address,e.status,e.deleted,e.department_id,e.gmt_create,e.gmt_modified from demo_employee e where 1 = 1 and e.deleted = ? LIMIT ? 
+==> Parameters: 0(Integer), 3(Integer)
 <==      Total: 3
-查询总数4
-
+Employee(id=2e18f6560b25473480af987141eccd02, name=zzs005, gender=1, no=zzs005, password=admin, phone=18826****41, address=广东, status=1, deleted=0, departmentId=94e2d2e56cd811ea802000fffc35d9fa, gmtCreate=Sat Mar 28 00:00:00 CST 2020, gmtModified=Sat Mar 28 00:00:00 CST 2020, department=null, roles=null)
+Employee(id=cc6b08506cdb11ea802000fffc35d9fa, name=zzs001, gender=1, no=zzs001, password=666666, phone=18826****42, address=北京, status=1, deleted=0, departmentId=65684a126cd811ea802000fffc35d9fa, gmtCreate=Wed Sep 04 21:48:28 CST 2019, gmtModified=Wed Mar 25 10:44:51 CST 2020, department=null, roles=null)
+Employee(id=cc6b08506cdb11ea802000fffc35d9fb, name=zzs002, gender=1, no=zzs002, password=123456, phone=18826****43, address=广东, status=1, deleted=0, departmentId=65684a126cd811ea802000fffc35d9fa, gmtCreate=Thu Aug 01 21:49:43 CST 2019, gmtModified=Mon Sep 02 21:49:49 CST 2019, department=null, roles=null)
+结果总数:9
 ```
 
+# 结语
+
+以上基本讲完为什么要使用持久层框架以及如何使用 mybatis。后续发现其他有趣的地方再做补充，也欢迎大家指正不足的地方。
+
+最后，感谢阅读。
 
 # 参考资料
 
-[Mybatis官方中文文档](https://Mybatis.org/Mybatis-3/zh/index.html/)
+[Mybatis官方中文文档](https://mybatis.org/mybatis-3/zh/index.html)
+
+> 2021-09-29更改
 
 > 相关源码请移步：[mybatis-demo](https://github.com/ZhangZiSheng001/mybatis-projects/tree/master/mybatis-demo)
 
