@@ -149,7 +149,7 @@ mybatis 有自带的数据源，但实际项目中建议还是引入第三方的
 
 ## 数据库脚本
 
-本项目的数据库概念模型如下。为了尽可能模拟出更多的场景，本项目给出的表会比较复杂，涉及到 4 张主表和 2 张中间表，具体的 sql 脚本也提供好了（[脚本路径]( https://github.com/ZhangZiSheng001/mybatis-projects /sql)）：
+本项目的数据库概念模型如下。为了尽可能模拟出更多的场景，本项目给出的表会比较复杂，涉及到 4 张主表和 2 张中间表，具体的 sql 脚本也提供好了（[脚本路径]( https://github.com/ZhangZiSheng001/mybatis-projects/sql)）：
 
 ![Mybatis_demo项目的数据库概念模型](https://img2020.cnblogs.com/blog/1731892/202109/1731892-20210928132405404-231694101.png)
 
@@ -294,7 +294,7 @@ public interface EmployeeMapper {
 
 注意下参数符号 #{name}， 它告诉 mybatis 创建一个预处理语句（PreparedStatement）参数，在 JDBC 中，这样的一个参数在 SQL 中会由一个“?”来标识，并被传递到一个新的预处理语句中。不过有时你就是想直接在 SQL 语句中直接插入一个不转义的字符串。 这时候你可以使用 “$” 字符：
 
-```xml
+```
 ORDER BY ${columnName}
 ```
 
@@ -355,7 +355,7 @@ Employee(id=cc6b08506cdb11ea802000fffc35d9fa, name=zzs001, gender=1, no=zzs001, 
 
 在实际项目中，我们经常需要用到高级条件查询。这类查询和入门例子的查询最大的不同在于，高级条件查询的某个条件可能为空，所以，在配置入参映射时需要进行判断。mybatis 提供了丰富的动态 sql 语法以支持此类入参映射，如下：
 
-```java
+```xml
     <select id = "queryByCondition" parameterType="cn.zzs.mybatis.condition.EmployeeCondition" resultType="cn.zzs.mybatis.entity.Employee">
         select e.* from demo_employee e where 1 = 1 
         <!-- 一般条件 -->

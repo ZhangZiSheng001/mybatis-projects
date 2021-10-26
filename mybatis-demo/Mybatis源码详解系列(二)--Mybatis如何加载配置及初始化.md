@@ -1,6 +1,6 @@
 # 简介
 
-Mybatis 是一个持久层框架，它对 JDBC 进行了高级封装，使我们的代码中不会出现任何的 JDBC 代码，另外，它还通过 xml 或注解的方式将 sql 从 DAO/Repository 层中解耦出来，除了这些基本功能外，它还提供了动态 sql、延迟加载、缓存等功能。 相比 Hibernate，Mybatis 更面向数据库，可以灵活地对 sql 语句进行优化。
+mybatis 是一个持久层框架，它让我们可以方便、解耦地操作数据库。 相比 hibernate，mybatis 在国内更受欢迎，而且 mybatis 更面向数据库，可以灵活地对 sql 语句进行优化。
 
 前面已经说完 mybatis 的使用（ [Mybatis详解系列(一)--持久层框架解决了什么及如何使用Mybatis](https://www.cnblogs.com/ZhangZiSheng001/p/12603885.html) ），现在开始分析源码，和使用例子一样，我用的 mybatis 是 3.5.4 版本的。考虑连贯性，我会按下面的顺序来展开分析，计划两篇博客写完，本文只涉及第一点内容：
 
@@ -84,7 +84,7 @@ private XMLConfigBuilder(XPathParser parser, String environment, Properties prop
 }
 ```
 
-`XPathParser`的构造方法里将对 xml 进行解析，如下。点进 `XPathParser.createDocument(InputSource)`方法就会发现 mybatis 使用的是 JAXP 的 API，这部分的内容就不在本文的讨论范围，感兴趣可参考我的另一篇博客： [源码详解系列(三) ------ dom4j的使用和分析(重点对比和DOM、SAX的区别)](https://www.cnblogs.com/ZhangZiSheng001/p/11917301.html) 。
+`XPathParser`的构造方法里将对 xml 进行解析，如下。点进 `XPathParser.createDocument(InputSource)`方法就会发现 mybatis 使用的是 JAXP 的 API，这部分的内容就不在本文的讨论范围，感兴趣可参考我的另一篇博客： [源码详解系列(三) -- dom4j的使用和分析(重点对比和DOM、SAX的区别)](https://www.cnblogs.com/ZhangZiSheng001/p/11917301.html) 。
 
 ```java
 	private final Document document;
